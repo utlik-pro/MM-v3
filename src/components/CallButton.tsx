@@ -187,14 +187,7 @@ export function CallButton() {
         </div>
       )}
       
-      {status === 'connected' && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3 max-w-sm">
-          <div className="flex items-center">
-            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            <p className="text-sm text-green-700">Подключен к голосовому ассистенту</p>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 } 
