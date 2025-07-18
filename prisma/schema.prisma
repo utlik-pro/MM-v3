@@ -1,0 +1,260 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum definitions
+enum UserRole {
+  ADMIN
+  CLIENT_ADMIN
+  CLIENT_USER
+  VIEWER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  CLOSED
+}
+
+enum ConversationStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
+  TIMEOUT
+}
+
+// Core Models
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String?
+  name      String?
+  role      UserRole @default(CLIENT_USER)
+  clientId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  client   Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  sessions Session[]
+  accounts Account[]
+
+  @@map("users")
+}
+
+model Client {
+  id          String   @id @default(cuid())
+  name        String
+  domain      String?
+  description String?
+  settings    Json?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users         User[]
+  agents        Agent[]
+  conversations Conversation[]
+  leads         Lead[]
+
+  @@map("clients")
+}
+
+model Agent {
+  id                 String   @id @default(cuid())
+  name               String
+  description        String?
+  clientId           String
+  elevenLabsAgentId  String   @unique
+  isActive           Boolean  @default(true)
+  settings           Json?
+  businessHours      Json?
+  fallbackResponses  Json?
+  webhookUrl         String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  prompts       Prompt[]
+  conversations Conversation[]
+  leads         Lead[]
+  analytics     Analytics[]
+
+  @@map("agents")
+}
+
+model Prompt {
+  id        String   @id @default(cuid())
+  agentId   String
+  title     String
+  content   String   @db.Text
+  version   Int      @default(1)
+  isActive  Boolean  @default(false)
+  isDefault Boolean  @default(false)
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, version])
+  @@map("prompts")
+}
+
+model Conversation {
+  id             String             @id @default(cuid())
+  agentId        String
+  clientId       String
+  userId         String?
+  sessionId      String?
+  transcript     Json?
+  summary        String?
+  duration       Int?               // in seconds
+  status         ConversationStatus @default(ACTIVE)
+  leadCaptured   Boolean            @default(false)
+  leadId         String?
+  metadata       Json?
+  ipAddress      String?
+  userAgent      String?
+  startedAt      DateTime           @default(now())
+  endedAt        DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  // Relations
+  agent  Agent   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  client Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  lead   Lead?   @relation(fields: [leadId], references: [id])
+  events ConversationEvent[]
+
+  @@map("conversations")
+}
+
+model ConversationEvent {
+  id             String   @id @default(cuid())
+  conversationId String
+  eventType      String   // 'message', 'action', 'error', 'lead_capture'
+  eventData      Json
+  timestamp      DateTime @default(now())
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("conversation_events")
+}
+
+model Lead {
+  id             String     @id @default(cuid())
+  agentId        String
+  clientId       String
+  conversationId String?
+  contactInfo    Json       // flexible JSON for name, email, phone, etc.
+  source         String?    // where the lead came from
+  status         LeadStatus @default(NEW)
+  score          Int?       // lead quality score 1-100
+  notes          String?    @db.Text
+  assignedTo     String?    // user ID of assigned sales person
+  followUpDate   DateTime?
+  metadata       Json?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  // Relations
+  agent         Agent          @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  activities    LeadActivity[]
+
+  @@map("leads")
+}
+
+model LeadActivity {
+  id          String   @id @default(cuid())
+  leadId      String
+  activityType String   // 'email', 'call', 'meeting', 'note'
+  description String?  @db.Text
+  metadata    Json?
+  createdBy   String?  // user ID
+  createdAt   DateTime @default(now())
+
+  // Relations
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@map("lead_activities")
+}
+
+model Analytics {
+  id               String   @id @default(cuid())
+  agentId          String
+  date             DateTime
+  totalConversations Int     @default(0)
+  completedConversations Int @default(0)
+  avgDuration      Float?
+  leadsGenerated   Int      @default(0)
+  leadsConverted   Int      @default(0)
+  metadata         Json?
+  createdAt        DateTime @default(now())
+
+  // Relations
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, date])
+  @@map("analytics")
+}
+
+// NextAuth.js models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

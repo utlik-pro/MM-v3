@@ -1,0 +1,352 @@
+# Voice Assistant Admin Panel - Product Requirements Document
+
+## Project Overview
+
+This document outlines the comprehensive product requirements for creating an admin panel that allows clients to manage their voice assistant settings, collect leads, and view interaction history. The admin panel will provide complete control over the voice assistant's behavior, lead generation, and analytics.
+
+## Executive Summary
+
+The Voice Assistant Admin Panel is a comprehensive management system that enables clients to:
+- Configure voice assistant prompts and personality
+- Collect and manage leads from voice interactions
+- View detailed conversation history and analytics
+- Manage multiple voice assistants/agents
+- Configure business logic and integration settings
+
+## Objectives
+
+### Primary Goals
+- Create secure admin interface for voice assistant management
+- Implement lead capture and management system
+- Provide comprehensive conversation history and analytics
+- Enable real-time prompt and settings management
+- Build scalable multi-tenant architecture
+
+### Success Metrics
+- 100% secure authentication and authorization
+- Real-time prompt updates applied to voice assistant
+- Complete lead tracking and export functionality
+- Comprehensive conversation analytics and reporting
+- Multi-client support with data isolation
+
+## Functional Requirements
+
+### Authentication & Security
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| AUTH-101 | Admin Authentication | Secure login system with email/password | High |
+| AUTH-102 | Multi-tenant Support | Support multiple clients with data isolation | High |
+| AUTH-103 | Role-based Access | Different permission levels (admin, viewer, editor) | Medium |
+| AUTH-104 | Session Management | Secure session handling with timeout | High |
+| AUTH-105 | Password Security | Strong password requirements and hashing | High |
+
+### Prompt Management
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| PROMPT-101 | Prompt Editor | Rich text editor for voice assistant prompts | High |
+| PROMPT-102 | Prompt Templates | Pre-built templates for different industries | Medium |
+| PROMPT-103 | Prompt Versioning | Version control for prompt changes | High |
+| PROMPT-104 | Real-time Updates | Live deployment of prompt changes to voice assistant | High |
+| PROMPT-105 | Prompt Testing | Test interface to preview prompt behavior | Medium |
+
+### Lead Management
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| LEAD-101 | Lead Capture | Automatic capture of user contact information | High |
+| LEAD-102 | Lead Dashboard | Overview of all collected leads with filters | High |
+| LEAD-103 | Lead Details | Detailed view of individual lead interactions | High |
+| LEAD-104 | Lead Export | Export leads to CSV/Excel format | High |
+| LEAD-105 | Lead Notifications | Email/SMS notifications for new leads | Medium |
+| LEAD-106 | Lead Status | Mark leads as contacted, qualified, converted | Medium |
+
+### Conversation History
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| CONV-101 | Conversation Log | Complete record of all voice interactions | High |
+| CONV-102 | Conversation Search | Search conversations by date, keyword, user | High |
+| CONV-103 | Conversation Analytics | Statistics on usage, duration, outcomes | High |
+| CONV-104 | Conversation Export | Export conversation data for analysis | Medium |
+| CONV-105 | Real-time Monitoring | Live view of ongoing conversations | Medium |
+
+### Agent Configuration
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| AGENT-101 | Voice Settings | Configure voice, speed, tone preferences | High |
+| AGENT-102 | Business Hours | Set operational hours for voice assistant | Medium |
+| AGENT-103 | Fallback Scenarios | Configure responses for error situations | High |
+| AGENT-104 | Integration Settings | Configure external API integrations | Medium |
+| AGENT-105 | Webhook Configuration | Setup webhooks for lead notifications | Medium |
+
+### Analytics & Reporting
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| ANALYTICS-101 | Usage Dashboard | Overview of assistant usage statistics | High |
+| ANALYTICS-102 | Performance Metrics | Success rates, completion rates, satisfaction | High |
+| ANALYTICS-103 | Lead Conversion | Track lead to customer conversion rates | Medium |
+| ANALYTICS-104 | Time-based Reports | Daily, weekly, monthly performance reports | Medium |
+| ANALYTICS-105 | Custom Reports | Configurable reports for specific metrics | Low |
+
+## Technical Requirements
+
+### Database Schema
+- **Users**: Admin accounts with roles and permissions
+- **Clients**: Multi-tenant client configuration
+- **Agents**: Voice assistant configurations per client
+- **Prompts**: Prompt templates and versions
+- **Conversations**: Complete conversation records
+- **Leads**: Contact information and lead status
+- **Analytics**: Aggregated statistics and metrics
+
+### API Architecture
+- RESTful API endpoints for all CRUD operations
+- Real-time WebSocket connections for live updates
+- Secure authentication with JWT tokens
+- Rate limiting and request validation
+- Comprehensive error handling and logging
+
+### Frontend Requirements
+- React-based admin dashboard
+- Responsive design for mobile and desktop
+- Real-time updates using WebSockets
+- Rich text editor for prompt management
+- Data visualization for analytics
+- Export functionality for leads and reports
+
+### Integration Requirements
+- ElevenLabs API integration for real-time prompt updates
+- Email service integration for notifications
+- CSV/Excel export functionality
+- Webhook support for external integrations
+- Database integration (PostgreSQL/MySQL)
+
+## User Stories
+
+### As an Admin User
+- I want to log into a secure admin panel to manage my voice assistant
+- I want to update my voice assistant's prompts and see changes applied immediately
+- I want to view all leads collected by my voice assistant with their contact details
+- I want to export lead data to integrate with my CRM system
+- I want to see analytics about how my voice assistant is performing
+
+### As a Client Manager
+- I want to configure multiple voice assistants for different business units
+- I want to set business hours when my voice assistant is active
+- I want to receive notifications when new leads are captured
+- I want to track conversation history to improve my service
+
+### As a System Administrator
+- I want to manage multiple client accounts with proper data isolation
+- I want to monitor system performance and usage across all clients
+- I want to ensure data security and compliance requirements are met
+
+## Technical Architecture
+
+### Backend Stack
+- **Framework**: Next.js API routes with TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js with JWT
+- **File Storage**: Vercel Blob or AWS S3
+- **Email**: SendGrid or Resend
+- **WebSockets**: Socket.io for real-time updates
+
+### Frontend Stack
+- **Framework**: Next.js 14 with TypeScript
+- **UI Library**: Tailwind CSS with shadcn/ui components
+- **State Management**: Zustand or React Query
+- **Forms**: React Hook Form with Zod validation
+- **Charts**: Recharts or Chart.js
+- **Editor**: Monaco Editor or Tiptap
+
+### Database Models
+
+```typescript
+// Core Models
+User {
+  id: string
+  email: string
+  password: string
+  role: Role
+  clientId: string
+  createdAt: DateTime
+}
+
+Client {
+  id: string
+  name: string
+  domain: string
+  settings: Json
+  agents: Agent[]
+  users: User[]
+}
+
+Agent {
+  id: string
+  name: string
+  clientId: string
+  elevenLabsAgentId: string
+  currentPrompt: Prompt
+  settings: Json
+  conversations: Conversation[]
+}
+
+Prompt {
+  id: string
+  agentId: string
+  content: string
+  version: number
+  isActive: boolean
+  createdAt: DateTime
+}
+
+Conversation {
+  id: string
+  agentId: string
+  userId?: string
+  transcript: Json
+  duration: number
+  leadCaptured: boolean
+  createdAt: DateTime
+}
+
+Lead {
+  id: string
+  agentId: string
+  conversationId: string
+  contactInfo: Json
+  status: LeadStatus
+  notes: string
+  createdAt: DateTime
+}
+```
+
+### Security Requirements
+- All API endpoints protected with authentication
+- Data encryption in transit and at rest
+- Input validation and sanitization
+- SQL injection prevention
+- XSS protection
+- CSRF protection
+- Rate limiting on API calls
+
+### Performance Requirements
+- Page load times under 3 seconds
+- Real-time updates with minimal latency
+- Support for 1000+ concurrent users
+- Database queries optimized for large datasets
+- Efficient file upload and processing
+
+## Implementation Phases
+
+### Phase 1: Core Infrastructure (Week 1-2)
+- Database setup and schema creation
+- Authentication system implementation
+- Basic admin panel structure
+- API endpoints for CRUD operations
+
+### Phase 2: Prompt Management (Week 3)
+- Prompt editor interface
+- Version control system
+- Integration with ElevenLabs API
+- Real-time prompt deployment
+
+### Phase 3: Lead Management (Week 4)
+- Lead capture from voice conversations
+- Lead dashboard and management interface
+- Export functionality
+- Notification system
+
+### Phase 4: Analytics & History (Week 5)
+- Conversation logging and storage
+- Analytics dashboard
+- Reporting functionality
+- Data visualization
+
+### Phase 5: Advanced Features (Week 6)
+- Multi-tenant support
+- Advanced configuration options
+- Performance optimization
+- Security hardening
+
+## Environment Variables
+
+```bash
+# Database
+DATABASE_URL=postgresql://...
+DIRECT_URL=postgresql://...
+
+# Authentication
+NEXTAUTH_SECRET=your-secret-key
+NEXTAUTH_URL=https://your-domain.com
+
+# ElevenLabs Integration
+ELEVENLABS_API_KEY=sk_...
+ELEVENLABS_WEBHOOK_SECRET=your-webhook-secret
+
+# Email Service
+SENDGRID_API_KEY=your-sendgrid-key
+SMTP_HOST=smtp.sendgrid.net
+SMTP_PORT=587
+
+# File Storage
+BLOB_READ_WRITE_TOKEN=your-blob-token
+
+# Analytics
+ANALYTICS_SECRET=your-analytics-secret
+```
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User authentication
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/session` - Get current session
+
+### Prompt Management
+- `GET /api/prompts` - List all prompts
+- `POST /api/prompts` - Create new prompt
+- `PUT /api/prompts/:id` - Update prompt
+- `DELETE /api/prompts/:id` - Delete prompt
+- `POST /api/prompts/:id/deploy` - Deploy prompt to agent
+
+### Lead Management
+- `GET /api/leads` - List all leads
+- `GET /api/leads/:id` - Get lead details
+- `PUT /api/leads/:id` - Update lead status
+- `POST /api/leads/export` - Export leads
+- `POST /api/leads/webhook` - Webhook for new leads
+
+### Conversation Management
+- `GET /api/conversations` - List conversations
+- `GET /api/conversations/:id` - Get conversation details
+- `POST /api/conversations/search` - Search conversations
+- `POST /api/conversations/export` - Export conversations
+
+### Analytics
+- `GET /api/analytics/dashboard` - Dashboard metrics
+- `GET /api/analytics/reports` - Generate reports
+- `GET /api/analytics/usage` - Usage statistics
+
+## Success Criteria
+
+### Technical Success
+- ✅ 100% API endpoint coverage with proper authentication
+- ✅ Real-time prompt updates applied to voice assistant
+- ✅ Complete lead capture and management system
+- ✅ Comprehensive conversation history and analytics
+- ✅ Multi-tenant architecture with data isolation
+
+### Business Success
+- ✅ Clients can independently manage their voice assistants
+- ✅ Lead generation increases by 50% with better tracking
+- ✅ Customer satisfaction improves with prompt customization
+- ✅ Reduced support overhead with self-service admin panel
+- ✅ Scalable system supporting multiple clients
+
+### User Experience Success
+- ✅ Intuitive admin interface requiring minimal training
+- ✅ Sub-3-second page load times across all features
+- ✅ Mobile-responsive design for on-the-go management
+- ✅ Real-time updates without manual page refreshes
+- ✅ Comprehensive help documentation and tutorials
+
+This admin panel will transform the voice assistant from a simple widget into a comprehensive business tool for lead generation and customer interaction management. 
