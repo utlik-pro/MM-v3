@@ -1,0 +1,226 @@
+# MinskMir Voice Agent - Cursor AI Rules
+
+## Обзор проекта
+Разработка голосового AI-агента для консультаций по недвижимости компании MinskMir с использованием LiveKit, Google Real-time API и RAG системы на Python.
+
+## Основные технологии
+- **Backend:** Python 3.9+ с LiveKit agents
+- **Voice Processing:** LiveKit + Google Gemini 2.0 Flash Real-time API
+- **RAG System:** LlamaIndex для работы с базой недвижимости
+- **CRM Integration:** Webhook для передачи данных
+- **Language:** Только русский язык
+- **Voice:** Женский голос (AOEDE)
+
+## Архитектурные принципы
+
+### 1. Структура проекта
+```
+/
+├── agent/                 # Основной голосовой агент
+│   ├── voice_agent.py    # Главный файл агента
+│   ├── speech_handler.py # Обработка речи
+│   └── session_manager.py # Управление сессиями
+├── rag/                  # RAG система
+│   ├── knowledge_base.py # База знаний о недвижимости
+│   ├── embeddings.py     # Векторные представления
+│   └── retrieval.py      # Поиск релевантной информации
+├── crm/                  # CRM интеграция
+│   ├── webhook_handler.py # Обработка webhook'ов
+│   └── data_formatter.py # Форматирование данных для CRM
+├── utils/                # Утилиты
+│   ├── timeout_manager.py # Управление таймаутами
+│   └── logger.py         # Логирование
+├── config/               # Конфигурация
+│   ├── settings.py       # Основные настройки
+│   └── prompts.py        # Промпты для агента
+└── data/                 # Данные
+    └── real_estate_db/   # База данных недвижимости
+```
+
+### 2. Правила кодирования
+
+#### Python Best Practices
+- Используй Python 3.9+ с type hints для всех функций
+- Следуй PEP 8 стандартам кодирования
+- Используй async/await для всех I/O операций
+- Создавай docstrings для всех классов и функций
+- Используй dataclasses для структур данных
+
+#### LiveKit Integration
+- Используй livekit-agents как основной фреймворк
+- Правильно настраивай livekit-plugins-google для голосовой обработки
+- Implement proper error handling для LiveKit connections
+- Используй event-driven архитектуру для voice interactions
+
+#### Google API Integration
+- Используй Google Gemini 2.0 Flash для real-time обработки
+- Properly handle API rate limits и retries
+- Implement secure API key management
+- Обеспечь поддержку только русского языка
+
+### 3. Голосовое взаимодействие
+
+#### Требования к голосу
+- Женский голос (AOEDE) обязательно
+- Естественная интонация для русского языка
+- Четкое произношение профессиональных терминов недвижимости
+- Дружелюбный и профессиональный тон
+
+#### Timeout Management
+- Автоотключение через 5 секунд молчания
+- Предупреждение через 2-3 секунды: "Вы меня слышите?"
+- Graceful disconnection с вежливым сообщением
+- Proper cleanup всех ресурсов при отключении
+
+#### Error Handling
+- Обработка ошибок распознавания речи
+- Fallback сценарии при проблемах с API
+- Clear error messages на русском языке
+- Automatic recovery attempts
+
+### 4. RAG System Requirements
+
+#### LlamaIndex Integration
+- Используй llama-index для векторной базы знаний
+- Index всей информации о недвижимости MinskMir
+- Implement semantic search для поиска объектов
+- Обновляемая база знаний
+
+#### Knowledge Base Content
+- Цены и характеристики объектов
+- Информация о районах и инфраструктуре
+- Условия рассрочки и финансирования
+- Транспортная доступность (метро, автобусы)
+- Социальная инфраструктура (школы, детские сады, магазины)
+
+### 5. CRM Integration
+
+#### Webhook Implementation
+- Secure webhook endpoint для передачи данных
+- Proper data validation и sanitization
+- Retry logic для failed webhook calls
+- Comprehensive logging
+
+#### Data Fields (обязательные)
+```python
+@dataclass
+class AppointmentData:
+    client_name: str           # Имя клиента
+    phone_number: str          # Номер телефона
+    appointment_time: datetime # Время записи
+    property_interest: str     # Информация о квартире
+    budget_range: str         # Бюджет клиента
+    additional_info: str      # Дополнительная информация
+```
+
+### 6. Консультационная логика
+
+#### Обработка запросов
+- Understand natural language queries на русском
+- Provide detailed property information
+- Suggest relevant alternatives
+- Calculate affordability и financing options
+- Explain infrastructure и neighborhood benefits
+
+#### Conversation Flow
+1. Приветствие и представление
+2. Выяснение потребностей клиента
+3. Предоставление релевантной информации
+4. Ответы на уточняющие вопросы
+5. Предложение записи на прием
+6. Сбор контактных данных
+7. Подтверждение записи
+
+### 7. Code Quality Rules
+
+#### Testing
+- Write unit tests для всех core functions
+- Integration tests для API interactions
+- Voice interaction tests with mock data
+- CRM webhook testing
+
+#### Performance
+- Optimize response times для real-time voice
+- Efficient vector search в RAG system
+- Memory management для long conversations
+- Concurrent handling multiple clients
+
+#### Security
+- Secure API key storage (environment variables)
+- Input validation для user data
+- Rate limiting для API calls
+- Data privacy compliance
+
+### 8. Рефакторинг существующего кода
+
+#### Cleanup Tasks
+- Удали все test files и mock data
+- Remove unused dependencies from requirements.txt
+- Consolidate duplicate code
+- Remove commented-out code blocks
+- Clean up import statements
+
+#### Code Organization
+- Separate concerns по модулям
+- Extract configuration в config files
+- Implement proper logging throughout
+- Add comprehensive error handling
+
+### 9. Development Guidelines
+
+#### Git Workflow
+- Feature branches для каждой функции
+- Descriptive commit messages на английском
+- Pull requests with proper descriptions
+- Code review обязателен
+
+#### Documentation
+- Inline comments на русском для business logic
+- Technical comments на английском
+- README с installation instructions
+- API documentation для webhook endpoints
+
+### 10. Deployment Considerations
+
+#### Environment Setup
+- Docker containerization рекомендуется
+- Environment-specific configuration
+- Health checks для LiveKit connection
+- Monitoring и alerting setup
+
+#### DigitalOcean Deployment
+- Optimize для production environment
+- Proper logging и monitoring
+- Backup strategies для knowledge base
+- Scalability considerations
+
+## Prompt Engineering для агента
+
+### Системный промпт (базовый)
+```
+Ты - профессиональный консультант по недвижимости компании MinskMir. 
+Говори только на русском языке, женским голосом. 
+Будь дружелюбной, профессиональной и помогай клиентам найти идеальную недвижимость.
+Если клиент молчит более 3 секунд, спроси: "Вы меня слышите?"
+Если молчание продолжается 5 секунд, вежливо завершай разговор.
+```
+
+### Примеры диалогов
+- Приветствие: "Здравствуйте! Меня зовут Анна, я консультант по недвижимости MinskMir. Как могу вам помочь?"
+- Уточнение: "Расскажите, пожалуйста, какую недвижимость вы ищете?"
+- Предложение: "У нас есть отличные варианты в этом районе. Хотели бы узнать подробности?"
+
+## Error Messages на русском
+- "Извините, я вас не расслышала. Можете повторить?"
+- "Произошла техническая ошибка. Давайте попробуем еще раз."
+- "К сожалению, мне нужно завершить разговор. До свидания!"
+
+## Обязательные проверки перед deploy
+- [ ] Голос настроен на женский (AOEDE)
+- [ ] Работает только русский язык
+- [ ] Timeout 5 секунд с предупреждением
+- [ ] CRM webhook отправляет корректные данные
+- [ ] RAG система возвращает актуальную информацию о недвижимости
+- [ ] Все лишние файлы удалены
+- [ ] Frontend widget подключен к новому backend
+- [ ] Comprehensive testing выполнен 

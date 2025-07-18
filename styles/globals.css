@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --minskmir-primary: #2563eb;
+  --minskmir-secondary: #64748b;
+  --minskmir-accent: #0ea5e9;
+  --minskmir-success: #22c55e;
+  --minskmir-warning: #f59e0b;
+  --minskmir-error: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Voice Widget Specific Styles */
+.voice-widget {
+  /* Ensure smooth animations */
+  transition: all 0.3s ease-in-out;
+}
+
+.voice-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Custom animations for voice widget */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes recording {
+  0%, 100% {
+    transform: scale(1);
+    background-color: #ef4444;
+  }
+  50% {
+    transform: scale(1.1);
+    background-color: #dc2626;
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Loading spinner styles */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom utility classes */
+.gradient-text {
+  background: linear-gradient(135deg, var(--minskmir-primary), var(--minskmir-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Focus states for accessibility */
+.voice-widget button:focus {
+  outline: 2px solid var(--minskmir-primary);
+  outline-offset: 2px;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .voice-widget {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+}
+
+/* iframe specific styles when embedded */
+body.iframe-mode {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.iframe-mode .voice-widget {
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .voice-widget {
+    border: 2px solid #000;
+  }
+  
+  .voice-widget button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .voice-widget,
+  .voice-widget * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .voice-widget {
+    display: none;
+  }
+} 

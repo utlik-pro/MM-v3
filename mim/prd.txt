@@ -1,0 +1,442 @@
+# MinskMir Voice Agent - Product Requirements Document
+
+## 1. Introduction
+
+This document outlines the comprehensive product requirements for MinskMir Voice Agent, a real estate consultation voice agent that provides property consultations, appointment booking, and CRM integration through voice interactions in Russian language. The PRD serves as a reference for the development team, providing detailed specifications for features, voice interaction design, technical requirements, and integration guidelines.
+
+## 2. Product overview
+
+MinskMir Voice Agent is an AI-powered voice assistant that enables real estate consultations for MinskMir company clients through natural Russian language conversations. The agent uses LiveKit and Google Gemini Real-time API for voice processing, incorporates a RAG system for property information retrieval, and integrates with CRM systems via webhooks. The agent features automatic session management, appointment booking capabilities, and comprehensive real estate knowledge.
+
+## 3. Goals and objectives
+
+### 3.1 Primary goals
+- Create an intelligent voice agent for real estate consultations in Russian language
+- Provide comprehensive property information including prices, characteristics, and infrastructure
+- Enable appointment booking with automatic CRM integration
+- Implement robust session management with auto-disconnect functionality
+- Deliver professional consultation experience with female voice (AOEDE)
+- Integrate existing frontend widget with new backend infrastructure
+
+### 3.2 Technical objectives
+- Refactor existing Python codebase and remove unnecessary files
+- Implement LiveKit + Google Gemini Real-time API integration
+- Build RAG system using LlamaIndex for property database queries
+- Create secure webhook system for CRM data transmission
+- Deploy on DigitalOcean with GitHub version control
+
+## 4. Target audience
+
+### 4.1 Primary users
+- Potential real estate buyers seeking property information
+- Existing MinskMir clients requiring consultation services
+- Property investors exploring market opportunities
+- First-time buyers needing guidance and support
+
+### 4.2 Secondary users
+- MinskMir sales representatives accessing appointment data
+- CRM system administrators managing lead data
+- Technical support staff monitoring system performance
+
+## 5. Features and requirements
+
+### 5.1 Voice interaction core
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| VI-101 | Russian language processing | Process and respond only in Russian language with natural speech patterns | High |
+| VI-102 | Female voice (AOEDE) | Use AOEDE female voice for all responses with professional tone | High |
+| VI-103 | LiveKit integration | Implement LiveKit agents framework for real-time voice processing | High |
+| VI-104 | Google Gemini API | Integrate Google Gemini 2.0 Flash Real-time API for speech processing | High |
+
+### 5.2 Session management
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| SM-101 | Auto-disconnect timer | Disconnect after 5 seconds of user silence | High |
+| SM-102 | Warning system | Warn user after 2-3 seconds of silence: "Вы меня слышите?" | High |
+| SM-103 | Graceful termination | Politely end conversation: "К сожалению, мне нужно завершить разговор. До свидания!" | High |
+| SM-104 | Resource cleanup | Properly cleanup all LiveKit and API resources on disconnect | High |
+
+### 5.3 Real estate consultation
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| RC-101 | Property information | Provide detailed property prices, characteristics, and specifications | High |
+| RC-102 | District information | Share comprehensive neighborhood details, infrastructure, and amenities | High |
+| RC-103 | Transportation access | Provide metro, bus, and transportation accessibility information | Medium |
+| RC-104 | Social infrastructure | Include details about schools, kindergartens, shopping centers, hospitals | Medium |
+| RC-105 | Financing options | Explain available payment plans, installments, and financing solutions | High |
+| RC-106 | Property recommendations | Suggest relevant alternatives based on user preferences and budget | Medium |
+
+### 5.4 RAG system integration
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| RAG-101 | LlamaIndex implementation | Use LlamaIndex for vector database and semantic search | High |
+| RAG-102 | Property database indexing | Index all MinskMir property information for quick retrieval | High |
+| RAG-103 | Semantic search | Implement intelligent search based on user queries and context | High |
+| RAG-104 | Knowledge base updates | Enable dynamic updates to property information database | Medium |
+
+### 5.5 Appointment booking
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| AB-101 | Time selection | Allow users to choose appointment times from available slots | High |
+| AB-102 | Office selection | Enable selection of MinskMir office locations for meetings | High |
+| AB-103 | Contact collection | Gather client name, phone number, and property interests | High |
+| AB-104 | Appointment confirmation | Confirm booking details and provide confirmation to user | High |
+
+### 5.6 CRM integration
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| CRM-101 | Webhook implementation | Send appointment data via secure webhook to CRM system | High |
+| CRM-102 | Data validation | Validate all collected data before transmission | High |
+| CRM-103 | Retry mechanism | Implement retry logic for failed webhook calls | Medium |
+| CRM-104 | Error logging | Log all CRM integration errors for monitoring | Medium |
+
+### 5.7 Code refactoring
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| CF-101 | Remove test files | Delete all unnecessary test files and mock data | High |
+| CF-102 | Clean dependencies | Remove unused packages from requirements.txt | High |
+| CF-103 | Code organization | Restructure code into logical modules and packages | High |
+| CF-104 | Documentation cleanup | Remove outdated comments and add comprehensive docstrings | Medium |
+
+## 6. User stories and acceptance criteria
+
+### 6.1 Voice interaction and setup
+
+**VI-101: Initial connection**
+- As a user, I want to connect to the voice agent and receive a professional greeting in Russian
+- **Acceptance Criteria:**
+  - Agent greets with: "Здравствуйте! Меня зовут Анна, я консультант по недвижимости MinskMir. Как могу вам помочь?"
+  - Voice is clearly female (AOEDE) with natural Russian pronunciation
+  - Connection establishes within 3 seconds
+  - Audio quality is clear and professional
+
+**VI-102: Natural conversation**
+- As a user, I want to ask questions about real estate in natural Russian language
+- **Acceptance Criteria:**
+  - Agent understands various Russian speech patterns and dialects
+  - Responses are contextually appropriate and helpful
+  - Agent maintains conversational flow throughout interaction
+  - Technical real estate terms are pronounced correctly
+
+**VI-103: Session timeout handling**
+- As a user, I want to be warned before the session ends due to inactivity
+- **Acceptance Criteria:**
+  - After 2-3 seconds of silence: "Вы меня слышите?"
+  - After 5 seconds total: "К сожалению, мне нужно завершить разговор. До свидания!"
+  - Session terminates gracefully with proper resource cleanup
+  - No hanging connections or memory leaks
+
+### 6.2 Real estate consultation
+
+**RC-101: Property information inquiry**
+- As a potential buyer, I want to get detailed information about available properties
+- **Acceptance Criteria:**
+  - Agent provides comprehensive property details (price, size, layout, features)
+  - Information is retrieved from current MinskMir database
+  - Response time is under 3 seconds for property queries
+  - Agent can handle multiple properties in single conversation
+
+**RC-102: Neighborhood consultation**
+- As a user, I want to learn about neighborhood infrastructure and amenities
+- **Acceptance Criteria:**
+  - Agent provides metro/transportation accessibility details
+  - Includes information about schools, kindergartens, hospitals, shopping
+  - Mentions safety ratings and demographic information when available
+  - Can compare multiple neighborhoods based on user criteria
+
+**RC-103: Financing consultation**
+- As a buyer, I want to understand available financing and payment options
+- **Acceptance Criteria:**
+  - Agent explains installment plans and payment schedules
+  - Provides accurate interest rates and loan terms
+  - Can calculate monthly payments based on user budget
+  - Offers personalized financing recommendations
+
+### 6.3 Appointment booking
+
+**AB-101: Appointment scheduling**
+- As a user, I want to schedule an appointment to view properties or meet with sales representative
+- **Acceptance Criteria:**
+  - Agent offers available time slots from MinskMir calendar
+  - User can select preferred office location
+  - Agent confirms appointment details before finalizing
+  - Booking process takes less than 2 minutes
+
+**AB-102: Contact information collection**
+- As a user, I want to provide my contact details for appointment booking
+- **Acceptance Criteria:**
+  - Agent collects name, phone number clearly and accurately
+  - Validates phone number format for Belarus/Russia
+  - Confirms spelling of name with user
+  - Handles correction requests gracefully
+
+**AB-103: Property interest specification**
+- As a user, I want to specify what type of property I'm interested in for the appointment
+- **Acceptance Criteria:**
+  - Agent collects property type, budget range, preferred location
+  - Records specific requirements (rooms, floor, amenities)
+  - Summarizes collected information for user confirmation
+  - Links property interest to appointment booking
+
+### 6.4 Technical integration
+
+**TI-101: RAG system performance**
+- As a system, the RAG system should provide accurate and fast property information retrieval
+- **Acceptance Criteria:**
+  - Property queries return results within 2 seconds
+  - Information accuracy rate above 95%
+  - System handles concurrent users without performance degradation
+  - Vector search returns relevant results for natural language queries
+
+**TI-102: CRM webhook integration**
+- As a system, appointment data should be automatically sent to CRM
+- **Acceptance Criteria:**
+  - Webhook sends data immediately after appointment confirmation
+  - All required fields are included: name, phone, time, property_interest, budget
+  - Failed webhook calls are retried up to 3 times
+  - Success/failure status is logged for monitoring
+
+**TI-103: Error handling and recovery**
+- As a system, the agent should handle errors gracefully without breaking user experience
+- **Acceptance Criteria:**
+  - API failures trigger appropriate fallback responses
+  - User is informed of technical issues in Russian: "Произошла техническая ошибка. Давайте попробуем еще раз."
+  - System automatically attempts recovery for transient failures
+  - Critical errors are logged for technical team review
+
+### 6.5 Edge cases and error scenarios
+
+**EC-101: Speech recognition errors**
+- As a user, if my speech is not recognized correctly, I want clear feedback and opportunity to repeat
+- **Acceptance Criteria:**
+  - Agent responds: "Извините, я вас не расслышала. Можете повторить?"
+  - System allows multiple attempts to understand user input
+  - Agent suggests alternative ways to phrase requests if needed
+  - Escalation to human representative option is available
+
+**EC-102: Database unavailability**
+- As a user, I want to be informed if property information is temporarily unavailable
+- **Acceptance Criteria:**
+  - Agent informs user of temporary system issues
+  - Offers to take contact information for follow-up
+  - Provides general consultation based on cached information
+  - Suggests calling back later or visiting office directly
+
+**EC-103: CRM system downtime**
+- As a system, appointment booking should still function even if CRM integration fails
+- **Acceptance Criteria:**
+  - Appointment data is stored locally if webhook fails
+  - User receives confirmation that appointment is booked
+  - Data is queued for transmission when CRM system recovers
+  - Manual backup process is available for critical appointments
+
+## 7. Technical requirements
+
+### 7.1 Technology stack
+
+| Requirement ID | Component | Technology | Version |
+|----------------|-----------|------------|---------|
+| TS-101 | Programming Language | Python | 3.9+ |
+| TS-102 | Voice Framework | LiveKit agents | Latest |
+| TS-103 | Speech Processing | Google Gemini 2.0 Flash Real-time API | Latest |
+| TS-104 | RAG System | LlamaIndex | 0.12.48+ |
+| TS-105 | Vector Database | LlamaIndex built-in | Latest |
+| TS-106 | HTTP Client | aiohttp | Latest |
+| TS-107 | Environment Management | python-dotenv | 0.19.0+ |
+
+### 7.2 LiveKit plugins and integrations
+
+| Plugin | Purpose | Configuration |
+|--------|---------|---------------|
+| livekit-plugins-google | Google API integration | Russian language, AOEDE voice |
+| livekit-plugins-openai | Fallback speech processing | Backup for Google API |
+| livekit-plugins-deepgram | Alternative STT | Backup speech-to-text |
+| livekit-plugins-noise-cancellation | Audio quality | Noise reduction |
+
+### 7.3 API integrations
+
+| API | Purpose | Requirements |
+|-----|---------|--------------|
+| Google Gemini 2.0 Flash | Real-time speech processing | Russian language support, low latency |
+| MinskMir Property Database | Real estate information | Read access, real-time updates |
+| CRM Webhook Endpoint | Appointment data transmission | HTTPS, authentication, retry logic |
+
+### 7.4 Performance requirements
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Response Time | < 3 seconds | From user speech end to agent response start |
+| Audio Latency | < 500ms | Round-trip audio processing |
+| Concurrent Users | 50+ | Simultaneous voice sessions |
+| Uptime | 99.5% | Monthly availability target |
+| Error Rate | < 2% | Failed interactions per total sessions |
+
+### 7.5 Security requirements
+
+| Requirement | Implementation |
+|-------------|---------------|
+| API Key Security | Environment variables, no hardcoding |
+| Data Encryption | HTTPS for all external communications |
+| User Privacy | No permanent storage of voice recordings |
+| Access Control | Restricted access to CRM webhook endpoints |
+| Rate Limiting | Prevent API abuse and ensure fair usage |
+
+## 8. Voice interaction design
+
+### 8.1 Conversation flow
+
+```
+1. Connection & Greeting
+   ↓
+2. User Intent Recognition
+   ↓
+3. Information Gathering
+   ↓
+4. Property Consultation
+   ↓
+5. Appointment Booking (if requested)
+   ↓
+6. Confirmation & Farewell
+```
+
+### 8.2 Dialog examples
+
+#### Initial greeting
+**Agent:** "Здравствуйте! Меня зовут Анна, я консультант по недвижимости MinskMir. Как могу вам помочь?"
+
+#### Property inquiry
+**User:** "Мне нужна двухкомнатная квартира в центре"
+**Agent:** "Отличный выбор! У нас есть несколько прекрасных двухкомнатных квартир в центральных районах. Какой у вас бюджет и есть ли предпочтения по району?"
+
+#### Appointment booking
+**Agent:** "Хотели бы вы записаться на просмотр квартиры? Я могу предложить удобное время для встречи в нашем офисе или показа объекта."
+
+### 8.3 Error handling dialogs
+
+#### Speech recognition error
+**Agent:** "Извините, я вас не расслышала. Можете повторить, пожалуйста?"
+
+#### Technical error
+**Agent:** "Произошла техническая ошибка. Давайте попробуем еще раз. Если проблема повторится, рекомендую обратиться по телефону."
+
+#### Timeout warning
+**Agent:** "Вы меня слышите? Если вам нужно время подумать, просто скажите, и я подожду."
+
+## 9. CRM integration specifications
+
+### 9.1 Webhook data format
+
+```python
+{
+    "client_name": "string",           # Имя клиента
+    "phone_number": "string",          # Номер телефона (+375XXXXXXXXX)
+    "appointment_time": "datetime",    # ISO 8601 format
+    "property_interest": "string",     # Описание интересующей недвижимости
+    "budget_range": "string",         # Бюджет клиента
+    "additional_info": "string",      # Дополнительная информация
+    "session_id": "string",           # Идентификатор сессии
+    "created_at": "datetime"          # Время создания записи
+}
+```
+
+### 9.2 Webhook security
+
+- HTTPS only communication
+- API key authentication
+- Request signing for verification
+- IP whitelist for MinskMir servers
+- Rate limiting to prevent abuse
+
+### 9.3 Error handling and retries
+
+- 3 retry attempts with exponential backoff
+- 30-second timeout per request
+- Failed requests logged for manual processing
+- Alternative contact methods if CRM unavailable
+
+## 10. Deployment and infrastructure
+
+### 10.1 Development environment
+
+- GitHub repository for version control
+- Feature branch workflow
+- Code review requirements
+- Automated testing pipeline
+- Documentation requirements
+
+### 10.2 Production deployment
+
+- DigitalOcean droplet for backend hosting
+- Vercel for frontend widget hosting
+- Environment variable management
+- SSL certificate configuration
+- Monitoring and logging setup
+
+### 10.3 Monitoring and maintenance
+
+- LiveKit connection health checks
+- Google API quota monitoring
+- CRM webhook success rates
+- Voice quality metrics
+- Performance optimization reviews
+
+### 10.4 Backup and recovery
+
+- Daily configuration backups
+- Property database synchronization
+- Conversation logs retention (7 days)
+- Disaster recovery procedures
+- Business continuity planning
+
+## 11. Testing strategy
+
+### 11.1 Unit testing
+- Voice agent core functions
+- RAG system query accuracy
+- CRM webhook integration
+- Timeout and session management
+
+### 11.2 Integration testing
+- LiveKit + Google API integration
+- End-to-end conversation flows
+- CRM system connectivity
+- Error handling scenarios
+
+### 11.3 Performance testing
+- Concurrent user load testing
+- Response time optimization
+- Memory usage monitoring
+- API rate limit testing
+
+### 11.4 User acceptance testing
+- Real estate expert validation
+- Russian language accuracy
+- Voice quality assessment
+- Business workflow verification
+
+## 12. Documentation requirements
+
+### 12.1 Technical documentation
+- API integration guides
+- Deployment instructions
+- Configuration management
+- Troubleshooting procedures
+
+### 12.2 User documentation
+- Agent capabilities overview
+- Conversation best practices
+- Appointment booking process
+- Contact information for support
+
+### 12.3 Business documentation
+- CRM integration workflow
+- Property database maintenance
+- Performance metrics reporting
+- Customer feedback collection 

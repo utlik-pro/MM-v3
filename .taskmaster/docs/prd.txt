@@ -1,0 +1,294 @@
+# ElevenLabs Proxy Iframe - Product Requirements Document
+
+## 1. Introduction
+
+This document outlines the comprehensive product requirements for creating a custom iframe widget that proxies ElevenLabs Conversational AI functionality through a Vercel server. The solution will hide ElevenLabs branding and API usage from end users while providing seamless voice AI interaction capabilities for the MinskMir Voice Agent project.
+
+## 2. Product overview
+
+The ElevenLabs Proxy Iframe is a white-label solution that creates a custom iframe widget hosted on Vercel. The widget will proxy all communication with ElevenLabs Conversational AI API while presenting a branded MinskMir interface to users. This solution ensures that users remain unaware of the underlying ElevenLabs service, providing a seamless and branded experience.
+
+## 3. Goals and objectives
+
+### 3.1 Primary goals
+- Create a custom iframe widget that proxies ElevenLabs Conversational AI
+- Hide all ElevenLabs branding and API usage from end users
+- Deploy the solution on Vercel for reliable hosting
+- Integrate with existing MinskMir Voice Agent project
+- Provide seamless voice AI interaction without exposing third-party dependencies
+
+### 3.2 Technical objectives
+- Implement secure API proxying using Vercel serverless functions
+- Create custom frontend widget with MinskMir branding
+- Ensure proper authentication and API key management
+- Implement real-time communication with ElevenLabs ConvAI
+- Build responsive iframe that works across different devices
+
+## 4. Target audience
+
+### 4.1 Primary users
+- MinskMir website visitors seeking voice AI consultation
+- Potential real estate clients requiring immediate assistance
+- Users who prefer voice interaction over text-based communication
+
+### 4.2 Secondary users
+- MinskMir technical team managing the widget
+- System administrators monitoring API usage and performance
+
+## 5. Features and requirements
+
+### 5.1 API Integration
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| API-101 | ElevenLabs ConvAI Integration | Integrate with ElevenLabs Conversational AI using provided agent ID and API key | High |
+| API-102 | Secure API key management | Store and manage ElevenLabs API key securely using environment variables | High |
+| API-103 | Agent configuration | Use specific agent ID: agent_01jxkr0mstfk6ttayjsghjm7xc | High |
+| API-104 | Proxy endpoints | Create Vercel serverless functions to proxy all ElevenLabs API calls | High |
+
+### 5.2 Frontend Widget
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| FE-101 | Custom iframe widget | Create custom iframe widget that replaces default ElevenLabs widget | High |
+| FE-102 | MinskMir branding | Apply MinskMir branding and remove all ElevenLabs references | High |
+| FE-103 | Responsive design | Ensure widget works across desktop, tablet, and mobile devices | High |
+| FE-104 | Voice controls | Implement voice interaction controls (mute, unmute, end conversation) | Medium |
+| FE-105 | Loading states | Provide clear loading indicators during initialization and processing | Medium |
+
+### 5.3 Backend Proxy
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| BE-101 | Vercel deployment | Deploy backend proxy functions on Vercel platform | High |
+| BE-102 | API routing | Route all widget API calls through custom proxy endpoints | High |
+| BE-103 | Authentication handling | Handle ElevenLabs authentication transparently from frontend | High |
+| BE-104 | Error handling | Implement comprehensive error handling and fallback mechanisms | High |
+| BE-105 | CORS configuration | Configure proper CORS settings for iframe integration | High |
+
+### 5.4 Security and Privacy
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| SEC-101 | API key protection | Ensure ElevenLabs API key is never exposed to client-side | High |
+| SEC-102 | Domain restrictions | Restrict iframe usage to authorized domains only | Medium |
+| SEC-103 | Rate limiting | Implement rate limiting to prevent API abuse | Medium |
+| SEC-104 | HTTPS enforcement | Ensure all communications use HTTPS encryption | High |
+
+### 5.5 Integration
+
+| Requirement ID | Requirement | Description | Priority |
+|----------------|-------------|-------------|----------|
+| INT-101 | MinskMir website integration | Provide easy iframe embed code for MinskMir website | High |
+| INT-102 | Configuration options | Allow customization of widget appearance and behavior | Medium |
+| INT-103 | Analytics integration | Support for tracking widget usage and performance | Low |
+
+## 6. User stories and acceptance criteria
+
+### 6.1 Widget Integration
+
+**ST-101: Website embedding**
+- As a MinskMir website administrator, I want to embed the voice AI widget using a simple iframe code
+- **Acceptance Criteria:**
+  - Iframe embed code is provided with proper dimensions and configuration
+  - Widget loads without showing any ElevenLabs branding
+  - Widget is fully functional when embedded on MinskMir website
+  - Widget respects parent page styling and responsive design
+
+**ST-102: User interaction**
+- As a website visitor, I want to interact with the voice AI without knowing it uses ElevenLabs
+- **Acceptance Criteria:**
+  - Widget appears to be a native MinskMir solution
+  - No ElevenLabs branding, logos, or references are visible
+  - Voice interaction works seamlessly without technical knowledge required
+  - Error messages are branded with MinskMir identity
+
+### 6.2 Voice Communication
+
+**ST-103: Voice conversation initiation**
+- As a user, I want to start a voice conversation by clicking a button
+- **Acceptance Criteria:**
+  - Clear "Start Conversation" button is prominently displayed
+  - Microphone permissions are requested appropriately
+  - Connection to voice AI is established without delays
+  - Visual feedback indicates when the AI is listening and responding
+
+**ST-104: Conversation management**
+- As a user, I want to control my voice conversation with clear options
+- **Acceptance Criteria:**
+  - Mute/unmute functionality works correctly
+  - End conversation button terminates session properly
+  - Visual indicators show connection status throughout conversation
+  - Conversation can be paused and resumed
+
+### 6.3 Technical Implementation
+
+**ST-105: API proxying**
+- As a developer, I want all ElevenLabs API calls to be proxied through our Vercel backend
+- **Acceptance Criteria:**
+  - No direct calls to ElevenLabs API from frontend
+  - All API responses are properly formatted and returned
+  - API key is securely stored and never exposed
+  - Proxy handles all ElevenLabs ConvAI functionality
+
+**ST-106: Error handling**
+- As a user, I want to receive helpful error messages when issues occur
+- **Acceptance Criteria:**
+  - Network errors display user-friendly messages
+  - API failures provide clear next steps
+  - Microphone issues are clearly communicated
+  - System errors are logged for technical team review
+
+### 6.4 Deployment and Maintenance
+
+**ST-107: Vercel deployment**
+- As a technical administrator, I want the solution deployed reliably on Vercel
+- **Acceptance Criteria:**
+  - All serverless functions deploy successfully
+  - Environment variables are properly configured
+  - Custom domain setup works correctly
+  - Deployment process is documented and repeatable
+
+**ST-108: Performance monitoring**
+- As a system administrator, I want to monitor widget performance and usage
+- **Acceptance Criteria:**
+  - API response times are tracked
+  - Error rates are monitored
+  - Usage analytics are available
+  - System health checks are in place
+
+## 7. Technical requirements
+
+### 7.1 Technology stack
+
+| Requirement ID | Requirement | Description |
+|----------------|-------------|-------------|
+| TS-101 | Frontend framework | Use React with TypeScript for widget development |
+| TS-102 | Backend platform | Deploy on Vercel using serverless functions |
+| TS-103 | Styling | Use TailwindCSS for responsive design |
+| TS-104 | Build tools | Use Vite for fast development and building |
+| TS-105 | Environment management | Use Vercel environment variables for configuration |
+
+### 7.2 API Integration
+
+| Requirement ID | Requirement | Description |
+|----------------|-------------|-------------|
+| API-201 | ElevenLabs ConvAI API | Integrate with ElevenLabs Conversational AI API |
+| API-202 | WebSocket communication | Handle real-time voice communication through WebSockets |
+| API-203 | Audio processing | Process audio streams for voice interaction |
+| API-204 | Session management | Manage conversation sessions and state |
+
+### 7.3 Security implementation
+
+| Requirement ID | Requirement | Description |
+|----------------|-------------|-------------|
+| SEC-201 | API key storage | Store API key in Vercel environment variables |
+| SEC-202 | Request validation | Validate all incoming requests to proxy endpoints |
+| SEC-203 | CORS configuration | Configure CORS for secure iframe embedding |
+| SEC-204 | Rate limiting | Implement rate limiting on proxy endpoints |
+
+### 7.4 Performance requirements
+
+| Requirement ID | Requirement | Description |
+|----------------|-------------|-------------|
+| PR-101 | Load time | Widget should load within 3 seconds |
+| PR-102 | Voice latency | Voice response latency should be under 500ms |
+| PR-103 | Bundle size | Frontend bundle size should be under 1MB |
+| PR-104 | API response time | Proxy API responses should add less than 100ms overhead |
+
+## 8. Design and user interface
+
+### 8.1 Visual design principles
+
+- Clean, professional appearance matching MinskMir branding
+- Intuitive voice interaction controls
+- Clear visual feedback for all interaction states
+- Responsive design for all device sizes
+- Accessibility compliance for voice and visual interactions
+
+### 8.2 Widget components
+
+#### 8.2.1 Main interface
+- Voice control button (start/stop conversation)
+- Visual indicator for AI listening/speaking states
+- Mute/unmute controls
+- End conversation button
+- Connection status indicator
+
+#### 8.2.2 Error states
+- Network connection issues
+- Microphone permission denied
+- API service unavailable
+- General error fallback
+
+#### 8.2.3 Loading states
+- Initial widget loading
+- Conversation initialization
+- AI processing indicators
+- Connection establishment
+
+### 8.3 Responsive specifications
+
+| Breakpoint | Widget behavior |
+|------------|-----------------|
+| Mobile (<768px) | Compact layout with essential controls only |
+| Tablet (768px-1024px) | Balanced layout with all features accessible |
+| Desktop (>1024px) | Full feature layout with optimal spacing |
+
+### 8.4 Accessibility requirements
+
+- WCAG 2.1 AA compliance
+- Keyboard navigation support
+- Screen reader compatibility
+- High contrast mode support
+- Voice command alternatives for visual controls
+
+## 9. Configuration and deployment
+
+### 9.1 Environment variables
+
+```
+ELEVENLABS_API_KEY=sk_079e94528d5861306a40b2083311d6697bcc49e3933991d8
+ELEVENLABS_AGENT_ID=agent_01jxkr0mstfk6ttayjsghjm7xc
+ALLOWED_ORIGINS=https://minskmir.by,https://www.minskmir.by
+RATE_LIMIT_REQUESTS=100
+RATE_LIMIT_WINDOW=3600
+```
+
+### 9.2 Deployment structure
+
+```
+project/
+├── src/
+│   ├── components/          # React components
+│   ├── hooks/              # Custom React hooks
+│   ├── utils/              # Utility functions
+│   └── types/              # TypeScript type definitions
+├── api/
+│   ├── proxy/              # Vercel serverless functions
+│   └── utils/              # API utility functions
+├── public/                 # Static assets
+└── vercel.json             # Vercel configuration
+```
+
+### 9.3 Integration code
+
+The final integration will provide a simple iframe embed code:
+
+```html
+<iframe 
+  src="https://voice-widget.minskmir.by" 
+  width="400" 
+  height="600"
+  frameborder="0"
+  allow="microphone">
+</iframe>
+```
+
+## 10. Success metrics
+
+- Widget loads successfully in 99% of cases
+- Voice interaction latency under 500ms
+- Zero exposure of ElevenLabs branding or API
+- Successful integration with MinskMir website
+- User satisfaction with voice AI experience 
