@@ -4,13 +4,6 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "devCommand": "npm run dev",
-  "env": {
-    "ELEVENLABS_API_KEY": "@elevenlabs-api-key",
-    "ELEVENLABS_AGENT_ID": "@elevenlabs-agent-id",
-    "ALLOWED_ORIGINS": "@allowed-origins",
-    "RATE_LIMIT_REQUESTS": "100",
-    "RATE_LIMIT_WINDOW": "3600"
-  },
   "functions": {
     "pages/api/**/*.js": {
       "runtime": "nodejs18.x",
@@ -32,10 +25,11 @@
       ]
     }
   ],
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/widget",
-      "destination": "/"
+      "source": "/health",
+      "destination": "/api/health"
     }
-  ]
+  ],
+  "regions": ["iad1"]
 } 
