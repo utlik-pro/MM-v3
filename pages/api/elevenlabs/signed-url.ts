@@ -65,7 +65,7 @@ export default async function handler(
   const agentId = process.env.ELEVENLABS_AGENT_ID;
 
   if (!apiKey || !agentId) {
-    console.error('Missing ElevenLabs configuration');
+    console.error('Missing Voice Assistant configuration');
     return res.status(500).json({
       error: 'Configuration Error',
       message: 'Server configuration is incomplete',
@@ -91,7 +91,7 @@ export default async function handler(
   }
 
   try {
-    // Make request to ElevenLabs API
+    // Make request to Voice Assistant API
     const response = await fetch(
       `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${agentId}`,
       {
@@ -105,11 +105,11 @@ export default async function handler(
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('ElevenLabs API error:', response.status, errorText);
+      console.error('Voice Assistant API error:', response.status, errorText);
       
       return res.status(response.status).json({
-        error: 'ElevenLabs API Error',
-        message: 'Failed to get signed URL from ElevenLabs',
+        error: 'Voice Assistant API Error',
+        message: 'Failed to get signed URL from Voice Assistant',
         statusCode: response.status
       });
     }

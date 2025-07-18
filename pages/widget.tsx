@@ -16,7 +16,7 @@ export default function Widget() {
         <meta httpEquiv="Expires" content="0" />
       </Head>
       
-      <main className="w-full h-screen flex items-center justify-center p-4 bg-transparent">
+      <main className="w-full h-screen flex items-end justify-end p-4 bg-transparent">
         <CallButton />
       </main>
       

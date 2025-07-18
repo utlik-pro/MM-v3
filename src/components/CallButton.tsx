@@ -11,7 +11,7 @@ export function CallButton() {
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const conversationRef = useRef<any>(null);
 
-  // Initialize ElevenLabs conversation
+  // Initialize Voice Assistant conversation
   const initializeConversation = useCallback(async () => {
     try {
       setStatus('connecting');
@@ -35,23 +35,23 @@ export function CallButton() {
       const data = await response.json();
       setSignedUrl(data.signed_url);
 
-      // Dynamically import ElevenLabs client to avoid SSR issues
+      // Dynamically import Voice Assistant client to avoid SSR issues
       const { Conversation } = await import('@elevenlabs/client');
       
       // Use the correct startSession method
       const conversation = await Conversation.startSession({
         signedUrl: data.signed_url,
         onConnect: () => {
-          console.log('Connected to ElevenLabs');
+          console.log('Connected to Voice Assistant');
           setStatus('connected');
         },
         onDisconnect: () => {
-          console.log('Disconnected from ElevenLabs');
+          console.log('Disconnected from Voice Assistant');
           setStatus('idle');
           setSignedUrl(null);
         },
         onError: (message: string) => {
-          console.error('ElevenLabs error:', message);
+          console.error('Voice Assistant error:', message);
           setError(message);
           setStatus('error');
         },

@@ -7,7 +7,7 @@ interface HealthResponse {
   uptime: number;
   environment: string;
   services: {
-    elevenlabs: 'available' | 'unavailable';
+    voiceAssistant: 'available' | 'unavailable';
   };
 }
 
@@ -24,13 +24,13 @@ export default async function handler(
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
       services: {
-        elevenlabs: 'unavailable'
+        voiceAssistant: 'unavailable'
       }
     });
   }
 
   try {
-    // Check if ElevenLabs API key is configured
+    // Check if Voice Assistant API key is configured
     const elevenLabsStatus = process.env.ELEVENLABS_API_KEY ? 'available' : 'unavailable';
 
     res.status(200).json({
@@ -40,7 +40,7 @@ export default async function handler(
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
       services: {
-        elevenlabs: elevenLabsStatus
+        voiceAssistant: elevenLabsStatus
       }
     });
   } catch (error) {
@@ -52,7 +52,7 @@ export default async function handler(
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
       services: {
-        elevenlabs: 'unavailable'
+        voiceAssistant: 'unavailable'
       }
     });
   }
