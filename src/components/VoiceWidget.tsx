@@ -103,9 +103,9 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
           setMode('listening');
           conversationRef.current = null;
         },
-        onError: (error: Error) => {
-          console.error('Conversation error:', error);
-          setError(error.message);
+        onError: (message: string) => {
+          console.error('Conversation error:', message);
+          setError(message);
           setStatus('disconnected');
         },
         onModeChange: (modeData: { mode: 'speaking' | 'listening' }) => {
