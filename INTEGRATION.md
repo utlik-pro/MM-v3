@@ -57,8 +57,8 @@ https://your-project-name.vercel.app/widget
 ```html
 <iframe 
   src="https://your-project-name.vercel.app/widget"
-  width="220"
-  height="60"
+  width="134"
+  height="44"
   frameborder="0"
   allow="microphone"
   title="MinskMir Voice Assistant"
@@ -163,7 +163,7 @@ GET https://your-project-name.vercel.app/health
 <iframe src="..." width="180" height="50"></iframe>
 
 <!-- Средняя кнопка -->
-<iframe src="..." width="220" height="60"></iframe>
+<iframe src="..." width="134" height="44"></iframe>
 
 <!-- Большая кнопка -->
 <iframe src="..." width="280" height="80"></iframe>

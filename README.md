@@ -49,8 +49,8 @@ RATE_LIMIT_WINDOW=3600
 <!-- Простая интеграция -->
 <iframe 
   src="https://your-project.vercel.app/widget"
-  width="220"
-  height="60"
+  width="134"
+  height="44"
   frameborder="0"
   allow="microphone"
   style="border-radius: 30px;">
@@ -165,7 +165,7 @@ curl https://your-project.vercel.app/health
 <iframe src="..." width="180" height="50"></iframe>
 
 <!-- Средний (рекомендуемый) -->
-<iframe src="..." width="220" height="60"></iframe>
+<iframe src="..." width="134" height="44"></iframe>
 
 <!-- Большой -->
 <iframe src="..." width="280" height="80"></iframe>

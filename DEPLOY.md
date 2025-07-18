@@ -57,8 +57,8 @@ https://your-project-name.vercel.app/widget
 ```html
 <iframe 
   src="https://your-project-name.vercel.app/widget"
-  width="220"
-  height="60"
+  width="134"
+  height="44"
   frameborder="0"
   allow="microphone"
   style="border-radius: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">

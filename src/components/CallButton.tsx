@@ -99,35 +99,35 @@ export function CallButton() {
       case 'idle':
         return (
           <>
-            <Phone className="w-5 h-5 mr-3" />
+            <Phone className="w-4 h-4 mr-2" />
             <span className="font-medium">Позвонить</span>
           </>
         );
       case 'connecting':
         return (
           <>
-            <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             <span className="font-medium">Соединение...</span>
           </>
         );
       case 'connected':
         return (
           <>
-            <PhoneOff className="w-5 h-5 mr-3" />
+            <PhoneOff className="w-4 h-4 mr-2" />
             <span className="font-medium">Завершить</span>
           </>
         );
       case 'error':
         return (
           <>
-            <AlertCircle className="w-5 h-5 mr-3" />
+            <AlertCircle className="w-4 h-4 mr-2" />
             <span className="font-medium">Ошибка</span>
           </>
         );
       default:
         return (
           <>
-            <Phone className="w-5 h-5 mr-3" />
+            <Phone className="w-4 h-4 mr-2" />
             <span className="font-medium">Позвонить</span>
           </>
         );
@@ -136,7 +136,7 @@ export function CallButton() {
 
   // Get button classes based on status
   const getButtonClasses = () => {
-    const baseClasses = "inline-flex items-center justify-center px-8 py-4 rounded-full text-white font-medium text-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-lg focus:outline-none focus:ring-4 focus:ring-offset-2 min-w-[200px]";
+    const baseClasses = "inline-flex items-center justify-center px-3 py-1.5 rounded-full text-white font-medium text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-1 min-w-[120px]";
     
     switch (status) {
       case 'idle':
