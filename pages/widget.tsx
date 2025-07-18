@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { CallButton } from '@/components/CallButton';
+import { CallButton } from '../src/components/CallButton';
 
 export default function Widget() {
   return (
@@ -8,9 +8,7 @@ export default function Widget() {
         <title>MinskMir Voice Assistant</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         
-        {/* Allow iframe embedding */}
-        <meta httpEquiv="X-Frame-Options" content="ALLOWALL" />
-        <meta httpEquiv="Content-Security-Policy" content="frame-ancestors *" />
+
         
         {/* Prevent page caching in iframe */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />

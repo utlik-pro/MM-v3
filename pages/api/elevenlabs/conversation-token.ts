@@ -28,6 +28,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ElevenLabsConversationTokenResponse | ApiError>
 ) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({
       error: 'Method Not Allowed',
@@ -61,10 +70,15 @@ export default async function handler(
     });
   }
 
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
   const origin = req.headers.origin;
   
-  if (allowedOrigins.length > 0 && origin && !allowedOrigins.includes(origin)) {
+  // Only check origins if they are configured AND an origin header exists
+  // This allows direct API calls and iframe embedding from same origin
+  if (allowedOrigins.length > 0 && origin && !allowedOrigins.some(allowed => 
+    origin === allowed || origin.includes('.vercel.app')
+  )) {
+    console.log('Origin check failed:', { origin, allowedOrigins });
     return res.status(403).json({
       error: 'Forbidden',
       message: 'Origin not allowed',
