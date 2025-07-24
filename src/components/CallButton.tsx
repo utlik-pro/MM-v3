@@ -163,14 +163,36 @@ export function CallButton() {
 
   return (
     <>
-      {/* Fixed tooltip - only when idle */}
+      {/* Fixed profile card tooltip - only when idle */}
       {status === 'idle' && (
-        <div className="fixed bottom-24 right-6 z-[999999] pointer-events-none">
-          <div className="bg-gray-900 text-white text-sm rounded-lg py-2 px-3 shadow-lg animate-bounce-gentle max-w-xs text-center">
-            Нужна персональная подборка квартир?<br />
-            Кликните - позвонить и получите консультацию за 30 секунд!
-            {/* Arrow */}
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+        <div className="fixed bottom-28 right-4 z-[999999] pointer-events-none">
+          <div className="bg-white rounded-xl shadow-2xl p-4 max-w-xs animate-bounce-gentle border border-gray-100">
+            {/* Profile Section */}
+            <div className="flex flex-col items-center text-center mb-3">
+              {/* Avatar */}
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center mb-3 shadow-lg">
+                <span className="text-white font-bold text-xl">А</span>
+              </div>
+              
+              {/* Name */}
+              <h3 className="text-gray-900 font-semibold text-lg leading-tight">Анна</h3>
+              
+              {/* Title */}
+              <p className="text-gray-500 text-xs uppercase tracking-wide font-medium">Специалист по продажам</p>
+            </div>
+            
+            {/* Message */}
+            <div className="text-center mb-4">
+              <p className="text-gray-700 text-sm leading-relaxed">
+                <span className="inline-block mr-1">👋</span>
+                Нужна персональная подборка квартир? Кликните - позвонить и получите консультацию за 30 секунд!
+              </p>
+            </div>
+            
+            {/* Arrow pointing to button */}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 translate-y-[-1px]">
+              <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[8px] border-l-transparent border-r-transparent border-t-white"></div>
+            </div>
           </div>
         </div>
       )}
