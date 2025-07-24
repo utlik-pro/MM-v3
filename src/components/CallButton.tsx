@@ -163,30 +163,45 @@ export function CallButton() {
 
   return (
     <div className="fixed bottom-4 right-4 z-[999999]">
-      {/* Profile card tooltip - positioned above the button */}
+      {/* AI Assistant tooltip - positioned above the button */}
       {status === 'idle' && (
         <div className="absolute bottom-full right-0 mb-4 pointer-events-none">
-          <div className="bg-white rounded-xl shadow-2xl p-4 max-w-xs animate-bounce-gentle border border-gray-100 min-w-[280px]">
-            {/* Profile Section */}
+          <div className="bg-white rounded-xl shadow-2xl p-4 max-w-xs animate-bounce-gentle border border-gray-100 min-w-[280px] relative">
+            {/* Profile Section - COMMENTED OUT */}
+            {/* 
             <div className="flex flex-col items-center text-center mb-3">
-              {/* Avatar */}
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center mb-3 shadow-lg">
                 <span className="text-white font-bold text-xl">А</span>
               </div>
-              
-              {/* Name */}
               <h3 className="text-gray-900 font-semibold text-lg leading-tight">Анна</h3>
-              
-              {/* Title */}
               <p className="text-gray-500 text-xs uppercase tracking-wide font-medium">Специалист по продажам</p>
             </div>
+            */}
             
-            {/* Message */}
+            {/* AI Assistant Message */}
             <div className="text-center mb-4">
               <p className="text-gray-700 text-sm leading-relaxed">
-                <span className="inline-block mr-1">👋</span>
-                Нужна персональная подборка квартир? Кликните - позвонить и получите консультацию за 30 секунд!
+                <span className="inline-block mr-1">🤖</span>
+                AI-помощник подберёт лучшие варианты новостроек под ваши запросы.<br />
+                Нажмите для консультации
               </p>
+            </div>
+            
+            {/* Small arrow indicator */}
+            <div className="absolute top-2 right-2">
+              <svg 
+                className="w-4 h-4 text-blue-500 animate-pulse" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M13 7l5 5m0 0l-5 5m5-5H6" 
+                />
+              </svg>
             </div>
             
             {/* Arrow pointing down to button */}
