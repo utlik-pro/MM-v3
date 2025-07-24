@@ -19,6 +19,16 @@ export default function Widget() {
       </main>
       
       <style jsx global>{`
+        * {
+          margin: 0 !important;
+          padding: 0 !important;
+          box-sizing: border-box !important;
+          background: transparent !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        
         html, body {
           margin: 0 !important;
           padding: 0 !important;
@@ -26,29 +36,102 @@ export default function Widget() {
           overflow: visible !important;
           width: 100% !important;
           height: 100% !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
         }
         
         #__next {
           background: transparent !important;
           width: 100% !important;
           height: 100% !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
         
         main {
           background: transparent !important;
           padding: 0 !important;
           margin: 0 !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
         }
         
-        /* Keep button styles but ensure tooltip is on top */
-        button {
-          position: relative !important;
+        /* Restore button styles */
+        button[aria-label*="звонок"] {
+          background: #000000 !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25) !important;
+          color: white !important;
+          border-radius: 9999px !important;
+          padding: 6px 12px !important;
+          font-weight: 500 !important;
+          font-size: 14px !important;
+          line-height: 20px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          min-width: 120px !important;
+          transition: all 0.3s ease-in-out !important;
+          cursor: pointer !important;
+        }
+        
+        button[aria-label*="звонок"]:hover {
+          background: #374151 !important;
+          transform: scale(1.05) !important;
+        }
+        
+        button[aria-label*="звонок"]:active {
+          transform: scale(0.95) !important;
+        }
+        
+        /* Connected state */
+        button[aria-label*="Завершить"] {
+          background: #dc2626 !important;
+          animation: pulse 2s infinite !important;
+        }
+        
+        /* Connecting state */
+        button[aria-label*="звонок"][disabled] {
+          background: #2563eb !important;
+          cursor: wait !important;
+        }
+        
+        /* Error state */
+        button[aria-label*="звонок"].error {
+          background: #ef4444 !important;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
         }
         
         /* Tooltip positioning */
-        .absolute {
+        .fixed {
           position: fixed !important;
           z-index: 999999 !important;
+        }
+        
+        /* Remove any possible container styles */
+        div, span {
+          background: transparent !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        
+        /* Except for tooltip and error messages */
+        .bg-gray-900,
+        .bg-red-50 {
+          background: revert !important;
+          border: revert !important;
+          box-shadow: revert !important;
         }
       `}</style>
     </>
