@@ -136,19 +136,19 @@ export function CallButton() {
 
   // Get button classes based on status
   const getButtonClasses = () => {
-    const baseClasses = "inline-flex items-center justify-center px-3 py-1.5 rounded-full text-white font-medium text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-1 min-w-[120px]";
+    const baseClasses = "inline-flex items-center justify-center px-3 py-1.5 rounded-full text-white font-medium text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-lg outline-none min-w-[120px]";
     
     switch (status) {
       case 'idle':
-        return `${baseClasses} bg-black hover:bg-gray-800 focus:ring-gray-300 shadow-black/25`;
+        return `${baseClasses} bg-black hover:bg-gray-800 shadow-black/25`;
       case 'connecting':
-        return `${baseClasses} bg-blue-600 hover:bg-blue-700 focus:ring-blue-300 cursor-wait`;
+        return `${baseClasses} bg-blue-600 hover:bg-blue-700 cursor-wait`;
       case 'connected':
-        return `${baseClasses} bg-red-600 hover:bg-red-700 focus:ring-red-300 animate-pulse`;
+        return `${baseClasses} bg-red-600 hover:bg-red-700 animate-pulse`;
       case 'error':
-        return `${baseClasses} bg-red-500 hover:bg-red-600 focus:ring-red-300`;
+        return `${baseClasses} bg-red-500 hover:bg-red-600`;
       default:
-        return `${baseClasses} bg-black hover:bg-gray-800 focus:ring-gray-300`;
+        return `${baseClasses} bg-black hover:bg-gray-800`;
     }
   };
 
@@ -163,14 +163,30 @@ export function CallButton() {
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <button
-        onClick={handleClick}
-        disabled={status === 'connecting'}
-        className={getButtonClasses()}
-        aria-label={status === 'connected' ? 'Завершить звонок' : 'Начать звонок'}
-      >
-        {getButtonContent()}
-      </button>
+      {/* Tooltip wrapper */}
+      <div className="relative">
+        {/* Auto-appearing bouncing tooltip - only when idle */}
+        {status === 'idle' && (
+          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50">
+            <div className="bg-gray-900 text-white text-sm rounded-lg py-2 px-3 shadow-lg animate-bounce-gentle max-w-xs text-center">
+              Нужна персональная подборка квартир?<br />
+              Кликните - позвонить и получите консультацию за 30 секунд!
+              {/* Arrow */}
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Button */}
+        <button
+          onClick={handleClick}
+          disabled={status === 'connecting'}
+          className={getButtonClasses()}
+          aria-label={status === 'connected' ? 'Завершить звонок' : 'Начать звонок'}
+        >
+          {getButtonContent()}
+        </button>
+      </div>
       
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 max-w-sm">
@@ -186,8 +202,6 @@ export function CallButton() {
           </button>
         </div>
       )}
-      
-
     </div>
   );
 } 

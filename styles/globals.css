@@ -70,6 +70,22 @@ body {
   }
 }
 
+/* Gentle bounce animation for tooltip */
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(-8px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s infinite;
+}
+
 /* Loading spinner styles */
 .animate-spin {
   animation: spin 1s linear infinite;
@@ -92,10 +108,15 @@ body {
   background-clip: text;
 }
 
-/* Focus states for accessibility */
-.voice-widget button:focus {
-  outline: 2px solid var(--minskmir-primary);
-  outline-offset: 2px;
+/* Remove all focus states and outlines */
+button:focus,
+button:focus-visible,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 /* Responsive improvements */
@@ -138,11 +159,74 @@ body.iframe-mode {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  
+  .animate-bounce-gentle {
+    animation: none !important;
+  }
 }
 
 /* Print styles */
 @media print {
   .voice-widget {
     display: none;
+  }
+}
+
+/* Tooltip styles */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 12px;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 1000;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-width: 280px;
+  white-space: normal;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+}
+
+/* Ensure tooltip works in iframe context */
+iframe .tooltip {
+  position: fixed !important;
+}
+
+/* Mobile responsive tooltip */
+@media (max-width: 640px) {
+  .tooltip {
+    max-width: 260px;
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+  
+  .tooltip::after {
+    border-width: 5px;
+  }
+  
+  .animate-bounce-gentle {
+    animation: bounce-gentle 3s infinite;
   }
 } 
