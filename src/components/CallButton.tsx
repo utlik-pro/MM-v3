@@ -99,7 +99,7 @@ export function CallButton() {
       case 'idle':
         return (
           <>
-            <Phone className="w-4 h-4 mr-2" />
+            <Phone className="w-4 h-4 mr-2 animate-phone-shake" />
             <span className="font-medium">Позвонить</span>
           </>
         );
@@ -127,7 +127,7 @@ export function CallButton() {
       default:
         return (
           <>
-            <Phone className="w-4 h-4 mr-2" />
+            <Phone className="w-4 h-4 mr-2 animate-phone-shake" />
             <span className="font-medium">Позвонить</span>
           </>
         );
@@ -136,7 +136,7 @@ export function CallButton() {
 
   // Get button classes based on status
   const getButtonClasses = () => {
-    const baseClasses = "inline-flex items-center justify-center px-3 py-1.5 rounded-full text-white font-medium text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-lg outline-none min-w-[120px]";
+    const baseClasses = "inline-flex items-center justify-center px-3 py-1.5 rounded-full text-white font-medium text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-lg outline-none min-w-[120px] relative";
     
     switch (status) {
       case 'idle':
@@ -175,15 +175,27 @@ export function CallButton() {
         </div>
       )}
 
-      {/* Button */}
-      <button
-        onClick={handleClick}
-        disabled={status === 'connecting'}
-        className={getButtonClasses()}
-        aria-label={status === 'connected' ? 'Завершить звонок' : 'Начать звонок'}
-      >
-        {getButtonContent()}
-      </button>
+      {/* Button with ripple effect wrapper */}
+      <div className="relative">
+        {/* Ripple waves - only when idle */}
+        {status === 'idle' && (
+          <>
+            <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-ripple-1"></div>
+            <div className="absolute inset-0 rounded-full border-2 border-white/20 animate-ripple-2"></div>
+            <div className="absolute inset-0 rounded-full border-2 border-white/10 animate-ripple-3"></div>
+          </>
+        )}
+        
+        {/* Button */}
+        <button
+          onClick={handleClick}
+          disabled={status === 'connecting'}
+          className={getButtonClasses()}
+          aria-label={status === 'connected' ? 'Завершить звонок' : 'Начать звонок'}
+        >
+          {getButtonContent()}
+        </button>
+      </div>
       
       {/* Error display */}
       {error && (
