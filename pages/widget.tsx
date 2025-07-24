@@ -32,7 +32,14 @@ export default function Widget() {
           overflow: visible !important;
         }
 
-        /* Restore button styles */
+        /* Widget container positioning */
+        .fixed {
+          position: fixed !important;
+          z-index: 999999 !important;
+        }
+
+        /* Button styles - higher specificity */
+        div.fixed button,
         button[aria-label*="звонок"] {
           background: #374151 !important;
           color: white !important;
@@ -43,18 +50,24 @@ export default function Widget() {
           line-height: 1.25rem !important;
           text-align: center !important;
           min-width: 130px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
         }
 
+        div.fixed button:hover,
         button[aria-label*="звонок"]:hover {
           background: #4b5563 !important;
         }
 
+        div.fixed button:disabled,
         button[aria-label*="звонок"]:disabled {
           background: #2563eb !important;
         }
 
-        /* Profile card styles - white background with shadow */
-        .fixed .bg-white {
+        /* Profile card styles */
+        .absolute .bg-white,
+        div.absolute div.bg-white {
           background: white !important;
           color: #374151 !important;
           border-radius: 12px !important;
@@ -63,8 +76,10 @@ export default function Widget() {
           font-size: 0.875rem !important;
           line-height: 1.5 !important;
           text-align: center !important;
+          min-width: 280px !important;
           max-width: 20rem !important;
           border: 1px solid #f3f4f6 !important;
+          margin: 0 !important;
         }
 
         /* Avatar gradient */
@@ -124,12 +139,6 @@ export default function Widget() {
           margin-bottom: 16px !important;
         }
 
-        /* Ensure fixed positioning works */
-        .fixed {
-          position: fixed !important;
-          z-index: 999999 !important;
-        }
-
         /* Error message styles */
         .bg-red-50 {
           background: #fef2f2 !important;
@@ -141,6 +150,15 @@ export default function Widget() {
           font-size: 0.875rem !important;
           line-height: 1.25rem !important;
           max-width: 24rem !important;
+        }
+
+        /* Ensure relative/absolute positioning works */
+        .relative {
+          position: relative !important;
+        }
+
+        .absolute {
+          position: absolute !important;
         }
       `}</style>
     </>

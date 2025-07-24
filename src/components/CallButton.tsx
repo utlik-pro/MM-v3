@@ -162,11 +162,11 @@ export function CallButton() {
   }, []);
 
   return (
-    <>
-      {/* Fixed profile card tooltip - only when idle */}
+    <div className="fixed bottom-4 right-4 z-[999999]">
+      {/* Profile card tooltip - positioned above the button */}
       {status === 'idle' && (
-        <div className="fixed bottom-28 right-4 z-[999999] pointer-events-none">
-          <div className="bg-white rounded-xl shadow-2xl p-4 max-w-xs animate-bounce-gentle border border-gray-100">
+        <div className="absolute bottom-full right-0 mb-4 pointer-events-none">
+          <div className="bg-white rounded-xl shadow-2xl p-4 max-w-xs animate-bounce-gentle border border-gray-100 min-w-[280px]">
             {/* Profile Section */}
             <div className="flex flex-col items-center text-center mb-3">
               {/* Avatar */}
@@ -189,7 +189,7 @@ export function CallButton() {
               </p>
             </div>
             
-            {/* Arrow pointing to button */}
+            {/* Arrow pointing down to button */}
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 translate-y-[-1px]">
               <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[8px] border-l-transparent border-r-transparent border-t-white"></div>
             </div>
@@ -197,7 +197,7 @@ export function CallButton() {
         </div>
       )}
 
-      {/* Button with wave lines wrapper */}
+      {/* Button container with wave lines */}
       <div className="relative">
         {/* Wave lines - only when idle */}
         {status === 'idle' && (
@@ -231,7 +231,7 @@ export function CallButton() {
       
       {/* Error display */}
       {error && (
-        <div className="fixed bottom-4 right-4 bg-red-50 border border-red-200 rounded-lg p-3 max-w-sm z-[999999]">
+        <div className="absolute bottom-full right-0 mb-4 bg-red-50 border border-red-200 rounded-lg p-3 max-w-sm">
           <div className="flex items-center">
             <AlertCircle className="w-4 h-4 text-red-500 mr-2 flex-shrink-0" />
             <p className="text-sm text-red-700">{error}</p>
@@ -244,6 +244,6 @@ export function CallButton() {
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 } 
