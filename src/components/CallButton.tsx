@@ -179,29 +179,27 @@ export function CallButton() {
             */}
             
             {/* AI Assistant Message */}
-            <div className="text-center mb-4">
+            <div className="text-center mb-4 relative">
               <p className="text-gray-700 text-sm leading-relaxed">
                 <span className="inline-block mr-1">🤖</span>
                 AI-помощник подберёт лучшие варианты новостроек под ваши запросы.<br />
                 Нажмите для консультации
+                <span className="inline-block ml-1">
+                  <svg 
+                    className="w-3 h-3 text-blue-500 animate-pulse inline-block" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M19 14l-7 7m0 0l-7-7m7 7V3" 
+                    />
+                  </svg>
+                </span>
               </p>
-            </div>
-            
-            {/* Small arrow indicator */}
-            <div className="absolute top-2 right-2">
-              <svg 
-                className="w-4 h-4 text-blue-500 animate-pulse" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M13 7l5 5m0 0l-5 5m5-5H6" 
-                />
-              </svg>
             </div>
             
             {/* Arrow pointing down to button */}
