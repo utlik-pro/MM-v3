@@ -99,36 +99,36 @@ export function CallButton() {
       case 'idle':
         return (
           <>
-            <Phone className="w-4 h-4 mr-2 animate-phone-shake" />
-            <span className="font-medium">Позвонить</span>
+            <Phone className="w-4 h-4 mr-2 animate-phone-shake text-white" />
+            <span className="font-medium text-white">Позвонить</span>
           </>
         );
       case 'connecting':
         return (
           <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            <span className="font-medium">Соединение...</span>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin text-white" />
+            <span className="font-medium text-white">Соединение...</span>
           </>
         );
       case 'connected':
         return (
           <>
-            <PhoneOff className="w-4 h-4 mr-2" />
-            <span className="font-medium">Завершить</span>
+            <PhoneOff className="w-4 h-4 mr-2 text-white" />
+            <span className="font-medium text-white">Завершить</span>
           </>
         );
       case 'error':
         return (
           <>
-            <AlertCircle className="w-4 h-4 mr-2" />
-            <span className="font-medium">Ошибка</span>
+            <AlertCircle className="w-4 h-4 mr-2 text-white" />
+            <span className="font-medium text-white">Ошибка</span>
           </>
         );
       default:
         return (
           <>
-            <Phone className="w-4 h-4 mr-2 animate-phone-shake" />
-            <span className="font-medium">Позвонить</span>
+            <Phone className="w-4 h-4 mr-2 animate-phone-shake text-white" />
+            <span className="font-medium text-white">Позвонить</span>
           </>
         );
     }
@@ -136,11 +136,11 @@ export function CallButton() {
 
   // Get button classes based on status
   const getButtonClasses = () => {
-    const baseClasses = "inline-flex items-center justify-center px-3 py-1.5 rounded-full text-white font-medium text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-lg outline-none min-w-[120px] relative";
+    const baseClasses = "inline-flex items-center justify-center px-4 py-2 rounded-full text-white font-medium text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-lg outline-none min-w-[130px] relative";
     
     switch (status) {
       case 'idle':
-        return `${baseClasses} bg-black hover:bg-gray-800 shadow-black/25`;
+        return `${baseClasses} bg-gray-800 hover:bg-gray-700 shadow-gray-800/25`;
       case 'connecting':
         return `${baseClasses} bg-blue-600 hover:bg-blue-700 cursor-wait`;
       case 'connected':
@@ -148,7 +148,7 @@ export function CallButton() {
       case 'error':
         return `${baseClasses} bg-red-500 hover:bg-red-600`;
       default:
-        return `${baseClasses} bg-black hover:bg-gray-800`;
+        return `${baseClasses} bg-gray-800 hover:bg-gray-700`;
     }
   };
 
@@ -175,14 +175,24 @@ export function CallButton() {
         </div>
       )}
 
-      {/* Button with ripple effect wrapper */}
+      {/* Button with wave lines wrapper */}
       <div className="relative">
-        {/* Ripple waves - only when idle */}
+        {/* Wave lines - only when idle */}
         {status === 'idle' && (
           <>
-            <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-ripple-1"></div>
-            <div className="absolute inset-0 rounded-full border-2 border-white/20 animate-ripple-2"></div>
-            <div className="absolute inset-0 rounded-full border-2 border-white/10 animate-ripple-3"></div>
+            {/* Right side lines */}
+            <div className="absolute top-1/2 left-full ml-2 transform -translate-y-1/2">
+              <div className="w-6 h-0.5 bg-white/40 animate-wave-line-1"></div>
+              <div className="w-8 h-0.5 bg-white/30 animate-wave-line-2 mt-1"></div>
+              <div className="w-10 h-0.5 bg-white/20 animate-wave-line-3 mt-1"></div>
+            </div>
+            
+            {/* Left side lines */}
+            <div className="absolute top-1/2 right-full mr-2 transform -translate-y-1/2 flex flex-col items-end">
+              <div className="w-6 h-0.5 bg-white/40 animate-wave-line-1"></div>
+              <div className="w-8 h-0.5 bg-white/30 animate-wave-line-2 mt-1"></div>
+              <div className="w-10 h-0.5 bg-white/20 animate-wave-line-3 mt-1"></div>
+            </div>
           </>
         )}
         

@@ -118,53 +118,68 @@ body {
   animation: phone-shake 3s ease-in-out infinite;
 }
 
-/* Ripple wave animations */
-@keyframes ripple-1 {
+/* Wave line animations */
+@keyframes wave-line-1 {
   0% {
-    transform: scale(1);
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  50% {
     opacity: 1;
+    transform: scaleX(1);
   }
   100% {
-    transform: scale(2.5);
     opacity: 0;
+    transform: scaleX(1);
   }
 }
 
-@keyframes ripple-2 {
+@keyframes wave-line-2 {
   0% {
-    transform: scale(1);
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  50% {
     opacity: 1;
+    transform: scaleX(1);
   }
   100% {
-    transform: scale(3);
     opacity: 0;
+    transform: scaleX(1);
   }
 }
 
-@keyframes ripple-3 {
+@keyframes wave-line-3 {
   0% {
-    transform: scale(1);
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  50% {
     opacity: 1;
+    transform: scaleX(1);
   }
   100% {
-    transform: scale(3.5);
     opacity: 0;
+    transform: scaleX(1);
   }
 }
 
-.animate-ripple-1 {
-  animation: ripple-1 2s ease-out infinite;
+.animate-wave-line-1 {
+  animation: wave-line-1 2s ease-out infinite;
   animation-delay: 0s;
+  transform-origin: left center;
 }
 
-.animate-ripple-2 {
-  animation: ripple-2 2s ease-out infinite;
-  animation-delay: 0.5s;
+.animate-wave-line-2 {
+  animation: wave-line-2 2s ease-out infinite;
+  animation-delay: 0.3s;
+  transform-origin: left center;
 }
 
-.animate-ripple-3 {
-  animation: ripple-3 2s ease-out infinite;
-  animation-delay: 1s;
+.animate-wave-line-3 {
+  animation: wave-line-3 2s ease-out infinite;
+  animation-delay: 0.6s;
+  transform-origin: left center;
 }
 
 /* Loading spinner styles */
@@ -243,9 +258,9 @@ body.iframe-mode {
   
   .animate-bounce-gentle,
   .animate-phone-shake,
-  .animate-ripple-1,
-  .animate-ripple-2,
-  .animate-ripple-3 {
+  .animate-wave-line-1,
+  .animate-wave-line-2,
+  .animate-wave-line-3 {
     animation: none !important;
   }
 }
@@ -320,9 +335,9 @@ iframe .tooltip {
     animation: phone-shake 4s ease-in-out infinite;
   }
   
-  .animate-ripple-1,
-  .animate-ripple-2,
-  .animate-ripple-3 {
+  .animate-wave-line-1,
+  .animate-wave-line-2,
+  .animate-wave-line-3 {
     animation-duration: 3s;
   }
 } 
