@@ -126,12 +126,55 @@ export default function Widget() {
           box-shadow: none !important;
         }
         
-        /* Except for tooltip and error messages */
-        .bg-gray-900,
+        /* RESTORE TOOLTIP STYLES - very specific */
+        .fixed .bg-gray-900,
+        div.fixed div.bg-gray-900,
+        .fixed > div.bg-gray-900 {
+          background: #111827 !important;
+          color: white !important;
+          border-radius: 8px !important;
+          padding: 8px 12px !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+          font-size: 14px !important;
+          line-height: 1.4 !important;
+          text-align: center !important;
+          max-width: 280px !important;
+          margin: 0 !important;
+        }
+        
+        /* RESTORE TOOLTIP ARROW */
+        .fixed .bg-gray-900 div[class*="absolute"],
+        .fixed .bg-gray-900 .absolute {
+          background: transparent !important;
+          border: 4px solid transparent !important;
+          border-top-color: #111827 !important;
+          box-shadow: none !important;
+        }
+        
+        /* RESTORE ERROR MESSAGE STYLES */
         .bg-red-50 {
-          background: revert !important;
-          border: revert !important;
-          box-shadow: revert !important;
+          background: #fef2f2 !important;
+          border: 1px solid #fecaca !important;
+          border-radius: 8px !important;
+          padding: 12px !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .bg-red-50 p {
+          color: #b91c1c !important;
+          font-size: 14px !important;
+          margin: 0 !important;
+        }
+        
+        .bg-red-50 button {
+          color: #dc2626 !important;
+          text-decoration: underline !important;
+          background: transparent !important;
+          border: none !important;
+          cursor: pointer !important;
+          font-size: 14px !important;
+          margin-top: 8px !important;
+          padding: 0 !important;
         }
       `}</style>
     </>
