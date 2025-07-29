@@ -2,15 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/widget-demo": "pages/widget-demo.js",
-  "/": "pages/index.js",
-  "/lead-monitor": "pages/lead-monitor.js",
-  "/api/knowledge-base/list": "pages/api/knowledge-base/list.js",
-  "/widget": "pages/widget.js",
-  "/api/leads/new-leads": "pages/api/leads/new-leads.js",
-  "/api/knowledge-base/get-dependent-agents": "pages/api/knowledge-base/get-dependent-agents.js",
-  "/knowledge-base": "pages/knowledge-base.js",
-  "/api/conversation-audio": "pages/api/conversation-audio.js",
-  "/api/conversation-simple": "pages/api/conversation-simple.js",
-  "/api/monitor-leads": "pages/api/monitor-leads.js"
+  "/widget": "pages/widget.js"
 }

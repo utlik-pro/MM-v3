@@ -11,14 +11,44 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [showWidget, setShowWidget] = useState(true);
 
-  const handleCallClick = () => {
-    setStatus('connecting');
-    onCallStart?.();
-    
-    // Simulate connection
-    setTimeout(() => {
+  const handleCallClick = async () => {
+    try {
+      setStatus('connecting');
+      onCallStart?.();
+      
+      // Start real call with ElevenLabs
+      const response = await fetch('/api/conversation-simple', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: 'Привет! Я хочу узнать о новостройках',
+          voice_id: '21m00Tcm4TlvDq8ikWAM', // Rachel voice
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start conversation');
+      }
+
+      const data = await response.json();
+      console.log('Call started:', data);
+      
       setStatus('connected');
-    }, 2000);
+    } catch (error) {
+      console.error('Call error:', error);
+      setStatus('error');
+      
+      // Reset to idle after 3 seconds
+      setTimeout(() => {
+        setStatus('idle');
+      }, 3000);
+    }
+  };
+
+  const handleEndCall = () => {
+    setStatus('idle');
   };
 
   const handleClose = () => {
@@ -40,9 +70,9 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-600 to-green-700 flex items-center justify-center border-2 border-teal-200">
                 <div className="relative">
                   {/* Sparkles */}
-                  <div className="absolute -top-1 -left-1 w-2 h-2 bg-white rounded-full opacity-80"></div>
-                  <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-white rounded-full opacity-60"></div>
-                  <div className="absolute -bottom-1 -right-1 w-1 h-1 bg-white rounded-full opacity-40"></div>
+                  <div className="absolute -top-1 -left-1 w-2 h-2 bg-white rounded-full opacity-80 animate-sparkle"></div>
+                  <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-white rounded-full opacity-60 animate-sparkle" style={{animationDelay: '0.5s'}}></div>
+                  <div className="absolute -bottom-1 -right-1 w-1 h-1 bg-white rounded-full opacity-40 animate-sparkle" style={{animationDelay: '1s'}}></div>
                   {/* Main sparkle */}
                   <div className="w-3 h-3 bg-white rounded-full"></div>
                 </div>
@@ -74,22 +104,29 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
         
         {/* Call Button */}
         <button
-          onClick={handleCallClick}
+          onClick={status === 'connected' ? handleEndCall : handleCallClick}
           disabled={status === 'connecting'}
           className={`
             w-full py-3 px-4 rounded-lg font-semibold text-white text-sm
             flex items-center justify-center space-x-2 transition-all duration-200
             ${status === 'connecting' 
               ? 'bg-gray-400 cursor-not-allowed' 
+              : status === 'connected'
+              ? 'bg-red-600 hover:bg-red-700 active:scale-95'
               : 'bg-gradient-to-r from-teal-600 to-green-700 hover:from-teal-700 hover:to-green-800 active:scale-95'
             }
           `}
-          aria-label="Позвонить"
+          aria-label={status === 'connected' ? 'Завершить звонок' : 'Позвонить'}
         >
           {status === 'connecting' ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span>СОЕДИНЕНИЕ</span>
+            </>
+          ) : status === 'connected' ? (
+            <>
+              <X className="w-4 h-4" />
+              <span>ЗАВЕРШИТЬ</span>
             </>
           ) : (
             <>
