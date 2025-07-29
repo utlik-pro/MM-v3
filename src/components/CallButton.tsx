@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Phone, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Phone, X, Mic, MicOff } from 'lucide-react';
 
 interface CallButtonProps {
   onCallStart?: () => void;
@@ -10,13 +10,90 @@ interface CallButtonProps {
 const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [showWidget, setShowWidget] = useState(true);
+  const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+
+  // Check microphone access on component mount
+  useEffect(() => {
+    checkMicrophoneAccess();
+  }, []);
+
+  const checkMicrophoneAccess = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setHasMicrophoneAccess(true);
+      stream.getTracks().forEach(track => track.stop()); // Stop the test stream
+    } catch (error) {
+      console.log('Microphone access not granted:', error);
+      setHasMicrophoneAccess(false);
+    }
+  };
+
+  const requestMicrophoneAccess = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        } 
+      });
+      setHasMicrophoneAccess(true);
+      return stream;
+    } catch (error) {
+      console.error('Failed to get microphone access:', error);
+      setHasMicrophoneAccess(false);
+      throw error;
+    }
+  };
+
+  const startRecording = (stream: MediaStream) => {
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType: 'audio/webm;codecs=opus'
+    });
+    
+    mediaRecorderRef.current = mediaRecorder;
+    audioChunksRef.current = [];
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunksRef.current.push(event.data);
+      }
+    };
+
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      console.log('Recording stopped, audio size:', audioBlob.size);
+      
+      // Here you would send the audio to your API
+      // await sendAudioToAPI(audioBlob);
+    };
+
+    mediaRecorder.start(1000); // Collect data every second
+    setIsRecording(true);
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
 
   const handleCallClick = async () => {
     try {
       setStatus('connecting');
       onCallStart?.();
       
-      // Start real call with ElevenLabs
+      // Request microphone access
+      const stream = await requestMicrophoneAccess();
+      
+      // Start recording
+      startRecording(stream);
+      
+      // Start conversation with ElevenLabs
       const response = await fetch('/api/conversation-simple', {
         method: 'POST',
         headers: {
@@ -48,10 +125,14 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   };
 
   const handleEndCall = () => {
+    stopRecording();
     setStatus('idle');
   };
 
   const handleClose = () => {
+    if (isRecording) {
+      stopRecording();
+    }
     setShowWidget(false);
   };
 
@@ -102,6 +183,16 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
         {/* Separator */}
         <div className="border-t border-gray-200 mb-4"></div>
         
+        {/* Microphone Status */}
+        {!hasMicrophoneAccess && status === 'idle' && (
+          <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-yellow-700 text-xs text-center flex items-center justify-center">
+              <MicOff className="w-3 h-3 mr-1" />
+              Разрешите доступ к микрофону для звонка
+            </p>
+          </div>
+        )}
+        
         {/* Call Button */}
         <button
           onClick={status === 'connected' ? handleEndCall : handleCallClick}
@@ -130,11 +221,21 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
             </>
           ) : (
             <>
-              <Phone className="w-4 h-4" />
-              <span>ПОЗВОНИТЬ</span>
+              {hasMicrophoneAccess ? <Phone className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              <span>{hasMicrophoneAccess ? 'ПОЗВОНИТЬ' : 'РАЗРЕШИТЬ МИКРОФОН'}</span>
             </>
           )}
         </button>
+        
+        {/* Recording Indicator */}
+        {isRecording && (
+          <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 text-xs text-center flex items-center justify-center">
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></div>
+              Идет запись...
+            </p>
+          </div>
+        )}
         
         {/* Error Message */}
         {status === 'error' && (
