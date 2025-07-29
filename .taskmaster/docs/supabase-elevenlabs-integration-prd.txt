@@ -1,0 +1,357 @@
+# Supabase & ElevenLabs Integration - Product Requirements Document
+
+## 1. Introduction
+
+This document outlines the comprehensive requirements for migrating the existing voice agent system from SQLite to Supabase PostgreSQL database and implementing full integration with ElevenLabs Conversational AI API. The system will handle conversation storage, lead management, knowledge base, and RAG (Retrieval-Augmented Generation) functionality for voice agent interactions.
+
+## 2. Product Overview
+
+The Voice Agent System will be enhanced with Supabase as the primary database backend, providing scalable data storage for conversations, leads, and knowledge base documents. Full integration with ElevenLabs API will enable automatic conversation synchronization, lead capture, and knowledge base management for improved voice agent performance.
+
+## 3. Goals and Objectives
+
+### 3.1 Primary Goals
+- Migrate existing SQLite database to Supabase PostgreSQL
+- Implement full ElevenLabs API integration for conversation data
+- Create automated lead capture and synchronization system
+- Build knowledge base management system with vector search
+- Maintain existing admin panel functionality while adding new features
+
+### 3.2 Technical Objectives
+- Zero downtime migration from SQLite to Supabase
+- Real-time conversation synchronization with ElevenLabs
+- Vector embeddings for RAG knowledge base
+- Secure API key management and authentication
+- Maintain existing API endpoints while adding new functionality
+
+## 4. Target Audience
+
+### 4.1 Primary Users
+- System administrators managing voice agent configurations
+- Business users viewing lead reports and analytics
+- Developers maintaining and extending the system
+- Voice agent users whose conversations are being tracked
+
+## 5. Features and Requirements
+
+### 5.1 Database Migration to Supabase
+
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| DB-101 | Supabase Connection Setup | Configure Prisma to connect to Supabase PostgreSQL | High |
+| DB-102 | Schema Migration | Migrate existing Prisma schema to Supabase | High |
+| DB-103 | Data Migration | Transfer existing data from SQLite to Supabase | High |
+| DB-104 | Environment Configuration | Update environment variables for Supabase connection | High |
+| DB-105 | Connection Pooling | Configure optimal connection settings for production | Medium |
+
+### 5.2 ElevenLabs Conversations Integration
+
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| CONV-101 | Conversation List API | Implement endpoint to fetch conversations from ElevenLabs | High |
+| CONV-102 | Conversation Details API | Fetch detailed conversation data including transcript | High |
+| CONV-103 | Automatic Sync Service | Background service to sync conversations periodically | High |
+| CONV-104 | Conversation Storage | Store conversation data in Supabase with proper schema | High |
+| CONV-105 | Real-time Updates | WebSocket or polling for real-time conversation updates | Medium |
+
+### 5.3 Enhanced Lead Management
+
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| LEAD-101 | ElevenLabs Lead Integration | Enhanced webhook to capture more lead data | High |
+| LEAD-102 | Lead Enrichment | Extract additional data from conversation transcripts | Medium |
+| LEAD-103 | Lead Scoring | Automatic lead quality scoring based on conversation | Medium |
+| LEAD-104 | Lead Export Enhanced | Export leads with conversation context | Medium |
+| LEAD-105 | CRM Integration | Webhook integration for external CRM systems | Low |
+
+### 5.4 Knowledge Base & RAG System
+
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| KB-101 | Knowledge Base Schema | Database tables for storing documents and embeddings | High |
+| KB-102 | Document Upload API | API endpoints for uploading and managing documents | High |
+| KB-103 | Vector Embeddings | Generate and store vector embeddings for documents | High |
+| KB-104 | Semantic Search | Search functionality using vector similarity | High |
+| KB-105 | ElevenLabs KB Sync | Sync knowledge base with ElevenLabs system | Medium |
+| KB-106 | Document Management UI | Admin interface for managing knowledge base | Medium |
+
+### 5.5 API Enhancements
+
+| ID | Requirement | Description | Priority |
+|---|---|---|---|
+| API-101 | ElevenLabs Client | Robust client library for ElevenLabs API integration | High |
+| API-102 | Rate Limiting | Implement rate limiting for external API calls | High |
+| API-103 | Error Handling | Comprehensive error handling for API failures | High |
+| API-104 | Authentication | Secure API key management and rotation | High |
+| API-105 | Caching Strategy | Cache frequently accessed data to reduce API calls | Medium |
+
+## 6. User Stories and Acceptance Criteria
+
+### 6.1 Database Migration
+
+**DB-USER-101: Database Migration**
+- As a system administrator, I want to migrate from SQLite to Supabase without data loss
+- **Acceptance Criteria:**
+  - All existing data is preserved during migration
+  - Application functionality remains unchanged after migration
+  - Connection strings are updated to point to Supabase
+  - Migration can be rolled back if needed
+
+### 6.2 Conversation Management
+
+**CONV-USER-101: Automatic Conversation Sync**
+- As an administrator, I want conversations to be automatically synced from ElevenLabs
+- **Acceptance Criteria:**
+  - Conversations are fetched from ElevenLabs API every 5 minutes
+  - New conversations appear in the admin panel automatically
+  - Conversation transcripts are stored with proper formatting
+  - Conversation metadata (duration, status, etc.) is preserved
+
+**CONV-USER-102: Conversation History View**
+- As a business user, I want to view detailed conversation history
+- **Acceptance Criteria:**
+  - All conversations are listed with filtering options
+  - Individual conversations can be opened to view full transcript
+  - Conversation analytics are displayed (duration, outcome, etc.)
+  - Search functionality works across conversation content
+
+### 6.3 Enhanced Lead Capture
+
+**LEAD-USER-101: Advanced Lead Data**
+- As a business user, I want detailed lead information from conversations
+- **Acceptance Criteria:**
+  - Lead data includes conversation transcript and context
+  - Contact information is automatically extracted from conversations
+  - Lead quality score is calculated based on conversation content
+  - Integration with existing lead management workflow
+
+### 6.4 Knowledge Base Management
+
+**KB-USER-101: Document Management**
+- As an administrator, I want to manage knowledge base documents
+- **Acceptance Criteria:**
+  - Documents can be uploaded through admin interface
+  - Documents are automatically processed for vector search
+  - Document categories and tags can be assigned
+  - Documents can be updated or deleted with version control
+
+**KB-USER-102: Semantic Search**
+- As a system, I want to provide relevant information to voice agents
+- **Acceptance Criteria:**
+  - Vector search returns relevant documents for queries
+  - Search results are ranked by relevance
+  - Integration with ElevenLabs knowledge base
+  - Fast response times for search queries
+
+## 7. Technical Requirements
+
+### 7.1 Technology Stack
+
+| Component | Technology | Version |
+|-----------|------------|---------|
+| Database | Supabase PostgreSQL | Latest |
+| ORM | Prisma | 5.0+ |
+| Vector Database | Supabase Vector (pgvector) | Latest |
+| API Integration | ElevenLabs API | v1 |
+| Backend | Next.js API Routes | 14+ |
+| Authentication | Supabase Auth | Latest |
+
+### 7.2 Database Schema Updates
+
+```sql
+-- New tables for enhanced functionality
+
+-- Vector embeddings for knowledge base
+CREATE TABLE knowledge_documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id UUID REFERENCES clients(id),
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  content_type TEXT DEFAULT 'text',
+  metadata JSONB,
+  embedding VECTOR(1536), -- OpenAI embeddings dimension
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Enhanced conversation table
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS 
+  elevenlabs_conversation_id TEXT,
+  transcript_json JSONB,
+  sentiment_score FLOAT,
+  topics TEXT[],
+  language TEXT DEFAULT 'ru';
+
+-- Enhanced leads table  
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS
+  conversation_summary TEXT,
+  extracted_entities JSONB,
+  lead_quality_score INTEGER,
+  source_conversation_id UUID REFERENCES conversations(id);
+
+-- API integration logs
+CREATE TABLE api_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  service_name TEXT NOT NULL,
+  endpoint TEXT NOT NULL,
+  method TEXT NOT NULL,
+  status_code INTEGER,
+  response_time_ms INTEGER,
+  error_message TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### 7.3 API Integration Architecture
+
+```typescript
+// ElevenLabs API Client Structure
+interface ElevenLabsClient {
+  conversations: {
+    list(params?: ConversationListParams): Promise<ConversationList>;
+    get(id: string): Promise<ConversationDetail>;
+  };
+  knowledgeBase: {
+    list(): Promise<KnowledgeDocument[]>;
+    upload(document: DocumentUpload): Promise<KnowledgeDocument>;
+    delete(id: string): Promise<void>;
+  };
+  tools: {
+    list(): Promise<Tool[]>;
+    create(tool: ToolConfig): Promise<Tool>;
+  };
+}
+
+// Data Synchronization Service
+interface SyncService {
+  syncConversations(): Promise<SyncResult>;
+  syncKnowledgeBase(): Promise<SyncResult>;
+  scheduleSync(interval: number): void;
+}
+```
+
+## 8. Security Requirements
+
+### 8.1 API Security
+- Secure storage of ElevenLabs API keys in environment variables
+- Rate limiting to prevent API abuse
+- Request/response logging for audit trails
+- Error handling that doesn't expose sensitive information
+
+### 8.2 Data Security
+- Encryption of sensitive data in Supabase
+- Row Level Security (RLS) policies for multi-tenant isolation
+- Secure webhook endpoints with signature verification
+- Regular security audits of API integrations
+
+## 9. Performance Requirements
+
+### 9.1 Database Performance
+- Query response times under 100ms for dashboard data
+- Vector search responses under 500ms
+- Efficient indexing for frequently queried fields
+- Connection pooling for optimal resource usage
+
+### 9.2 API Performance
+- ElevenLabs API calls with retry logic and backoff
+- Caching of frequently accessed data
+- Background processing for heavy operations
+- Real-time updates without blocking UI
+
+## 10. Implementation Phases
+
+### Phase 1: Database Migration (Week 1)
+- Set up Supabase project and configuration
+- Migrate Prisma schema to PostgreSQL
+- Transfer existing data with validation
+- Update all database connections
+
+### Phase 2: ElevenLabs Integration (Week 2)
+- Implement conversation synchronization
+- Create enhanced lead capture system
+- Set up automated background sync
+- Add conversation analytics
+
+### Phase 3: Knowledge Base System (Week 3)
+- Create knowledge base database schema
+- Implement document upload and processing
+- Add vector search functionality
+- Integrate with ElevenLabs Knowledge Base API
+
+### Phase 4: Admin Interface Updates (Week 4)
+- Update existing admin panels
+- Add knowledge base management interface
+- Enhance conversation and lead views
+- Add system monitoring dashboard
+
+### Phase 5: Testing & Optimization (Week 5)
+- Comprehensive testing of all features
+- Performance optimization
+- Security review and hardening
+- Documentation and deployment
+
+## 11. Environment Configuration
+
+```bash
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://eduukbhbpdogeszprxoi.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# ElevenLabs API Configuration
+ELEVENLABS_API_KEY=sk_your_api_key
+ELEVENLABS_AGENT_ID=agent_your_agent_id
+ELEVENLABS_WEBHOOK_SECRET=your_webhook_secret
+
+# Database Configuration (Supabase)
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.eduukbhbpdogeszprxoi.supabase.co:5432/postgres
+DIRECT_URL=postgresql://postgres:[PASSWORD]@db.eduukbhbpdogeszprxoi.supabase.co:5432/postgres
+
+# OpenAI Configuration (for embeddings)
+OPENAI_API_KEY=sk_your_openai_key
+
+# Application Configuration
+NODE_ENV=production
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=https://your-domain.com
+```
+
+## 12. Testing Strategy
+
+### 12.1 Unit Testing
+- Database migration scripts
+- API integration functions
+- Vector search functionality
+- Lead extraction algorithms
+
+### 12.2 Integration Testing
+- ElevenLabs API connectivity
+- Supabase database operations
+- Webhook processing
+- Real-time synchronization
+
+### 12.3 Performance Testing
+- Database query performance
+- API response times
+- Vector search speed
+- Concurrent user load testing
+
+## 13. Monitoring and Maintenance
+
+### 13.1 System Monitoring
+- API call success rates and response times
+- Database performance metrics
+- Vector search performance
+- Lead conversion tracking
+
+### 13.2 Error Handling
+- Comprehensive logging of all API interactions
+- Alerting for failed synchronization attempts
+- Graceful degradation when external services are unavailable
+- Automatic retry mechanisms with exponential backoff
+
+### 13.3 Maintenance Tasks
+- Regular database optimization
+- API key rotation
+- Knowledge base content updates
+- Performance tuning and optimization 

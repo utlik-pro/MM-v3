@@ -24,10 +24,25 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/knowledge-base": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/knowledge-base.js"
+    ],
+    "/lead-monitor": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/lead-monitor.js"
+    ],
     "/widget": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/widget.js"
+    ],
+    "/widget-demo": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/widget-demo.js"
     ]
   },
   "ampFirstPages": []

@@ -117,10 +117,10 @@ POST /api/webhook/voice-lead
 }
 ```
 
-### Интеграция с ElevenLabs
+### Интеграция с голосовым ассистентом
 
-#### Настройка webhook в ElevenLabs
-1. Зайдите в настройки агента в ElevenLabs
+#### Настройка webhook
+1. Зайдите в настройки голосового агента
 2. Добавьте webhook URL:
    ```
    https://ваш-домен.vercel.app/api/webhook/voice-lead
@@ -151,9 +151,9 @@ DATABASE_URL="postgresql://user:password@localhost:5432/voice_admin"
 NEXTAUTH_SECRET="your-secret-key"
 NEXTAUTH_URL="http://localhost:3000"
 
-# ElevenLabs
-ELEVENLABS_API_KEY="sk_your_api_key"
-ELEVENLABS_AGENT_ID="agent_your_agent_id"
+# Voice AI
+VOICE_AI_API_KEY="sk_your_api_key"
+VOICE_AGENT_ID="agent_your_agent_id"
 
 # Email notifications
 SMTP_HOST="smtp.gmail.com"
@@ -274,7 +274,7 @@ TELEGRAM_CHAT_ID=your-chat-id
 A: Пока система работает без аутентификации для демонстрации. В продакшене будет добавлена полная система пользователей.
 
 ### Q: Можно ли изменить промт ассистента?
-A: Да, через раздел "Промты" в админке. Изменения применяются мгновенно к ElevenLabs агенту.
+A: Да, через раздел "Промты" в админке. Изменения применяются мгновенно к голосовому агенту.
 
 ### Q: Как экспортировать лиды в CRM?
 A: Используйте функцию экспорта в разделе "Лиды" или настройте автоматическую интеграцию через webhook.

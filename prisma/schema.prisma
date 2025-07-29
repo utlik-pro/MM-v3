@@ -9,8 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // Enum definitions
@@ -49,9 +50,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  client   Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  sessions Session[]
+  client   Client? @relation(fields: [clientId], references: [id])
   accounts Account[]
+  sessions Session[]
 
   @@map("users")
 }
@@ -59,179 +60,206 @@ model User {
 model Client {
   id          String   @id @default(cuid())
   name        String
-  domain      String?
-  description String?
-  settings    Json?
+  domain      String?  @unique
+  settings    String?  // JSON string for client-specific settings
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  users         User[]
-  agents        Agent[]
-  conversations Conversation[]
-  leads         Lead[]
+  users              User[]
+  agents             Agent[]
+  conversations      Conversation[]
+  leads              Lead[]
+  analytics          Analytics[]
+  knowledgeDocuments KnowledgeDocument[]
 
   @@map("clients")
 }
 
 model Agent {
-  id                 String   @id @default(cuid())
-  name               String
-  description        String?
-  clientId           String
-  elevenLabsAgentId  String   @unique
-  isActive           Boolean  @default(true)
-  settings           Json?
-  businessHours      Json?
-  fallbackResponses  Json?
-  webhookUrl         String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id               String   @id @default(cuid())
+  clientId         String
+  externalId       String   // ElevenLabs agent ID
+  name             String
+  description      String?
+  isActive         Boolean  @default(true)
+  settings         String?  // JSON string for agent configuration
+  currentPromptId  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relations
-  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  prompts       Prompt[]
+  client        Client         @relation(fields: [clientId], references: [id])
+  currentPrompt Prompt?        @relation(fields: [currentPromptId], references: [id])
+  prompts       Prompt[]       @relation("AgentPrompts")
   conversations Conversation[]
   leads         Lead[]
-  analytics     Analytics[]
 
+  @@unique([clientId, externalId])
   @@map("agents")
 }
 
 model Prompt {
   id        String   @id @default(cuid())
   agentId   String
-  title     String
-  content   String   @db.Text
   version   Int      @default(1)
-  isActive  Boolean  @default(false)
+  title     String
+  content   String
+  variables String?  // JSON string for prompt variables
+  metadata  String?  // JSON string for additional metadata
+  isActive  Boolean  @default(true)
   isDefault Boolean  @default(false)
-  tags      String[]
+  tags      String?  // JSON string instead of String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agent             Agent           @relation("AgentPrompts", fields: [agentId], references: [id])
+  currentForAgents  Agent[]
+  conversations     Conversation[]
 
   @@unique([agentId, version])
   @@map("prompts")
 }
 
 model Conversation {
-  id             String             @id @default(cuid())
-  agentId        String
-  clientId       String
-  userId         String?
-  sessionId      String?
-  transcript     Json?
-  summary        String?
-  duration       Int?               // in seconds
-  status         ConversationStatus @default(ACTIVE)
-  leadCaptured   Boolean            @default(false)
-  leadId         String?
-  metadata       Json?
-  ipAddress      String?
-  userAgent      String?
-  startedAt      DateTime           @default(now())
-  endedAt        DateTime?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  id                      String             @id @default(cuid())
+  clientId                String
+  agentId                 String
+  promptId                String?
+  externalId              String?            // ElevenLabs conversation ID
+  elevenLabsConversationId String?           // Enhanced: ElevenLabs conversation ID
+  status                  ConversationStatus @default(ACTIVE)
+  startedAt               DateTime           @default(now())
+  endedAt                 DateTime?
+  duration                Int?               // seconds
+  transcript              String?
+  transcriptJson          Json?              // Enhanced: Structured transcript data
+  summary                 String?
+  sentimentScore          Float?             // Enhanced: Sentiment analysis score
+  topics                  String[]           // Enhanced: Extracted topics
+  language                String             @default("ru") // Enhanced: Language code
+  metadata                String?            // JSON string for additional data
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
 
   // Relations
-  agent  Agent   @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  client Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  lead   Lead?   @relation(fields: [leadId], references: [id])
-  events ConversationEvent[]
+  client               Client  @relation(fields: [clientId], references: [id])
+  agent                Agent   @relation(fields: [agentId], references: [id])
+  prompt               Prompt? @relation(fields: [promptId], references: [id])
+  leads                Lead[]
+  sourceLeads          Lead[]  @relation("LeadSourceConversation")
 
   @@map("conversations")
 }
 
-model ConversationEvent {
-  id             String   @id @default(cuid())
-  conversationId String
-  eventType      String   // 'message', 'action', 'error', 'lead_capture'
-  eventData      Json
-  timestamp      DateTime @default(now())
-
-  // Relations
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  @@map("conversation_events")
-}
-
 model Lead {
-  id             String     @id @default(cuid())
-  agentId        String
-  clientId       String
-  conversationId String?
-  contactInfo    Json       // flexible JSON for name, email, phone, etc.
-  source         String?    // where the lead came from
-  status         LeadStatus @default(NEW)
-  score          Int?       // lead quality score 1-100
-  notes          String?    @db.Text
-  assignedTo     String?    // user ID of assigned sales person
-  followUpDate   DateTime?
-  metadata       Json?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id                    String     @id @default(cuid())
+  clientId              String
+  agentId               String
+  conversationId        String?
+  sourceConversationId  String?    // Enhanced: Reference to source conversation
+  contactInfo           String     // JSON string for contact information
+  source                String     @default("voice_widget")
+  status                LeadStatus @default(NEW)
+  score                 Int?       // lead quality score 1-100
+  conversationSummary   String?    // Enhanced: Summary from conversation
+  extractedEntities     Json?      // Enhanced: Extracted entities (names, phones, etc.)
+  leadQualityScore      Int?       // Enhanced: AI-calculated lead quality score
+  notes                 String?
+  metadata              String?    // JSON string for additional lead data
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
 
   // Relations
-  agent         Agent          @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  conversations Conversation[]
-  activities    LeadActivity[]
+  client             Client         @relation(fields: [clientId], references: [id])
+  agent              Agent          @relation(fields: [agentId], references: [id])
+  conversation       Conversation?  @relation(fields: [conversationId], references: [id])
+  sourceConversation Conversation?  @relation("LeadSourceConversation", fields: [sourceConversationId], references: [id])
+  activities         LeadActivity[]
 
   @@map("leads")
 }
 
 model LeadActivity {
-  id          String   @id @default(cuid())
-  leadId      String
+  id           String   @id @default(cuid())
+  leadId       String
+  userId       String?  // user who performed the activity
   activityType String   // 'email', 'call', 'meeting', 'note'
-  description String?  @db.Text
-  metadata    Json?
-  createdBy   String?  // user ID
-  createdAt   DateTime @default(now())
+  description  String?
+  metadata     String?  // JSON string for activity-specific data
+  createdAt    DateTime @default(now())
 
   // Relations
-  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  lead Lead @relation(fields: [leadId], references: [id])
 
   @@map("lead_activities")
 }
 
 model Analytics {
-  id               String   @id @default(cuid())
-  agentId          String
-  date             DateTime
-  totalConversations Int     @default(0)
-  completedConversations Int @default(0)
-  avgDuration      Float?
-  leadsGenerated   Int      @default(0)
-  leadsConverted   Int      @default(0)
-  metadata         Json?
-  createdAt        DateTime @default(now())
+  id         String   @id @default(cuid())
+  clientId   String
+  date       DateTime
+  metric     String   // 'conversations', 'leads', 'conversions', etc.
+  value      Float
+  metadata   String?  // JSON string for additional metric data
+  createdAt  DateTime @default(now())
 
   // Relations
-  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id])
 
-  @@unique([agentId, date])
+  @@unique([clientId, date, metric])
   @@map("analytics")
 }
 
-// NextAuth.js models
+// Knowledge Base for RAG System
+model KnowledgeDocument {
+  id           String   @id @default(cuid())
+  clientId     String
+  title        String
+  content      String
+  contentType  String   @default("text")
+  metadata     Json?    // Additional document metadata
+  // Note: Vector embeddings will be handled separately in Supabase
+  // embedding VECTOR(1536) - PostgreSQL extension needed
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id])
+
+  @@map("knowledge_documents")
+}
+
+// API Integration Logging
+model ApiLog {
+  id              String   @id @default(cuid())
+  serviceName     String   // 'elevenlabs', 'openai', etc.
+  endpoint        String   // API endpoint called
+  method          String   // HTTP method
+  statusCode      Int?     // Response status code
+  responseTimeMs  Int?     // Response time in milliseconds
+  errorMessage    String?  // Error message if failed
+  metadata        Json?    // Additional request/response data
+  createdAt       DateTime @default(now())
+
+  @@map("api_logs")
+}
+
+// NextAuth models
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

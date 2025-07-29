@@ -29,8 +29,8 @@ out/
 # OS specific
 .DS_Store
 
+/generated/prisma
+
 # Task files
 # tasks.json
 # tasks/ 
-
-/generated/prisma
