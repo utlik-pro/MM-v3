@@ -1,0 +1,141 @@
+{
+	"meta": {
+		"generatedAt": "2025-07-29T10:44:55.732Z",
+		"tasksAnalyzed": 8,
+		"totalTasks": 12,
+		"analysisCount": 16,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 3,
+			"taskTitle": "Перенос данных из SQLite в Supabase",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the SQLite to Supabase migration process into specific steps including data schema analysis, migration script development, data validation, error handling, and post-migration verification",
+			"reasoning": "Data migration between different database systems involves schema mapping, data transformation, integrity validation, and error handling. The high priority and dependency indicates this is a critical foundation task. The complexity comes from ensuring data consistency across different database architectures and handling potential schema differences."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Улучшенный webhook для лидов",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Detail the steps to enhance the lead webhook including API endpoint modifications, contact information extraction logic, lead scoring algorithm implementation, and integration testing",
+			"reasoning": "Enhancing an existing webhook involves API modifications, data processing logic, and integration with multiple systems. The complexity is moderate as it builds on existing functionality but requires implementing new features like lead scoring and contact extraction from transcripts."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Система управления базой знаний",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the knowledge base management system implementation into components including document upload functionality, vector embedding generation, pgvector integration with Supabase, semantic search implementation, ElevenLabs Knowledge Base API integration, and user interface components",
+			"reasoning": "Implementing a vector search knowledge base system involves complex technologies like embedding generation and semantic search. Integration with pgvector and ElevenLabs API adds additional complexity. This requires understanding of vector databases, embedding models, and document processing pipelines."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Админ интерфейс для базы знаний",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Detail the admin interface components including document upload/management UI, categorization and tagging system, search functionality, and user permission management",
+			"reasoning": "Creating an admin interface is moderately complex, requiring CRUD operations, form handling, and search functionality. The complexity is mitigated by building on the knowledge base system (task 7), but still requires careful UI/UX design and proper integration with the backend."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Расширенная аналитика разговоров",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the conversation analytics system into components including sentiment analysis implementation, topic extraction, conversation quality metrics definition, data visualization dashboard, and report export functionality",
+			"reasoning": "Conversation analytics involves complex NLP techniques like sentiment analysis and topic extraction. Implementing meaningful metrics, creating visualizations, and building a comprehensive dashboard adds significant complexity. This requires expertise in both data analysis and frontend visualization."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Интеграция с внешними CRM системами",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Detail the CRM integration components including configurable webhook system, field mapping functionality, retry logic implementation, and testing with multiple CRM platforms",
+			"reasoning": "External CRM integration requires handling different API formats, field mapping, and robust error handling. The complexity comes from supporting multiple CRM systems and implementing reliable retry logic, though the core webhook functionality is relatively straightforward."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Система мониторинга и логирования",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the monitoring and logging system into components including API call logging implementation, performance monitoring setup, alert system configuration, health dashboard development, and log analysis tools",
+			"reasoning": "Comprehensive logging and monitoring requires integration across the entire system. The complexity comes from implementing proper instrumentation, setting up meaningful alerts, and creating dashboards that provide actionable insights. This requires both backend and frontend work."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Тестирование и оптимизация производительности",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Detail the testing and optimization process including unit test suite development, integration test implementation, load testing methodology, database query optimization, API performance tuning, and security audit",
+			"reasoning": "Comprehensive testing and optimization spans multiple disciplines including automated testing, performance engineering, and security. The complexity is high due to the breadth of testing required and the need to optimize across different layers of the application. This task has multiple dependencies indicating it touches many system components."
+		},
+		{
+			"taskId": "3",
+			"taskTitle": "Перенос данных из SQLite в Supabase",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on перенос данных из sqlite в supabase.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "6",
+			"taskTitle": "Улучшенный webhook для лидов",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on улучшенный webhook для лидов.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "7",
+			"taskTitle": "Система управления базой знаний",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on система управления базой знаний.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "8",
+			"taskTitle": "Админ интерфейс для базы знаний",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on админ интерфейс для базы знаний.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "9",
+			"taskTitle": "Расширенная аналитика разговоров",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on расширенная аналитика разговоров.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "10",
+			"taskTitle": "Интеграция с внешними CRM системами",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on интеграция с внешними crm системами.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "11",
+			"taskTitle": "Система мониторинга и логирования",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on система мониторинга и логирования.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "12",
+			"taskTitle": "Тестирование и оптимизация производительности",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on тестирование и оптимизация производительности.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		}
+	]
+}
