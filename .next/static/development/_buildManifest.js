@@ -1,1 +1,0 @@
-self.__BUILD_MANIFEST = {__rewrites:{afterFiles:[{has:void 0,source:"\u002Fhealth",destination:"\u002Fapi\u002Fhealth"}],beforeFiles:[],fallback:[]},"/_error":["static\u002Fchunks\u002Fpages\u002F_error.js"],"/widget":["static\u002Fchunks\u002Fpages\u002Fwidget.js"],sortedPages:["\u002F_app","\u002F_error","\u002Fwidget"]};self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()

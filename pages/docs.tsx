@@ -112,7 +112,7 @@ export default function Documentation() {
           <h3 className="text-xl font-semibold mb-3">Способ 1: iframe (Рекомендуется)</h3>
           <div className="bg-gray-900 text-green-400 p-4 rounded-lg mb-6 font-mono text-sm">
             <div>&lt;iframe</div>
-            <div>  src="{baseUrl || 'https://mm-v3.vercel.app'}/widget"</div>
+            <div suppressHydrationWarning>  src="{baseUrl || 'https://mm-v3.vercel.app'}/widget"</div>
             <div>  width="400"</div>
             <div>  height="600"</div>
             <div>  frameborder="0"</div>
@@ -125,7 +125,7 @@ export default function Documentation() {
             <div>&lt;div id="voice-widget"&gt;&lt;/div&gt;</div>
             <div>&lt;script&gt;</div>
             <div>  const script = document.createElement('script');</div>
-            <div>  script.src = '{baseUrl || 'https://mm-v3.vercel.app'}/widget.js';</div>
+            <div suppressHydrationWarning>  script.src = '{baseUrl || 'https://mm-v3.vercel.app'}/widget.js';</div>
             <div>  script.onload = () =&gt; &#123;VoiceWidget.init('voice-widget')&#125;;</div>
             <div>  document.head.appendChild(script);</div>
             <div>&lt;/script&gt;</div>
@@ -190,7 +190,7 @@ export default function Documentation() {
           <p className="mb-3">Для автоматической отправки лидов настройте Tool в системе:</p>
           <div className="bg-gray-900 text-green-400 p-4 rounded-lg mb-4 font-mono text-sm">
             <div>Tool Name: SendToCRMLead</div>
-            <div>URL: {baseUrl || 'https://mm-v3.vercel.app'}/api/webhook/crm-lead-enhanced</div>
+            <div suppressHydrationWarning>URL: {baseUrl || 'https://mm-v3.vercel.app'}/api/webhook/crm-lead-enhanced</div>
             <div>Method: POST</div>
             <div>Parameters:</div>
             <div>  - FullName (string)</div>

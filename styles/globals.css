@@ -10,7 +10,8 @@
   z-index: 999999;
 }
 
-/* Modern Widget Animations */
+/* Modern Widget Animations - DISABLED */
+/*
 @keyframes bounce-gentle {
   0%, 100% {
     transform: translateY(0);
@@ -30,6 +31,7 @@
     transform: scale(1.2);
   }
 }
+*/
 
 @keyframes pulse-glow {
   0%, 100% {
@@ -40,7 +42,8 @@
   }
 }
 
-/* Animation Classes */
+/* Animation Classes - DISABLED */
+/*
 .animate-bounce-gentle {
   animation: bounce-gentle 3s ease-in-out infinite;
 }
@@ -48,6 +51,7 @@
 .animate-sparkle {
   animation: sparkle 2s ease-in-out infinite;
 }
+*/
 
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
@@ -68,8 +72,7 @@
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .animate-bounce-gentle,
-  .animate-sparkle,
+  /* bounce-gentle and sparkle animations are now disabled by default */
   .animate-pulse-glow {
     animation: none;
   }
