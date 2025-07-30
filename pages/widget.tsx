@@ -4,18 +4,20 @@ export default function WidgetPage() {
   return (
     <>
       <style jsx global>{`
+        /* Reset only specific elements, not all */
+        html, body, #__next, main {
+          background: transparent !important;
+          border: none !important;
+          outline: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        /* Don't reset box-shadow globally */
         * {
           background: transparent !important;
           border: none !important;
           outline: none !important;
-          box-shadow: none !important;
-        }
-        
-        html, body, #__next, main, div, span, button, p, h1, h2, h3, h4, h5, h6 {
-          background: transparent !important;
-          border: none !important;
-          outline: none !important;
-          box-shadow: none !important;
         }
         
         /* Restore specific styles for the new widget */
