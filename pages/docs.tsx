@@ -121,7 +121,7 @@ export default function Documentation() {
             <div>&lt;script&gt;</div>
             <div>  const script = document.createElement('script');</div>
             <div>  script.src = 'https://your-domain.com/widget.js';</div>
-            <div>  script.onload = () => {'{'}VoiceWidget.init('voice-widget'){'}'};</div>
+            <div>  script.onload = () =&gt; &#123;VoiceWidget.init('voice-widget')&#125;;</div>
             <div>  document.head.appendChild(script);</div>
             <div>&lt;/script&gt;</div>
           </div>
