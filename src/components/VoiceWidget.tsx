@@ -40,10 +40,6 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
     ...config
   };
 
-  // Check microphone permission on mount
-  useEffect(() => {
-    checkMicrophonePermission();
-  }, []);
 
   const checkMicrophonePermission = async () => {
     try {
@@ -215,11 +211,11 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
           }}
         >
           {status === 'connecting' ? (
-            <Loader2 className="w-8 h-8 text-white animate-spin" />
+            <Loader2 className="w-8 h-8 text-black animate-spin" />
           ) : status === 'connected' && mode === 'speaking' ? (
-            <div className="w-8 h-8 bg-white rounded-full animate-recording" />
+            <div className="w-8 h-8 bg-black rounded-full animate-recording" />
           ) : (
-            <Mic className="w-8 h-8 text-white" />
+            <Mic className="w-8 h-8 text-black" />
           )}
         </div>
 
@@ -279,10 +275,25 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
 
             <button
               onClick={stopConversation}
-              className="
-                flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-lg font-medium
-                hover:bg-red-600 focus:ring-4 focus:ring-red-300 transition-all
-              "
+              style={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                backgroundColor: '#EF403B',
+                color: 'white',
+                borderRadius: '8px',
+                fontWeight: '500',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = '#d93832';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = '#EF403B';
+              }}
             >
               <PhoneOff className="w-5 h-5" />
               {widgetConfig.endCallText}

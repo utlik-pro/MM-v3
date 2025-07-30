@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Phone, X, Mic, MicOff } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Phone, X } from 'lucide-react';
 
 interface CallButtonProps {
   onCallStart?: () => void;
@@ -14,22 +14,17 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const conversationRef = useRef<any>(null);
 
-  // Check microphone access on component mount
+  // Cleanup ElevenLabs session on component unmount
   useEffect(() => {
-    checkMicrophoneAccess();
+    return () => {
+      if (conversationRef.current) {
+        conversationRef.current.endSession();
+        conversationRef.current = null;
+      }
+    };
   }, []);
-
-  const checkMicrophoneAccess = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setHasMicrophoneAccess(true);
-      stream.getTracks().forEach(track => track.stop()); // Stop the test stream
-    } catch (error) {
-      console.log('Microphone access not granted:', error);
-      setHasMicrophoneAccess(false);
-    }
-  };
 
   const requestMicrophoneAccess = async () => {
     try {
@@ -45,6 +40,16 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
     } catch (error) {
       console.error('Failed to get microphone access:', error);
       setHasMicrophoneAccess(false);
+      
+      // Provide specific error handling
+      if (error instanceof Error) {
+        if (error.name === 'NotAllowedError') {
+          throw new Error('Доступ к микрофону запрещен');
+        } else if (error.name === 'NotFoundError') {
+          throw new Error('Микрофон не найден');
+        }
+      }
+      
       throw error;
     }
   };
@@ -93,29 +98,59 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
       // Start recording
       startRecording(stream);
       
-      // Start conversation with ElevenLabs
-      const response = await fetch('/api/conversation-simple', {
+      // Get signed URL for ElevenLabs WebSocket connection
+      const response = await fetch('/api/elevenlabs/signed-url', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: 'Привет! Я хочу узнать о новостройках',
-          voice_id: '21m00Tcm4TlvDq8ikWAM', // Rachel voice
-        }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to start conversation');
+        throw new Error('Failed to get ElevenLabs signed URL');
       }
 
-      const data = await response.json();
-      console.log('Call started:', data);
+      const { signed_url } = await response.json();
+      console.log('ElevenLabs signed URL obtained:', signed_url);
       
-      setStatus('connected');
+      // Dynamic import of ElevenLabs client
+      const { Conversation } = await import('@elevenlabs/client');
+      
+      // Start real ElevenLabs conversation
+      const conversation = await Conversation.startSession({
+        signedUrl: signed_url,
+        onConnect: () => {
+          console.log('Connected to ElevenLabs');
+          setStatus('connected');
+        },
+        onDisconnect: () => {
+          console.log('Disconnected from ElevenLabs');
+          setStatus('idle');
+          stopRecording();
+        },
+        onError: (error) => {
+          console.error('ElevenLabs error:', error);
+          throw new Error(`ElevenLabs connection failed: ${error}`);
+        },
+        onModeChange: ({ mode }) => {
+          console.log('ElevenLabs mode:', mode);
+          // Handle speaking/listening modes if needed
+        }
+      });
+      
+      // Store conversation reference for cleanup
+      conversationRef.current = conversation;
+      
+      console.log('ElevenLabs conversation started');
     } catch (error) {
       console.error('Call error:', error);
       setStatus('error');
+      
+      // Show specific error message based on error type
+      if (error instanceof Error && error.name === 'NotAllowedError') {
+        // Microphone permission denied
+        console.log('Microphone permission denied');
+      }
       
       // Reset to idle after 3 seconds
       setTimeout(() => {
@@ -125,6 +160,11 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   };
 
   const handleEndCall = () => {
+    // End ElevenLabs conversation session
+    if (conversationRef.current) {
+      conversationRef.current.endSession();
+      conversationRef.current = null;
+    }
     stopRecording();
     setStatus('idle');
   };
@@ -141,7 +181,7 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   return (
     <div className="fixed bottom-4 right-4 z-[999999]">
       {/* New Modern Widget Design */}
-      <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 max-w-sm animate-bounce-gentle">
+      <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 max-w-sm">
         {/* Header with close button */}
         <div className="flex items-start justify-between mb-4">
           {/* Icon and Text */}
@@ -149,21 +189,21 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
             {/* AI Icon */}
             <div className="flex-shrink-0">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-600 to-green-700 flex items-center justify-center border-2 border-teal-200">
-                <div className="relative">
-                  {/* Sparkles */}
-                  <div className="absolute -top-1 -left-1 w-2 h-2 bg-white rounded-full opacity-80 animate-sparkle"></div>
-                  <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-white rounded-full opacity-60 animate-sparkle" style={{animationDelay: '0.5s'}}></div>
-                  <div className="absolute -bottom-1 -right-1 w-1 h-1 bg-white rounded-full opacity-40 animate-sparkle" style={{animationDelay: '1s'}}></div>
-                  {/* Main sparkle */}
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                </div>
+                <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  {/* Large sparkle */}
+                  <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
+                  {/* Small sparkle top right */}
+                  <path d="M18 3L19 6L22 7L19 8L18 11L17 8L14 7L17 6L18 3Z" />
+                  {/* Small sparkle bottom right */}
+                  <path d="M19 16L20 18L22 19L20 20L19 22L18 20L16 19L18 18L19 16Z" />
+                </svg>
               </div>
             </div>
             
             {/* Text */}
             <div className="flex-1">
-              <p className="text-gray-900 text-sm leading-relaxed font-medium">
-                Наш AI-помощник подберёт<br />
+              <p className="text-gray-900 leading-relaxed font-medium" style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '15px' }}>
+                Наш AI-помощник подберет<br />
                 лучшие варианты новостроек<br />
                 под ваши запросы
               </p>
@@ -180,68 +220,71 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
           </button>
         </div>
         
-        {/* Separator */}
-        <div className="border-t border-gray-200 mb-4"></div>
-        
-        {/* Microphone Status */}
-        {!hasMicrophoneAccess && status === 'idle' && (
-          <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-yellow-700 text-xs text-center flex items-center justify-center">
-              <MicOff className="w-3 h-3 mr-1" />
-              Разрешите доступ к микрофону для звонка
-            </p>
-          </div>
-        )}
-        
         {/* Call Button */}
         <button
           onClick={status === 'connected' ? handleEndCall : handleCallClick}
           disabled={status === 'connecting'}
           className={`
-            w-full py-3 px-4 rounded-lg font-semibold text-white text-sm
+            w-full py-3 px-4 rounded-lg font-semibold text-sm
             flex items-center justify-center space-x-2 transition-all duration-200
             ${status === 'connecting' 
-              ? 'bg-gray-400 cursor-not-allowed' 
+              ? 'cursor-not-allowed' 
               : status === 'connected'
-              ? 'bg-red-600 hover:bg-red-700 active:scale-95'
-              : 'bg-gradient-to-r from-teal-600 to-green-700 hover:from-teal-700 hover:to-green-800 active:scale-95'
+              ? 'text-white active:scale-95'
+              : 'text-white bg-gradient-to-r from-teal-600 to-green-700 hover:from-teal-700 hover:to-green-800 active:scale-95'
             }
           `}
+          style={
+            status === 'connecting' 
+              ? { 
+                  backgroundColor: 'white',
+                  color: 'black',
+                  border: '1px solid black'
+                }
+              : status === 'connected' 
+              ? { backgroundColor: '#EF403B' } 
+              : undefined
+          }
+          onMouseEnter={status === 'connected' ? (e) => {
+            e.currentTarget.style.backgroundColor = '#d93832';
+            e.currentTarget.style.color = 'white';
+          } : undefined}
+          onMouseLeave={status === 'connected' ? (e) => {
+            e.currentTarget.style.backgroundColor = '#EF403B';
+            e.currentTarget.style.color = 'white';
+          } : undefined}
           aria-label={status === 'connected' ? 'Завершить звонок' : 'Позвонить'}
         >
           {status === 'connecting' ? (
             <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>СОЕДИНЕНИЕ</span>
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+              <span style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '12px', fontWeight: '500' }}>
+                СОЕДИНЕНИЕ
+                <span className="animate-pulse">...</span>
+              </span>
             </>
           ) : status === 'connected' ? (
             <>
               <X className="w-4 h-4" />
-              <span>ЗАВЕРШИТЬ</span>
+              <span style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '12px', fontWeight: '500' }}>ЗАВЕРШИТЬ</span>
             </>
           ) : (
             <>
-              {hasMicrophoneAccess ? <Phone className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-              <span>{hasMicrophoneAccess ? 'ПОЗВОНИТЬ' : 'РАЗРЕШИТЬ МИКРОФОН'}</span>
+              <Phone className="w-4 h-4" />
+              <span style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '12px', fontWeight: '500' }}>ПОЗВОНИТЬ</span>
             </>
           )}
         </button>
         
-        {/* Recording Indicator */}
-        {isRecording && (
-          <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600 text-xs text-center flex items-center justify-center">
-              <div className="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></div>
-              Идет запись...
-            </p>
-          </div>
-        )}
         
         {/* Error Message */}
         {status === 'error' && (
           <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-600 text-xs text-center">
-              Ошибка подключения. Попробуйте еще раз.
+              {!hasMicrophoneAccess 
+                ? 'Требуется доступ к микрофону для звонка. Разрешите доступ и попробуйте снова.'
+                : 'Ошибка подключения. Попробуйте еще раз.'
+              }
             </p>
           </div>
         )}

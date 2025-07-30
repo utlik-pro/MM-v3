@@ -76,6 +76,80 @@ export default function WidgetPage() {
           color: #dc2626 !important;
         }
         
+        /* AI Icon sparkles colors */
+        .fixed .bg-green-200 {
+          background: #bbf7d0 !important;
+        }
+        
+        .fixed .bg-green-300 {
+          background: #86efac !important;
+        }
+        
+        .fixed .bg-green-400 {
+          background: #4ade80 !important;
+        }
+        
+        .fixed .bg-green-500 {
+          background: #22c55e !important;
+        }
+        
+        .fixed .bg-gradient-to-br {
+          background: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
+        }
+        
+        .fixed .from-teal-600 {
+          --tw-gradient-from: #0d9488;
+          --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(13, 148, 136, 0));
+        }
+        
+        .fixed .border-teal-200 {
+          border: 2px solid #99f6e4 !important;
+        }
+        
+        /* Custom red ЗАВЕРШИТЬ button color */
+        .fixed button[style*="background-color: rgb(239, 64, 59)"] {
+          background-color: #EF403B !important;
+          color: white !important;
+        }
+        
+        .fixed button[style*="background-color: rgb(239, 64, 59)"]:hover {
+          background-color: #d93832 !important;
+          color: white !important;
+        }
+        
+        .fixed button[style*="backgroundColor: #EF403B"] {
+          background-color: #EF403B !important;
+          color: white !important;
+        }
+        
+        .fixed button[style*="backgroundColor: #EF403B"]:hover {
+          background-color: #d93832 !important;
+          color: white !important;
+        }
+        
+        /* Force white color for button text */
+        .fixed button[aria-label="Завершить звонок"] {
+          color: white !important;
+        }
+        
+        .fixed button[aria-label="Завершить звонок"]:hover {
+          background-color: #d93832 !important;
+          color: white !important;
+        }
+        
+        /* СОЕДИНЕНИЕ button white background with black border */
+        .fixed button[style*="backgroundColor: white"] {
+          background-color: white !important;
+          color: black !important;
+          border: 1px solid black !important;
+        }
+        
+        .fixed button[style*="background-color: white"] {
+          background-color: white !important;
+          color: black !important;
+          border: 1px solid black !important;
+        }
+        
         /* Focus states */
         button:focus, button:focus-visible, input:focus, textarea:focus, select:focus {
           outline: none !important;
