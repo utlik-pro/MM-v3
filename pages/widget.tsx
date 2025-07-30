@@ -29,39 +29,39 @@ export default function WidgetPage() {
           border: 1px solid #e5e7eb !important;
         }
         
-        /* Enhanced shadow styles with higher specificity */
+        /* Enhanced shadow styles with higher specificity - softer shadows */
         .fixed .shadow-2xl {
-          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -webkit-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          -moz-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
         }
         
-        /* Force shadows even when client overrides */
+        /* Force shadows even when client overrides - softer */
         div[class*="shadow-2xl"] {
-          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -webkit-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          -moz-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
         }
         
-        /* Specific override for iframe content */
+        /* Specific override for iframe content - softer */
         .fixed div[class*="rounded-xl"] {
-          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -webkit-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          -moz-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
         }
         
-        /* Ultimate shadow override - target the exact element */
+        /* Ultimate shadow override - target the exact element - softer */
         .fixed .bg-white.rounded-xl.shadow-2xl.border.border-gray-200 {
-          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -webkit-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          -moz-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
         }
         
-        /* Force shadows on any element with rounded-xl class */
+        /* Force shadows on any element with rounded-xl class - softer */
         [class*="rounded-xl"] {
-          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -webkit-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          -moz-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
         }
         
         /* Force positioning in iframe mode */

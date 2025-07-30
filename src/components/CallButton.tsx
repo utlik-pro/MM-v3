@@ -192,9 +192,9 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
       <div 
         className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 h-40"
         style={{
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          WebkitBoxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          MozBoxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06)',
+          WebkitBoxShadow: '0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06)',
+          MozBoxShadow: '0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06)'
         }}
       >
         {/* Header with close button */}
