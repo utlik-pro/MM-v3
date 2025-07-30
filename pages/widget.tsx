@@ -64,6 +64,19 @@ export default function WidgetPage() {
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
         }
         
+        /* Force positioning in iframe mode */
+        .fixed {
+          position: fixed !important;
+        }
+        
+        /* Ensure correct positioning */
+        div[class*="fixed"] {
+          position: fixed !important;
+          bottom: 16px !important;
+          right: 16px !important;
+          z-index: 999999 !important;
+        }
+        
         .fixed .bg-gradient-to-r {
           background: linear-gradient(to right, var(--tw-gradient-stops)) !important;
         }

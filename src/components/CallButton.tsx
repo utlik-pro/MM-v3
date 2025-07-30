@@ -179,7 +179,15 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   if (!showWidget) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-[999999]">
+    <div 
+      className="fixed bottom-4 right-4 z-[999999]"
+      style={{
+        position: 'fixed',
+        bottom: '16px',
+        right: '16px',
+        zIndex: 999999
+      }}
+    >
       {/* New Modern Widget Design */}
       <div 
         className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 h-40"
