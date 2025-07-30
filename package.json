@@ -1,5 +1,5 @@
 {
-  "name": "elevenlabs-proxy-iframe",
+  "name": "mm-voice-widget-v3",
   "version": "1.0.0",
   "description": "Custom iframe widget that proxies ElevenLabs Conversational AI for MinskMir",
   "private": true,
