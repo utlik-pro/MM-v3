@@ -10,6 +10,39 @@
   z-index: 999999;
 }
 
+/* Iframe Mode Styles */
+.iframe-mode {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+}
+
+.iframe-mode .fixed {
+  position: fixed !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.iframe-mode .fixed.bottom-4.right-4 {
+  bottom: 16px !important;
+  right: 16px !important;
+  z-index: 999999 !important;
+}
+
+/* Force shadows in iframe mode */
+.iframe-mode .shadow-2xl {
+  -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.iframe-mode div[class*="rounded-xl"] {
+  -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
 /* Modern Widget Animations - DISABLED */
 /*
 @keyframes bounce-gentle {
@@ -28,8 +61,16 @@
   }
   50% {
     opacity: 1;
-    transform: scale(1.2);
+    transform: scale(1.1);
   }
+}
+
+.voice-widget .ai-icon {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.voice-widget .call-button {
+  animation: bounce-gentle 3s ease-in-out infinite;
 }
 */
 

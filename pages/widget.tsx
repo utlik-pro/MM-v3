@@ -29,7 +29,24 @@ export default function WidgetPage() {
           border: 1px solid #e5e7eb !important;
         }
         
+        /* Enhanced shadow styles with higher specificity */
         .fixed .shadow-2xl {
+          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        }
+        
+        /* Force shadows even when client overrides */
+        div[class*="shadow-2xl"] {
+          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        }
+        
+        /* Specific override for iframe content */
+        .fixed div[class*="rounded-xl"] {
+          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
         }
         
