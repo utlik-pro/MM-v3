@@ -185,16 +185,18 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
         position: 'fixed',
         bottom: '16px',
         right: '16px',
-        zIndex: 999999
+        zIndex: 999999,
+        padding: '20px',
+        margin: '-20px'
       }}
     >
       {/* New Modern Widget Design */}
       <div 
         className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 h-40"
         style={{
-          boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
-          WebkitBoxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
-          MozBoxShadow: '0 0 20px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 0 30px rgba(0, 0, 0, 0.12)',
+          WebkitBoxShadow: '0 0 30px rgba(0, 0, 0, 0.12)',
+          MozBoxShadow: '0 0 30px rgba(0, 0, 0, 0.12)'
         }}
       >
         {/* Header with close button */}

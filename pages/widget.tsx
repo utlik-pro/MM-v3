@@ -29,39 +29,39 @@ export default function WidgetPage() {
           border: 1px solid #e5e7eb !important;
         }
         
-        /* Enhanced shadow styles with higher specificity - uniform soft shadows */
+        /* Enhanced shadow styles with higher specificity - larger soft shadows */
         .fixed .shadow-2xl {
-          -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+          -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          -moz-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
         }
         
-        /* Force shadows even when client overrides - uniform */
+        /* Force shadows even when client overrides - larger */
         div[class*="shadow-2xl"] {
-          -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+          -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          -moz-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
         }
         
-        /* Specific override for iframe content - uniform */
+        /* Specific override for iframe content - larger */
         .fixed div[class*="rounded-xl"] {
-          -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+          -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          -moz-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
         }
         
-        /* Ultimate shadow override - target the exact element - uniform */
+        /* Ultimate shadow override - target the exact element - larger */
         .fixed .bg-white.rounded-xl.shadow-2xl.border.border-gray-200 {
-          -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+          -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          -moz-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
         }
         
-        /* Force shadows on any element with rounded-xl class - uniform */
+        /* Force shadows on any element with rounded-xl class - larger */
         [class*="rounded-xl"] {
-          -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+          -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          -moz-box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.12) !important;
         }
         
         /* Force positioning in iframe mode */
