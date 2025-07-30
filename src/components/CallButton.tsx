@@ -202,7 +202,7 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
             
             {/* Text */}
             <div className="flex-1">
-              <p className="text-gray-900 leading-relaxed font-medium" style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '15px' }}>
+              <p className="text-gray-900 leading-tight font-medium" style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '15px', letterSpacing: '0%', lineHeight: '1.2' }}>
                 Наш AI-помощник подберет<br />
                 лучшие варианты новостроек<br />
                 под ваши запросы
