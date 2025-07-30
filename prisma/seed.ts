@@ -19,15 +19,15 @@ async function main() {
   })
 
   // Создаем агента
-  const agent = await prisma.agent.upsert({
-    where: { 
-      clientId_externalId: {
-        clientId: client.id,
-        externalId: 'agent_01jxkr0mstfk6ttayjsghjm7xc'
-      }
-    },
-    update: {},
-    create: {
+  const existingAgent = await prisma.agent.findFirst({
+    where: {
+      clientId: client.id,
+      externalId: 'agent_01jxkr0mstfk6ttayjsghjm7xc'
+    }
+  })
+
+  const agent = existingAgent || await prisma.agent.create({
+    data: {
       clientId: client.id,
       externalId: 'agent_01jxkr0mstfk6ttayjsghjm7xc',
       name: 'MinskMir Voice Assistant',

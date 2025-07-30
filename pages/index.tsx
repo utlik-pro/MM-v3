@@ -9,7 +9,7 @@ export default function Home() {
   
   // Widget настройки
   const [widgetSettings, setWidgetSettings] = useState({
-    domain: typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.com',
+    domain: typeof window !== 'undefined' ? window.location.origin : 'https://mm-v3.vercel.app',
     width: '400',
     height: '600',
     frameBorder: '0'
@@ -166,7 +166,7 @@ export default function Home() {
                       value={widgetSettings.domain}
                       onChange={(e) => setWidgetSettings({...widgetSettings, domain: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="https://your-domain.com"
+                      placeholder="https://mm-v3.vercel.app"
                     />
                   </div>
                   <div>

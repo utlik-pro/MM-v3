@@ -69,7 +69,7 @@ async function handleGetLeads(req: NextApiRequest, res: NextApiResponse) {
       include: {
         agent: true,
         client: true,
-        conversations: true
+        conversation: true
       }
     });
 
