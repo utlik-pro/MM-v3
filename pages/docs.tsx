@@ -57,7 +57,6 @@ export default function Documentation() {
               Для работы системы необходимы API ключи голосовой платформы и настроенная база данных Supabase.
             </p>
           </div>
-          */}
 
           <h3 className="text-xl font-semibold mb-3">1. Клонирование репозитория</h3>
           <div className="bg-gray-900 text-green-400 p-4 rounded-lg mb-4 font-mono text-sm">
