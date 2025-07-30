@@ -48,8 +48,8 @@ export default async function handler(
         notes: transcript,
         agentId: agentId || 'agent_01jxkr0mstfk6ttayjsghjm7xc',
         clientId: 'default-client',
-        conversationId: conversationId || null,
-        metadata: metadata ? JSON.stringify(metadata) : null
+        conversationId: conversationId || undefined,
+        metadata: metadata ? JSON.stringify(metadata) : undefined
       },
       include: {
         agent: true,
@@ -60,7 +60,7 @@ export default async function handler(
     // Transform for response
     const transformedLead = {
       ...newLead,
-      contactInfo: JSON.parse(newLead.contactInfo),
+      contactInfo: newLead.contactInfo ? JSON.parse(newLead.contactInfo as string) : {},
       createdAt: newLead.createdAt.toISOString(),
       updatedAt: newLead.updatedAt.toISOString()
     };
