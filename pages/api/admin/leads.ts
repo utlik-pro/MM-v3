@@ -76,7 +76,7 @@ async function handleGetLeads(req: NextApiRequest, res: NextApiResponse) {
     // Transform data to match frontend expectations
     const transformedLeads = leads.map(lead => ({
       id: lead.id,
-      contactInfo: JSON.parse(lead.contactInfo),
+      contactInfo: lead.contactInfo ? JSON.parse(lead.contactInfo as string) : {},
       status: lead.status,
       score: lead.score,
       source: lead.source,
