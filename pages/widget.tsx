@@ -50,6 +50,20 @@ export default function WidgetPage() {
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
         }
         
+        /* Ultimate shadow override - target the exact element */
+        .fixed .bg-white.rounded-xl.shadow-2xl.border.border-gray-200 {
+          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        }
+        
+        /* Force shadows on any element with rounded-xl class */
+        [class*="rounded-xl"] {
+          -webkit-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          -moz-box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        }
+        
         .fixed .bg-gradient-to-r {
           background: linear-gradient(to right, var(--tw-gradient-stops)) !important;
         }

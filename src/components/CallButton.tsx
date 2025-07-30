@@ -181,7 +181,14 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   return (
     <div className="fixed bottom-4 right-4 z-[999999]">
       {/* New Modern Widget Design */}
-      <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 h-40">
+      <div 
+        className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 h-40"
+        style={{
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          WebkitBoxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          MozBoxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+        }}
+      >
         {/* Header with close button */}
         <div className="flex items-start justify-between mb-4">
           {/* Icon and Text */}
