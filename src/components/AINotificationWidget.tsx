@@ -31,7 +31,7 @@ export function AINotificationWidget({
 
   return (
     <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
-      <div className="bg-white rounded-2xl border border-gray-300 shadow-lg p-4 w-40">
+      <div className="bg-white rounded-2xl border border-gray-300 shadow-lg p-4 w-80 h-40">
         {/* Header with close button */}
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-3 flex-1">

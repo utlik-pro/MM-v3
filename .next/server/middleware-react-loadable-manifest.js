@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST='{"src/components/CallButton.tsx -> @elevenlabs/client":{"id":4175,"files":["static/chunks/3dbccb2b.2370cf444df42c8b.js","static/chunks/175.3846e889c355b888.js"]}}';
+self.__REACT_LOADABLE_MANIFEST="{}"
