@@ -1,6 +1,15 @@
 import CallButton from '../src/components/CallButton';
+import { useRouter } from 'next/router';
 
 export default function WidgetPage() {
+  const router = useRouter();
+  const { theme } = router.query;
+  
+  // Валидируем тему
+  const validThemes = ['default', 'blue', 'purple', 'orange', 'red'];
+  const currentTheme = validThemes.includes(theme as string) ? theme as string : 'default';
+  
+  console.log('Widget page - URL theme:', theme, 'Current theme:', currentTheme);
   return (
     <>
       <style jsx global>{`
@@ -205,7 +214,7 @@ export default function WidgetPage() {
       `}</style>
       
       <main className="w-full h-full flex items-center justify-center bg-transparent">
-        <CallButton />
+        <CallButton theme={currentTheme as any} />
       </main>
     </>
   );
