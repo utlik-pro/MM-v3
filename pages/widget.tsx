@@ -1,15 +1,20 @@
 import CallButton from '../src/components/CallButton';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 export default function WidgetPage() {
   const router = useRouter();
-  const { theme } = router.query;
+  const [currentTheme, setCurrentTheme] = useState('default');
   
-  // Валидируем тему
-  const validThemes = ['default', 'blue', 'purple', 'orange', 'red'];
-  const currentTheme = validThemes.includes(theme as string) ? theme as string : 'default';
-  
-  console.log('Widget page - URL theme:', theme, 'Current theme:', currentTheme);
+  useEffect(() => {
+    if (router.isReady) {
+      const { theme } = router.query;
+      const validThemes = ['default', 'blue', 'purple', 'orange', 'red'];
+      const themeValue = validThemes.includes(theme as string) ? theme as string : 'default';
+      setCurrentTheme(themeValue);
+      console.log('Widget page - URL theme:', theme, 'Current theme:', themeValue);
+    }
+  }, [router.isReady, router.query]);
   return (
     <>
       <style jsx global>{`
@@ -214,7 +219,7 @@ export default function WidgetPage() {
       `}</style>
       
       <main className="w-full h-full flex items-center justify-center bg-transparent">
-        <CallButton theme={currentTheme as any} />
+        {router.isReady && <CallButton theme={currentTheme as any} />}
       </main>
     </>
   );
