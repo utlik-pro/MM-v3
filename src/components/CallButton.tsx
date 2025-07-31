@@ -5,9 +5,54 @@ import { Phone, X } from 'lucide-react';
 
 interface CallButtonProps {
   onCallStart?: () => void;
+  theme?: 'default' | 'blue' | 'purple' | 'orange' | 'red';
 }
 
-const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
+// Цветовые схемы для разных тем
+const themeColors = {
+  default: {
+    icon: 'from-teal-600 to-green-700',
+    iconBorder: 'border-teal-200',
+    button: 'from-teal-600 to-green-700',
+    buttonHover: 'from-teal-700 to-green-800',
+    buttonConnected: '#EF403B',
+    buttonConnectedHover: '#d93832'
+  },
+  blue: {
+    icon: 'from-blue-600 to-indigo-700',
+    iconBorder: 'border-blue-200',
+    button: 'from-blue-600 to-indigo-700',
+    buttonHover: 'from-blue-700 to-indigo-800',
+    buttonConnected: '#EF403B',
+    buttonConnectedHover: '#d93832'
+  },
+  purple: {
+    icon: 'from-purple-600 to-violet-700',
+    iconBorder: 'border-purple-200',
+    button: 'from-purple-600 to-violet-700',
+    buttonHover: 'from-purple-700 to-violet-800',
+    buttonConnected: '#EF403B',
+    buttonConnectedHover: '#d93832'
+  },
+  orange: {
+    icon: 'from-orange-600 to-red-600',
+    iconBorder: 'border-orange-200',
+    button: 'from-orange-600 to-red-600',
+    buttonHover: 'from-orange-700 to-red-700',
+    buttonConnected: '#EF403B',
+    buttonConnectedHover: '#d93832'
+  },
+  red: {
+    icon: 'from-red-600 to-pink-700',
+    iconBorder: 'border-red-200',
+    button: 'from-red-600 to-pink-700',
+    buttonHover: 'from-red-700 to-pink-800',
+    buttonConnected: '#EF403B',
+    buttonConnectedHover: '#d93832'
+  }
+};
+
+const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' }) => {
   const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [showWidget, setShowWidget] = useState(true);
   const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState(false);
@@ -15,6 +60,32 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const conversationRef = useRef<any>(null);
+
+  // Получаем тему из URL параметров, если не передана
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTheme = urlParams.get('theme') as keyof typeof themeColors;
+      if (urlTheme && themeColors[urlTheme]) {
+        // Тема будет использована из URL параметра
+      }
+    }
+  }, []);
+
+  // Получаем актуальную тему (из props или URL)
+  const getCurrentTheme = () => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTheme = urlParams.get('theme') as keyof typeof themeColors;
+      if (urlTheme && themeColors[urlTheme]) {
+        return urlTheme;
+      }
+    }
+    return theme;
+  };
+
+  const currentTheme = getCurrentTheme();
+  const colors = themeColors[currentTheme];
 
   // Cleanup ElevenLabs session on component unmount
   useEffect(() => {
@@ -205,7 +276,7 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
           <div className="flex items-start space-x-3 flex-1">
             {/* AI Icon */}
             <div className="flex-shrink-0">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-600 to-green-700 flex items-center justify-center border-2 border-teal-200">
+              <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${colors.icon} flex items-center justify-center border-2 ${colors.iconBorder}`}>
                 <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
                   {/* Large sparkle */}
                   <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
@@ -249,7 +320,7 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
               ? 'cursor-not-allowed' 
               : status === 'connected'
               ? 'text-white active:scale-95'
-              : 'text-white bg-gradient-to-r from-teal-600 to-green-700 hover:from-teal-700 hover:to-green-800 active:scale-95'
+              : `text-white bg-gradient-to-r ${colors.button} hover:${colors.buttonHover} active:scale-95`
             }
           `}
           style={
@@ -260,15 +331,15 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart }) => {
                   border: '1px solid black'
                 }
               : status === 'connected' 
-              ? { backgroundColor: '#EF403B' } 
+              ? { backgroundColor: colors.buttonConnected } 
               : undefined
           }
           onMouseEnter={status === 'connected' ? (e) => {
-            e.currentTarget.style.backgroundColor = '#d93832';
+            e.currentTarget.style.backgroundColor = colors.buttonConnectedHover;
             e.currentTarget.style.color = 'white';
           } : undefined}
           onMouseLeave={status === 'connected' ? (e) => {
-            e.currentTarget.style.backgroundColor = '#EF403B';
+            e.currentTarget.style.backgroundColor = colors.buttonConnected;
             e.currentTarget.style.color = 'white';
           } : undefined}
           aria-label={status === 'connected' ? 'Завершить звонок' : 'Позвонить'}

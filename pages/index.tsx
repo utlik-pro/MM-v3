@@ -80,6 +80,13 @@ export default function Home() {
       href: '/docs',
       icon: Users,
       color: 'bg-orange-500'
+    },
+    {
+      title: 'Варианты дизайна',
+      description: 'Разные цветовые схемы виджета',
+      href: '/widget-variants',
+      icon: Copy,
+      color: 'bg-red-500'
     }
   ]
 
