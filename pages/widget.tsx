@@ -216,6 +216,29 @@ export default function WidgetPage() {
           box-shadow: none !important;
           border: none !important;
         }
+        
+        /* Custom purple theme colors */
+        .fixed .from-purple-800 {
+          --tw-gradient-from: #28027A;
+          --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(40, 2, 122, 0));
+        }
+        
+        .fixed .to-purple-900 {
+          --tw-gradient-to: #1e1b4b;
+        }
+        
+        .fixed .border-purple-300 {
+          border: 2px solid #c4b5fd !important;
+        }
+        
+        /* Custom purple button colors */
+        .fixed .bg-gradient-to-r.from-purple-800.to-purple-900 {
+          background: linear-gradient(to right, #28027A, #1e1b4b) !important;
+        }
+        
+        .fixed .bg-gradient-to-r.from-purple-800.to-purple-900:hover {
+          background: linear-gradient(to right, #1e1b4b, #0f172a) !important;
+        }
       `}</style>
       
       <main className="w-full h-full flex items-center justify-center bg-transparent">

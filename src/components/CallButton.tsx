@@ -27,10 +27,10 @@ const themeColors = {
     buttonConnectedHover: '#d93832'
   },
   purple: {
-    icon: 'from-purple-600 to-violet-700',
-    iconBorder: 'border-purple-200',
-    button: 'from-purple-600 to-violet-700',
-    buttonHover: 'from-purple-700 to-violet-800',
+    icon: 'from-purple-800 to-purple-900',
+    iconBorder: 'border-purple-300',
+    button: 'from-purple-800 to-purple-900',
+    buttonHover: 'from-purple-900 to-purple-950',
     buttonConnected: '#EF403B',
     buttonConnectedHover: '#d93832'
   },
