@@ -57,35 +57,28 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
   const [showWidget, setShowWidget] = useState(true);
   const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(theme);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const conversationRef = useRef<any>(null);
 
-  // Получаем тему из URL параметров, если не передана
+  // Получаем тему из URL параметров при загрузке компонента
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const urlTheme = urlParams.get('theme') as keyof typeof themeColors;
+      console.log('URL theme parameter:', urlTheme);
       if (urlTheme && themeColors[urlTheme]) {
-        // Тема будет использована из URL параметра
+        console.log('Setting theme to:', urlTheme);
+        setCurrentTheme(urlTheme);
+      } else {
+        console.log('Using default theme:', theme);
       }
     }
-  }, []);
+  }, [theme]);
 
-  // Получаем актуальную тему (из props или URL)
-  const getCurrentTheme = () => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlTheme = urlParams.get('theme') as keyof typeof themeColors;
-      if (urlTheme && themeColors[urlTheme]) {
-        return urlTheme;
-      }
-    }
-    return theme;
-  };
-
-  const currentTheme = getCurrentTheme();
   const colors = themeColors[currentTheme];
+  console.log('Current theme:', currentTheme, 'Colors:', colors);
 
   // Cleanup ElevenLabs session on component unmount
   useEffect(() => {
