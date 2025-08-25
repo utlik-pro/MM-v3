@@ -30,8 +30,8 @@ export default async function handler(
     const conversation = conversationResult.data
     
     // Проверяем, что разговор принадлежит нужному агенту
-    const targetAgentId = 'agent_01jxkr0mstfk6ttayjsghjm7xc'
-    if (conversation.agent_id !== targetAgentId) {
+    const targetAgentId = process.env.ELEVENLABS_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || ''
+    if (targetAgentId && conversation?.agent_id && conversation.agent_id !== targetAgentId) {
       return res.status(403).json({
         error: 'Access denied',
         details: 'This conversation does not belong to the target agent'
