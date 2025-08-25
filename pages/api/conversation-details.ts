@@ -42,18 +42,8 @@ export default async function handler(
     }
     console.log(`📋 Conversation details received for: ${conversation_id}`)
 
-    // Получаем аудио URL если есть
-    let audioUrl = null
-    if (conversation.audio_url) {
-      try {
-        const audioResult = await elevenLabsClient.getSignedUrl(conversation.audio_url)
-        if (audioResult.success) {
-          audioUrl = audioResult.data?.signed_url
-        }
-      } catch (error) {
-        console.warn('Failed to get audio URL:', error)
-      }
-    }
+    // URL для получения аудио через наш API-прокси
+    const audioUrl = `/api/conversation-audio?id=${conversation.conversation_id}`
 
     // Обрабатываем транскрипцию
     let transcript = ''
