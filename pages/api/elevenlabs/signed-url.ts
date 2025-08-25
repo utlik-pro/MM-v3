@@ -1,5 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { ElevenLabsSignedUrlResponse, ApiError } from '@/types/elevenlabs';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 // Rate limiting setup
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -104,14 +108,37 @@ export default async function handler(
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Voice Assistant API error:', response.status, errorText);
-      
-      return res.status(response.status).json({
+      const upstreamBody = await response.text();
+      console.error('Voice Assistant API error:', response.status, upstreamBody);
+
+      // Optional fallback check via curl in development for richer diagnostics
+      let curlDebug: { stdout?: string; stderr?: string } | undefined;
+      if (process.env.NODE_ENV !== 'production') {
+        try {
+          const curlCmd = `curl -s -i -H "xi-api-key: ${apiKey}" "https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${agentId}"`;
+          const { stdout, stderr } = await execAsync(curlCmd);
+          // Truncate to avoid oversized payloads
+          curlDebug = {
+            stdout: stdout?.slice(0, 4000),
+            stderr: stderr?.slice(0, 4000)
+          };
+        } catch (e) {
+          curlDebug = { stderr: String(e).slice(0, 1000) };
+        }
+      }
+
+      const payload: any = {
         error: 'Voice Assistant API Error',
         message: 'Failed to get signed URL from Voice Assistant',
         statusCode: response.status
-      });
+      };
+      if (process.env.NODE_ENV !== 'production') {
+        payload.dev = {
+          upstreamBody,
+          curl: curlDebug
+        };
+      }
+      return res.status(response.status).json(payload);
     }
 
     const data = await response.json();
