@@ -195,7 +195,7 @@ export default async function handler(
       }
     }
 
-    const result = {
+    const result: any = {
       success: true,
       conversation_id: conversation.conversation_id,
       status: conversation.status,
