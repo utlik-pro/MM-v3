@@ -28,6 +28,9 @@ export default async function handler(
     }
 
     const conversation = conversationResult.data
+    if (!conversation) {
+      return res.status(404).json({ error: 'Conversation not found' })
+    }
     
     // Проверяем, что разговор принадлежит нужному агенту
     const targetAgentId = process.env.ELEVENLABS_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || ''
