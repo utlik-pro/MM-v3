@@ -26,7 +26,7 @@ export default async function handler(
     // Проверяем, не существует ли уже лид с таким conversation_id
     const existingLead = await prisma.lead.findFirst({
       where: {
-        conversation_id: conversation_id
+        conversationId: conversation_id
       }
     })
 
@@ -40,14 +40,14 @@ export default async function handler(
     // Создаем новый лид
     const newLead = await prisma.lead.create({
       data: {
-        contact_info: JSON.stringify({
+        contactInfo: JSON.stringify({
           name: lead_info.name,
           phone: lead_info.phone,
           extracted_from: lead_info.extracted_from
         }),
-        conversation_id: conversation_id,
-        conversation_summary: client_intent || 'Общий интерес к недвижимости',
-        extracted_entities: JSON.stringify({
+        conversationId: conversation_id,
+        conversationSummary: client_intent || 'Общий интерес к недвижимости',
+        extractedEntities: {
           intent: client_intent,
           source: 'conversation',
           conversation_data: {
@@ -55,10 +55,8 @@ export default async function handler(
             status: conversation_data?.status || 'unknown',
             agent_id: conversation_data?.agent_id || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk'
           }
-        }),
-        lead_quality_score: calculateLeadQuality(lead_info, client_intent),
-        created_at: new Date(),
-        updated_at: new Date()
+        },
+        leadQualityScore: calculateLeadQuality(lead_info, client_intent)
       }
     })
 
@@ -68,11 +66,11 @@ export default async function handler(
       success: true,
       lead: {
         id: newLead.id,
-        conversation_id: newLead.conversation_id,
-        contact_info: JSON.parse(newLead.contact_info),
-        conversation_summary: newLead.conversation_summary,
-        lead_quality_score: newLead.lead_quality_score,
-        created_at: newLead.created_at
+        conversation_id: newLead.conversationId,
+        contact_info: JSON.parse(newLead.contactInfo as any),
+        conversation_summary: newLead.conversationSummary,
+        lead_quality_score: newLead.leadQualityScore,
+        created_at: newLead.createdAt
       }
     })
 
