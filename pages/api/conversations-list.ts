@@ -45,12 +45,20 @@ export default async function handler(
           let hasLead = false
           let topic: string | null = null
           let clientIntent: string | null = null
+          let transcriptLength = 0
           
           if (convDetailResult.success && convDetailResult.data) {
             const rawTranscript = (convDetailResult.data as any).transcript
             const transcript = Array.isArray(rawTranscript)
               ? rawTranscript.map((m: any) => (typeof m === 'string' ? m : m?.content || '')).join(' ')
               : (rawTranscript || '') as string
+            if (Array.isArray(rawTranscript)) {
+              transcriptLength = rawTranscript.length
+            } else if (typeof rawTranscript === 'string') {
+              transcriptLength = rawTranscript.length
+            } else {
+              transcriptLength = 0
+            }
             
             // Извлекаем контактную информацию из транскрипта
             const phonePattern = /\+375\s*\(?(\d{2})\)?\s*(\d{3})[- ]?(\d{2})[- ]?(\d{2})/g
@@ -135,7 +143,7 @@ export default async function handler(
             title: (conversation as any).call_summary_title || null,
             topic: topic,
             client_intent: clientIntent,
-            transcript_length: convDetailResult.success ? (convDetailResult.data.transcript?.length || 0) : 0,
+            transcript_length: transcriptLength,
             metadata: {
               agent_id: conversation.agent_id,
               call_duration_secs: conversation.call_duration_secs,
