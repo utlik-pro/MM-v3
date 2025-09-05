@@ -166,7 +166,7 @@ export default async function handler(
             minutes_ago: Math.round((Date.now() - conversation.start_time_unix_secs * 1000) / (1000 * 60)),
             has_lead: false,
             lead_info: null,
-            title: conversation.call_summary_title || null,
+            title: (conversation as any).call_summary_title || null,
             topic: (conversation as any).call_summary_title || null,
             client_intent: null,
             transcript_length: 0,
