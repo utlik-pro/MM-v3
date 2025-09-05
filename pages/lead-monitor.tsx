@@ -65,14 +65,82 @@ export default function LeadMonitor() {
 
   const fetchLeads = async () => {
     try {
-      const url = showAll 
-        ? '/api/monitor-leads?all=true&limit=100' 
-        : '/api/monitor-leads?since=60'
-      
-      const response = await fetch(url)
+      // Без БД: берём разговоры напрямую из ElevenLabs
+      const response = await fetch('/api/conversations-list?limit=100')
       const result = await response.json()
-      
-      setData(result)
+
+      const conversations = Array.isArray(result?.conversations) ? result.conversations : []
+
+      // Собираем лиды: идём по всем разговорам, при необходимости подтягиваем детали
+      const leadsFromConversations: Lead[] = (
+        await Promise.all(
+          conversations.map(async (c: any) => {
+            let leadInfo = c.lead_info
+            if (!leadInfo) {
+              try {
+                const d = await fetch(`/api/conversation-details?conversation_id=${c.id || c.conversation_id}`)
+                if (d.ok) {
+                  const dj = await d.json()
+                  if (dj?.lead_info) {
+                    leadInfo = dj.lead_info
+                  }
+                }
+              } catch {}
+            }
+
+            if (!leadInfo) return null
+
+            const createdAtSec = c.start_time || c.start_time_unix_secs || 0
+            const createdAtIso = createdAtSec ? new Date(createdAtSec * 1000).toISOString() : new Date().toISOString()
+
+            return {
+              id: (c.id || c.conversation_id) as string,
+              name: leadInfo?.name || 'Неизвестно',
+              phone: leadInfo?.phone || 'Не указан',
+              source: 'voice_widget',
+              quality_score: Math.max(1, Math.min(10, Math.round((c.duration_seconds || c.call_duration_secs || 0) / 60) + 5)),
+              created_at: createdAtIso,
+              is_crm_lead: false,
+              is_enhanced_lead: false,
+              conversation_id: (c.id || c.conversation_id) as string,
+              project: undefined,
+              intent: [],
+              minutes_ago: c.minutes_ago ?? 0,
+              time_formatted: c.start_time_formatted || new Date(createdAtIso).toLocaleString('ru-RU')
+            }
+          })
+        )
+      ).filter(Boolean) as Lead[]
+
+      const avgQuality = leadsFromConversations.length
+        ? Math.round(
+            leadsFromConversations.reduce((sum, l) => sum + (l.quality_score || 0), 0) / leadsFromConversations.length
+          )
+        : 0
+
+      const monitoringPayload: MonitoringData = {
+        success: true,
+        stats: {
+          monitoring_period_minutes: showAll ? 100000 : 60,
+          show_all_leads: showAll,
+          total_leads: leadsFromConversations.length,
+          crm_leads: 0,
+          enhanced_leads: 0,
+          avg_quality_score: avgQuality,
+          last_lead_time: leadsFromConversations[0]?.created_at,
+          last_lead_minutes_ago: leadsFromConversations[0]?.minutes_ago
+        },
+        leads: leadsFromConversations,
+        monitoring: {
+          show_all: showAll,
+          since_minutes: showAll ? 0 : 60,
+          limit: 100,
+          current_time: new Date().toISOString(),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+        }
+      }
+
+      setData(monitoringPayload)
       setLastUpdate(new Date())
       setIsLoading(false)
     } catch (error) {
@@ -282,12 +350,23 @@ export default function LeadMonitor() {
                 <div key={conversation.id} className="bg-white p-4 rounded-lg mb-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">Разговор {conversation.id.substring(0, 8)}...</h3>
+                      <h3 className="font-medium">
+                        {conversation.title || `Разговор ${conversation.id.substring(0, 8)}...`}
+                      </h3>
                       <p className="text-gray-600">{conversation.start_time_formatted}</p>
                       <p className="text-sm text-gray-500">Длительность: {conversation.duration_formatted}</p>
-                      <p className="text-sm text-gray-500">
-                        {conversation.has_lead ? '✅ Есть лид' : '❌ Нет лида'}
-                      </p>
+                      {(conversation.client_intent || conversation.topic) && (
+                        <p className="text-sm text-gray-700">🎯 {conversation.client_intent || conversation.topic}</p>
+                      )}
+                      {conversation.lead_info && (
+                        <p className="text-sm text-gray-700">Лид: {conversation.lead_info.name} — {conversation.lead_info.phone}</p>
+                      )}
+                      {conversation.call_successful && (
+                        <p className="text-sm text-gray-700">Статус звонка: {conversation.call_successful === 'success' ? 'завершен успешно' : conversation.call_successful}</p>
+                      )}
+                      {conversation.has_lead && (
+                        <p className="text-sm text-gray-500">✅ Есть лид</p>
+                      )}
                       {conversation.lead_info && (
                         <p className="text-sm text-gray-600 mt-1">
                           Лид: {conversation.lead_info.name} - {conversation.lead_info.phone}

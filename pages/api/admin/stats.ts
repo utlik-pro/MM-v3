@@ -1,152 +1,188 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { supabase } from '../../../lib/supabase'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { createDefaultElevenLabsClient } from '../../../lib/elevenlabs'
 
-interface AdminStats {
+type AdminStats = {
   leads: {
-    total: number;
-    today: number;
-    thisWeek: number;
-    conversionRate: number;
-  };
+    total: number
+    today: number
+    thisWeek: number
+    conversionRate: number
+  }
   conversations: {
-    total: number;
-    today: number;
-    avgDuration: string;
-    successRate: number;
-  };
+    total: number
+    today: number
+    avgDuration: string
+    successRate: number
+  }
   system: {
-    uptime: string;
-    webhookStatus: 'active' | 'inactive' | 'error';
-    dbStatus: 'connected' | 'disconnected' | 'error';
-    lastBackup: string;
-  };
+    uptime: string
+    webhookStatus: 'active' | 'inactive' | 'error'
+    dbStatus: 'connected' | 'disconnected' | 'error'
+    lastBackup: string
+  }
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+function secondsToHMM(seconds: number): string {
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return `${m}:${String(s).padStart(2, '0')}`
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<AdminStats | { error: string }>) {
   if (req.method !== 'GET') {
+    res.setHeader('Allow', ['GET'])
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
   try {
-    // Получаем статистику лидов
-    const { data: allLeads, error: leadsError } = await supabase
-      .from('leads')
-      .select('created_at, conversation_id')
-    
-    if (leadsError) {
-      console.error('❌ Error fetching leads:', leadsError)
-    }
+    const forwardedProto = (req.headers['x-forwarded-proto'] as string) || ''
+    const isProd = !!process.env.VERCEL
+    const proto = forwardedProto || (isProd ? 'https' : 'http')
+    const host = req.headers.host || 'localhost:3000'
+    const origin = `${proto}://${host}`
 
-    // Получаем статистику разговоров  
-    const { data: allConversations, error: conversationsError } = await supabase
-      .from('conversations')
-      .select('created_at, duration, status')
-    
-    if (conversationsError) {
-      console.error('❌ Error fetching conversations:', conversationsError)
-    }
-
-    console.log('📊 Raw data counts:', {
-      leads: allLeads?.length || 0,
-      conversations: allConversations?.length || 0,
-      linkedLeads: allLeads?.filter(lead => lead.conversation_id).length || 0
-    })
-
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-
-    // Обрабатываем статистику лидов
-    const leads = allLeads || []
-    const leadsToday = leads.filter(lead => 
-      new Date(lead.created_at) >= today
-    ).length
-    
-    const leadsThisWeek = leads.filter(lead => 
-      new Date(lead.created_at) >= weekAgo
-    ).length
-
-    const linkedLeads = leads.filter(lead => lead.conversation_id).length
-    const conversionRate = leads.length > 0 ? (linkedLeads / leads.length) * 100 : 0
-
-    // Обрабатываем статистику разговоров
-    const conversations = allConversations || []
-    const conversationsToday = conversations.filter(conv => 
-      new Date(conv.created_at) >= today
-    ).length
-
-    // Рассчитываем среднюю продолжительность
-    const validDurations = conversations
-      .filter(conv => conv.duration && conv.duration > 0)
-      .map(conv => conv.duration)
-    
-    const avgDurationSeconds = validDurations.length > 0 
-      ? validDurations.reduce((sum, duration) => sum + duration, 0) / validDurations.length
-      : 0
-
-    const avgDurationFormatted = avgDurationSeconds > 0 
-      ? `${Math.floor(avgDurationSeconds / 60)}:${String(Math.floor(avgDurationSeconds % 60)).padStart(2, '0')}`
-      : "0:00"
-
-    // Рассчитываем процент успешности (например, разговоры длиннее 30 сек считаются успешными)
-    const successfulConversations = conversations.filter(conv => 
-      conv.duration && conv.duration > 30
-    ).length
-    const successRate = conversations.length > 0 
-      ? (successfulConversations / conversations.length) * 100 
-      : 0
-
-    // Проверяем статус системы
-    let dbStatus: 'connected' | 'disconnected' | 'error' = 'connected'
-    try {
-      const { error: testError } = await supabase
-        .from('leads')
-        .select('id')
-        .limit(1)
-      
-      if (testError) {
-        dbStatus = 'error'
+    const convResp = await fetch(`${origin}/api/conversations-list?limit=200`).catch(() => null as any)
+    if (!convResp || !convResp.ok) {
+      // Fallback: try localhost http in case of proxy scheme issues
+      const fallbackOrigin = 'http://localhost:3000'
+      const fallbackResp = await fetch(`${fallbackOrigin}/api/conversations-list?limit=200`).catch(() => null as any)
+      if (fallbackResp && fallbackResp.ok) {
+        const convJson = await fallbackResp.json()
+        return res.status(200).json(await buildStats(convJson, origin))
       }
-    } catch (err) {
-      dbStatus = 'disconnected'
+      // Direct ElevenLabs fallback
+      const direct = await fetchConversationsDirect()
+      return res.status(200).json(await buildStats({ conversations: direct }, origin))
     }
-
-    const stats: AdminStats = {
-      leads: {
-        total: leads.length,
-        today: leadsToday,
-        thisWeek: leadsThisWeek,
-        conversionRate: Math.round(conversionRate * 10) / 10
-      },
-      conversations: {
-        total: conversations.length,
-        today: conversationsToday,
-        avgDuration: avgDurationFormatted,
-        successRate: Math.round(successRate * 10) / 10
-      },
-      system: {
-        uptime: "Доступно", // Можно добавить реальный uptime позже
-        webhookStatus: 'active', // Можно добавить проверку webhook позже
-        dbStatus,
-        lastBackup: "Доступно" // Можно добавить реальную информацию о бэкапах
-      }
-    }
-
-    console.log('📊 Admin stats generated:', {
-      totalLeads: stats.leads.total,
-      totalConversations: stats.conversations.total,
-      conversionRate: stats.leads.conversionRate,
-      successRate: stats.conversations.successRate,
-      dbStatus: stats.system.dbStatus
-    })
-
-    res.status(200).json(stats)
-
+    const convJson = await convResp.json()
+    return res.status(200).json(await buildStats(convJson, origin))
   } catch (error) {
-    console.error('Error in admin stats API:', error)
-    res.status(500).json({ 
-      error: 'Failed to fetch admin statistics',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    })
+    console.error('admin/stats error', error)
+    return res.status(500).json({ error: 'Internal server error' })
   }
-} 
+}
+
+async function buildStats(convJson: any, origin: string): Promise<AdminStats> {
+  const conversations: any[] = Array.isArray(convJson?.conversations) ? convJson.conversations : []
+  const startOfToday = new Date(); startOfToday.setHours(0,0,0,0)
+  const startOfWeek = new Date(); startOfWeek.setDate(startOfWeek.getDate() - 7)
+
+  // Дотягиваем lead_info через детали, если отсутствует
+  const enriched = await Promise.all(
+    conversations.map(async (c) => {
+      if (c.lead_info) return c
+      try {
+        const d = await fetch(`${origin}/api/conversation-details?conversation_id=${c.id || c.conversation_id}`)
+        if (d.ok) {
+          const dj = await d.json()
+          if (dj?.lead_info) {
+            return { ...c, lead_info: dj.lead_info, duration_seconds: dj.duration_seconds || c.duration_seconds }
+          }
+        }
+      } catch {}
+      return c
+    })
+  )
+
+  const totalConversations = enriched.length
+  const conversationsToday = conversations.filter(c => {
+    const ts = (c.start_time || c.start_time_unix_secs || 0) * 1000
+    return ts >= startOfToday.getTime()
+  }).length
+
+  const leads = enriched
+    .map(c => ({
+      id: c.id || c.conversation_id,
+      lead_info: c.lead_info,
+      start_time: c.start_time || c.start_time_unix_secs || 0
+    }))
+    .filter(l => !!l.lead_info)
+
+  const leadsTotal = leads.length
+  const leadsToday = leads.filter(l => (l.start_time * 1000) >= startOfToday.getTime()).length
+  const leadsThisWeek = leads.filter(l => (l.start_time * 1000) >= startOfWeek.getTime()).length
+
+  const totalDurationSeconds = enriched.reduce((sum, c) => sum + (c.duration_seconds || c.call_duration_secs || 0), 0)
+  const avgDurationSeconds = totalConversations > 0
+    ? Math.round(totalDurationSeconds / totalConversations)
+    : 0
+
+  const successTotal = enriched.filter(c => c.call_successful === 'success').length
+  const successRate = totalConversations > 0 ? Math.round((successTotal / totalConversations) * 100) : 0
+
+  return {
+    leads: {
+      total: leadsTotal,
+      today: leadsToday,
+      thisWeek: leadsThisWeek,
+      conversionRate: totalConversations > 0 ? Math.round((leadsTotal / totalConversations) * 100) : 0
+    },
+    conversations: {
+      total: totalConversations,
+      today: conversationsToday,
+      avgDuration: secondsToHMM(avgDurationSeconds),
+      successRate,
+      // Доп поле — суммарная длительность для UI
+      // @ts-ignore
+      totalDuration: secondsToHMM(totalDurationSeconds)
+    },
+    system: {
+      uptime: '—',
+      webhookStatus: 'active',
+      dbStatus: 'disconnected',
+      lastBackup: '—'
+    }
+  }
+}
+
+async function fetchConversationsDirect(): Promise<any[]> {
+  const client = createDefaultElevenLabsClient()
+  const list = await client.listConversations({ page_size: 200 })
+  if (!list.success || !list.data?.conversations) return []
+  const base = list.data.conversations
+
+  return Promise.all(
+    base.map(async (c: any) => {
+      let leadInfo: any = null
+      try {
+        const detail = await client.getConversation(c.conversation_id)
+        if (detail.success && detail.data) {
+          const transcript = detail.data.transcript || ''
+          // Regex patterns similar to conversations-list
+          const phonePatterns = [
+            /\+375\s*\(?\d{2}\)?\s*\d{3}[- ]?\d{2}[- ]?\d{2}/g,
+            /375\s*\(?\d{2}\)?\s*\d{3}[- ]?\d{2}[- ]?\d{2}/g,
+            /\+375\s*(\d{9})/g,
+            /375\s*(\d{9})/g
+          ]
+          const namePatterns = [
+            /меня зовут\s+([а-яё]+(?:\s+[а-яё]+)?)/i,
+            /я\s+([а-яё]+(?:\s+[а-яё]+)?)/i,
+            /имя\s+([а-яё]+(?:\s+[а-яё]+)?)/i
+          ]
+          let phoneMatch: RegExpExecArray | null = null
+          for (const p of phonePatterns) { phoneMatch = p.exec(transcript); if (phoneMatch) break }
+          let nameMatch: RegExpExecArray | null = null
+          for (const p of namePatterns) { nameMatch = p.exec(transcript); if (nameMatch) break }
+          if (phoneMatch || nameMatch) {
+            leadInfo = {
+              name: nameMatch ? nameMatch[1].trim() : 'Неизвестно',
+              phone: phoneMatch ? phoneMatch[0].trim() : 'Не указан',
+              extracted_from: 'transcript'
+            }
+          }
+        }
+      } catch {}
+
+      return {
+        id: c.conversation_id,
+        agent_id: c.agent_id,
+        status: c.status,
+        call_successful: (c as any).call_successful || null,
+        start_time: c.start_time_unix_secs,
+        duration_seconds: c.call_duration_secs,
+        lead_info: leadInfo
+      }
+    })
+  )
+}

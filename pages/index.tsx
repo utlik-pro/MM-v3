@@ -9,7 +9,7 @@ export default function Home() {
   
   // Widget настройки
   const [widgetSettings, setWidgetSettings] = useState({
-    domain: typeof window !== 'undefined' ? window.location.origin : 'https://mm-v3.vercel.app',
+    domain: '',
     width: '400',
     height: '600',
     frameBorder: '0'
@@ -224,7 +224,7 @@ export default function Home() {
                     <h4 className="text-sm font-semibold text-gray-900">HTML (iframe):</h4>
                     <button
                       onClick={() => copyToClipboard(`<iframe
-  src="${widgetSettings.domain}/widget"
+  src="${(widgetSettings.domain || '')}/widget"
   width="${widgetSettings.width}"
   height="${widgetSettings.height}"
   frameborder="${widgetSettings.frameBorder}"
@@ -238,7 +238,7 @@ export default function Home() {
                   </div>
                   <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                     <pre>{`<iframe
-  src="${widgetSettings.domain}/widget"
+  src="${(widgetSettings.domain || '')}/widget"
   width="${widgetSettings.width}"
   height="${widgetSettings.height}"
   frameborder="${widgetSettings.frameBorder}"
@@ -254,7 +254,7 @@ export default function Home() {
                       onClick={() => copyToClipboard(`<div id="voice-widget"></div>
 <script>
   const script = document.createElement('script');
-  script.src = '${widgetSettings.domain}/widget.js';
+  script.src = '${(widgetSettings.domain || '')}/widget.js';
   script.onload = () => {
     VoiceWidget.init('voice-widget');
   };
@@ -270,7 +270,7 @@ export default function Home() {
                     <pre>{`<div id="voice-widget"></div>
 <script>
   const script = document.createElement('script');
-  script.src = '${widgetSettings.domain}/widget.js';
+  script.src = '${(widgetSettings.domain || '')}/widget.js';
   script.onload = () => {
     VoiceWidget.init('voice-widget');
   };

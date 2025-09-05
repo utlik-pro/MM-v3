@@ -145,7 +145,8 @@ export default function Navigation({ currentPage }: NavigationProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <nav className="flex-1 px-4 py-6 overflow-y-auto">
+            <div className="flex flex-col gap-2 p-2 bg-gray-100 rounded-2xl shadow-inner border border-gray-200">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const current = isCurrentPage(item.href);
@@ -165,16 +166,16 @@ export default function Navigation({ currentPage }: NavigationProps) {
                   href={item.href}
                   onClick={handleClick}
                   className={`
-                    group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors
+                    group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all
                     ${current
-                      ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
-                    }
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-white/60'
+                    } 
                   `}
                 >
                   <Icon className={`
                     flex-shrink-0 w-5 h-5 mr-3
-                    ${current ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500'}
+                    ${current ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-600'}
                   `} />
                   <div className="flex-1">
                     <div className="flex items-center">
@@ -185,12 +186,11 @@ export default function Navigation({ currentPage }: NavigationProps) {
                       <div className="text-xs text-gray-500 mt-0.5">{item.description}</div>
                     )}
                   </div>
-                  {current && (
-                    <ChevronRight className="w-4 h-4 text-indigo-500" />
-                  )}
+                  {current && <ChevronRight className="w-4 h-4 text-blue-600" />}
                 </Link>
               );
             })}
+            </div>
           </nav>
 
           {/* Footer */}

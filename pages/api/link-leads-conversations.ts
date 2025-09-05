@@ -203,7 +203,7 @@ async function linkLeadToConversation(leadId: string, conversationId: string, me
       .from('conversations')
       .insert({
         client_id: 'default-client',
-        agent_id: 'agent_01jxkr0mstfk6ttayjsghjm7xc',
+        agent_id: 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
         eleven_labs_conversation_id: conversationId,
         status: 'COMPLETED',
         created_at: new Date().toISOString()

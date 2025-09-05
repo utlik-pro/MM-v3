@@ -131,7 +131,7 @@ export default async function handler(
     // Step 4: Prepare enhanced lead data
     const leadData = {
       client_id: 'default-client',
-      agent_id: agentId || 'agent_01jxkr0mstfk6ttayjsghjm7xc',
+      agent_id: agentId || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
       conversation_id: conversationData?.id || conversationId || null,
       source_conversation_id: conversationData?.id || null,
       

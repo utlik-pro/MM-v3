@@ -83,7 +83,7 @@ export default async function handler(
             .from('conversations')
             .insert({
               client_id: 'default-client',
-              agent_id: 'agent_01jxkr0mstfk6ttayjsghjm7xc',
+              agent_id: 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
               eleven_labs_conversation_id: matchingConversation.conversation_id,
               status: 'COMPLETED',
               created_at: new Date().toISOString()

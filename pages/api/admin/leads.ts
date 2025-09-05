@@ -110,7 +110,7 @@ async function handleCreateLead(req: NextApiRequest, res: NextApiResponse) {
     status = 'NEW', 
     notes, 
     score,
-    agentId = 'agent_01jxkr0mstfk6ttayjsghjm7xc',
+    agentId = 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
     clientId = 'default-client'
   } = req.body;
 

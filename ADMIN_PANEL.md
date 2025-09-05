@@ -88,7 +88,7 @@ GET /api/admin/leads?status=NEW&search=Иван
 # Создать новый лид (webhook)
 POST /api/admin/leads
 {
-  "agentId": "agent_01jxkr0mstfk6ttayjsghjm7xc",
+  "agentId": "agent_2001k4cgbmjhebd92cbzn8fk2zmk",
   "contactInfo": {
     "name": "Иван Петров",
     "phone": "+375 29 123-45-67"
@@ -108,7 +108,7 @@ PUT /api/admin/leads?id=lead_123
 POST /api/webhook/voice-lead
 {
   "conversation_id": "conv_123",
-  "agent_id": "agent_01jxkr0mstfk6ttayjsghjm7xc",
+  "agent_id": "agent_2001k4cgbmjhebd92cbzn8fk2zmk",
   "transcript": "Меня зовут Иван, мой телефон +375 29 123-45-67",
   "metadata": {
     "duration": 180,
