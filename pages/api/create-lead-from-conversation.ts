@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { supabase } from '../../lib/supabase'
 
 export default async function handler(
   req: NextApiRequest,
@@ -24,11 +22,11 @@ export default async function handler(
     console.log('📝 Creating lead from conversation:', conversation_id)
 
     // Проверяем, не существует ли уже лид с таким conversation_id
-    const existingLead = await prisma.lead.findFirst({
-      where: {
-        conversationId: conversation_id
-      }
-    })
+    const { data: existingLead } = await supabase
+      .from('leads')
+      .select('id')
+      .eq('conversation_id', conversation_id)
+      .single()
 
     if (existingLead) {
       return res.status(409).json({
@@ -38,16 +36,19 @@ export default async function handler(
     }
 
     // Создаем новый лид
-    const newLead = await prisma.lead.create({
-      data: {
-        contactInfo: JSON.stringify({
+    const { data: newLead, error } = await supabase
+      .from('leads')
+      .insert({
+        client_id: 'default-client',
+        agent_id: 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
+        conversation_id: conversation_id,
+        contact_info: JSON.stringify({
           name: lead_info.name,
           phone: lead_info.phone,
           extracted_from: lead_info.extracted_from
         }),
-        conversationId: conversation_id,
-        conversationSummary: client_intent || 'Общий интерес к недвижимости',
-        extractedEntities: {
+        conversation_summary: client_intent || 'Общий интерес к недвижимости',
+        extracted_entities: {
           intent: client_intent,
           source: 'conversation',
           conversation_data: {
@@ -56,9 +57,16 @@ export default async function handler(
             agent_id: conversation_data?.agent_id || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk'
           }
         },
-        leadQualityScore: calculateLeadQuality(lead_info, client_intent)
-      }
-    })
+        lead_quality_score: calculateLeadQuality(lead_info, client_intent),
+        source: 'conversation',
+        status: 'NEW'
+      })
+      .select('id, conversation_id, contact_info, conversation_summary, lead_quality_score, created_at')
+      .single()
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`)
+    }
 
     console.log('✅ Lead created successfully:', newLead.id)
 
@@ -66,11 +74,11 @@ export default async function handler(
       success: true,
       lead: {
         id: newLead.id,
-        conversation_id: newLead.conversationId,
-        contact_info: JSON.parse(newLead.contactInfo as any),
-        conversation_summary: newLead.conversationSummary,
-        lead_quality_score: newLead.leadQualityScore,
-        created_at: newLead.createdAt
+        conversation_id: newLead.conversation_id,
+        contact_info: JSON.parse(newLead.contact_info),
+        conversation_summary: newLead.conversation_summary,
+        lead_quality_score: newLead.lead_quality_score,
+        created_at: newLead.created_at
       }
     })
 
