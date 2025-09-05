@@ -132,7 +132,7 @@ export default async function handler(
             minutes_ago: Math.round((Date.now() - conversation.start_time_unix_secs * 1000) / (1000 * 60)),
             has_lead: hasLead,
             lead_info: leadInfo,
-            title: conversation.call_summary_title || null,
+            title: (conversation as any).call_summary_title || null,
             topic: topic,
             client_intent: clientIntent,
             transcript_length: convDetailResult.success ? (convDetailResult.data.transcript?.length || 0) : 0,
