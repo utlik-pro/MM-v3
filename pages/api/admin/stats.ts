@@ -147,7 +147,10 @@ async function fetchConversationsDirect(): Promise<any[]> {
       try {
         const detail = await client.getConversation(c.conversation_id)
         if (detail.success && detail.data) {
-          const transcript = detail.data.transcript || ''
+          const rawTranscript = (detail.data as any).transcript
+          const transcript = Array.isArray(rawTranscript)
+            ? rawTranscript.map((m: any) => (typeof m === 'string' ? m : m?.content || '')).join(' ')
+            : (rawTranscript || '') as string
           // Regex patterns similar to conversations-list
           const phonePatterns = [
             /\+375\s*\(?\d{2}\)?\s*\d{3}[- ]?\d{2}[- ]?\d{2}/g,
