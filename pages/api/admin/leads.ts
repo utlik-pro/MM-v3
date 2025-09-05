@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '../../../lib/supabase';
 
+type LeadStatus = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'CONVERTED' | 'CLOSED';
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -37,62 +39,71 @@ async function handleGetLeads(req: NextApiRequest, res: NextApiResponse) {
   const { status, search, limit = '50', offset = '0' } = req.query;
 
   try {
-    const whereClause: any = {};
+    let query = supabase
+      .from('leads')
+      .select(`
+        id,
+        contact_info,
+        status,
+        score,
+        source,
+        notes,
+        created_at,
+        updated_at,
+        agent_id,
+        client_id
+      `)
+      .order('created_at', { ascending: false })
+      .range(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string) - 1);
 
     // Filter by status
     if (status && status !== 'all') {
-      whereClause.status = status as LeadStatus;
+      query = query.eq('status', status as LeadStatus);
     }
 
     // Search in contact info and notes
     if (search && typeof search === 'string') {
-      whereClause.OR = [
-        {
-          contactInfo: {
-            contains: search
-          }
-        },
-        {
-          notes: {
-            contains: search
-          }
-        }
-      ];
+      query = query.or(`contact_info.ilike.%${search}%,notes.ilike.%${search}%`);
     }
 
-    const leads = await prisma.lead.findMany({
-      where: whereClause,
-      orderBy: { createdAt: 'desc' },
-      take: parseInt(limit as string),
-      skip: parseInt(offset as string),
-      include: {
-        agent: true,
-        client: true,
-        conversation: true,
-        sourceConversation: true
-      }
-    });
+    const { data: leads, error } = await query;
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
 
     // Transform data to match frontend expectations
-    const transformedLeads = leads.map(lead => ({
+    const transformedLeads = leads?.map(lead => ({
       id: lead.id,
-      contactInfo: lead.contactInfo ? JSON.parse(lead.contactInfo as string) : {},
+      contactInfo: lead.contact_info ? JSON.parse(lead.contact_info) : {},
       status: lead.status,
       score: lead.score,
       source: lead.source,
       notes: lead.notes,
-      createdAt: lead.createdAt.toISOString(),
-      updatedAt: lead.updatedAt.toISOString(),
-      agent: lead.agent,
-      client: lead.client
-    }));
+      createdAt: lead.created_at,
+      updatedAt: lead.updated_at,
+      agentId: lead.agent_id,
+      clientId: lead.client_id
+    })) || [];
 
     // Get total count for pagination
-    const total = await prisma.lead.count({ where: whereClause });
+    let countQuery = supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true });
+
+    if (status && status !== 'all') {
+      countQuery = countQuery.eq('status', status as LeadStatus);
+    }
+
+    if (search && typeof search === 'string') {
+      countQuery = countQuery.or(`contact_info.ilike.%${search}%,notes.ilike.%${search}%`);
+    }
+
+    const { count } = await countQuery;
 
     return res.status(200).json({
       leads: transformedLeads,
-      total,
+      total: count || 0,
       offset: parseInt(offset as string),
       limit: parseInt(limit as string)
     });
@@ -118,27 +129,29 @@ async function handleCreateLead(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const newLead = await prisma.lead.create({
-      data: {
-        contactInfo: JSON.stringify(contactInfo),
+    const { data: newLead, error } = await supabase
+      .from('leads')
+      .insert({
+        contact_info: JSON.stringify(contactInfo),
         source,
         status: status as LeadStatus,
         notes,
         score,
-        agentId,
-        clientId
-      },
-      include: {
-        agent: true,
-        client: true
-      }
-    });
+        agent_id: agentId,
+        client_id: clientId
+      })
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
 
     const transformedLead = {
       ...newLead,
-      contactInfo: newLead.contactInfo ? JSON.parse(newLead.contactInfo as string) : {},
-      createdAt: newLead.createdAt.toISOString(),
-      updatedAt: newLead.updatedAt.toISOString()
+      contactInfo: newLead.contact_info ? JSON.parse(newLead.contact_info) : {},
+      createdAt: newLead.created_at,
+      updatedAt: newLead.updated_at
     };
 
     return res.status(201).json({ lead: transformedLead });
@@ -161,22 +174,24 @@ async function handleUpdateLead(req: NextApiRequest, res: NextApiResponse) {
     if (req.body.status) updateData.status = req.body.status as LeadStatus;
     if (req.body.notes !== undefined) updateData.notes = req.body.notes;
     if (req.body.score !== undefined) updateData.score = req.body.score;
-    if (req.body.contactInfo) updateData.contactInfo = JSON.stringify(req.body.contactInfo);
+    if (req.body.contactInfo) updateData.contact_info = JSON.stringify(req.body.contactInfo);
 
-    const updatedLead = await prisma.lead.update({
-      where: { id },
-      data: updateData,
-      include: {
-        agent: true,
-        client: true
-      }
-    });
+    const { data: updatedLead, error } = await supabase
+      .from('leads')
+      .update(updateData)
+      .eq('id', id)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
 
     const transformedLead = {
       ...updatedLead,
-      contactInfo: updatedLead.contactInfo ? JSON.parse(updatedLead.contactInfo as string) : {},
-      createdAt: updatedLead.createdAt.toISOString(),
-      updatedAt: updatedLead.updatedAt.toISOString()
+      contactInfo: updatedLead.contact_info ? JSON.parse(updatedLead.contact_info) : {},
+      createdAt: updatedLead.created_at,
+      updatedAt: updatedLead.updated_at
     };
 
     return res.status(200).json({ lead: transformedLead });
@@ -194,9 +209,14 @@ async function handleDeleteLead(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    await prisma.lead.delete({
-      where: { id }
-    });
+    const { error } = await supabase
+      .from('leads')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
 
     return res.status(200).json({ message: 'Lead deleted successfully' });
   } catch (error) {

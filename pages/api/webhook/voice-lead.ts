@@ -39,30 +39,32 @@ export default async function handler(
     const score = calculateLeadScore(contactInfo, transcript);
 
     // Create lead in database
-    const newLead = await prisma.lead.create({
-      data: {
-        contactInfo: JSON.stringify(contactInfo),
+    const { data: newLead, error } = await supabase
+      .from('leads')
+      .insert({
+        contact_info: JSON.stringify(contactInfo),
         source: 'voice_widget',
         status: 'NEW',
         score,
         notes: transcript,
-        agentId: agentId || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
-        clientId: 'default-client',
-        conversationId: conversationId || undefined,
-        metadata: metadata ? JSON.stringify(metadata) : undefined
-      },
-      include: {
-        agent: true,
-        client: true
-      }
-    });
+        agent_id: agentId || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
+        client_id: 'default-client',
+        conversation_id: conversationId || null,
+        metadata: metadata ? JSON.stringify(metadata) : null
+      })
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
 
     // Transform for response
     const transformedLead = {
       ...newLead,
-      contactInfo: newLead.contactInfo ? JSON.parse(newLead.contactInfo as string) : {},
-      createdAt: newLead.createdAt.toISOString(),
-      updatedAt: newLead.updatedAt.toISOString()
+      contactInfo: newLead.contact_info ? JSON.parse(newLead.contact_info) : {},
+      createdAt: newLead.created_at,
+      updatedAt: newLead.updated_at
     };
 
     console.log('✅ New lead captured from voice:', transformedLead);
