@@ -24,50 +24,47 @@ export default async function handler(
     const elevenLabsClient = new ElevenLabsClient({ apiKey: process.env.ELEVENLABS_API_KEY! })
 
     const updateConfig = {
-      tool_config: {
-        name: 'SendToCRMLead',
-        description: 'Send lead information to CRM system',
-        type: 'webhook',
-        webhook: {
-          url: webhook_url,
-          method: 'POST' as const,
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          api_schema: {
-            type: 'object',
-            properties: {
-              FullName: {
-                type: 'string',
-                description: 'Full name of the lead'
-              },
-              Phone: {
-                type: 'string',
-                description: 'Phone number of the lead'
-              },
-              Commentary: {
-                type: 'string',
-                description: 'Additional comments about the lead'
-              },
-              UsrMinskMir: {
-                type: 'string',
-                description: 'Project information'
-              },
-              conversation_id: {
-                type: 'string',
-                description: 'ElevenLabs conversation ID'
-              },
-              agent_id: {
-                type: 'string',
-                description: 'Agent ID'
-              },
-              tool_call_id: {
-                type: 'string',
-                description: 'Tool call ID'
-              }
+      name: 'SendToCRMLead',
+      description: 'Send lead information to CRM system',
+      webhook: {
+        url: webhook_url,
+        method: 'POST' as const,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        request_body_schema: {
+          type: 'object',
+          properties: {
+            FullName: {
+              type: 'string',
+              description: 'Full name of the lead'
             },
-            required: ['FullName', 'Phone']
-          }
+            Phone: {
+              type: 'string',
+              description: 'Phone number of the lead'
+            },
+            Commentary: {
+              type: 'string',
+              description: 'Additional comments about the lead'
+            },
+            UsrMinskMir: {
+              type: 'string',
+              description: 'Project information'
+            },
+            conversation_id: {
+              type: 'string',
+              description: 'ElevenLabs conversation ID'
+            },
+            agent_id: {
+              type: 'string',
+              description: 'Agent ID'
+            },
+            tool_call_id: {
+              type: 'string',
+              description: 'Tool call ID'
+            }
+          },
+          required: ['FullName', 'Phone']
         }
       }
     }
