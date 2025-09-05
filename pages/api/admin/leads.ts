@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '../../../lib/prisma';
-import { LeadStatus } from '@prisma/client';
+import { supabase } from '../../../lib/supabase';
 
 export default async function handler(
   req: NextApiRequest,
