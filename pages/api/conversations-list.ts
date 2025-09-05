@@ -17,8 +17,7 @@ export default async function handler(
 
     // Получаем список разговоров
     const conversationsResult = await elevenLabsClient.listConversations({
-      page_size: parseInt(limit as string) || 50,
-      page: parseInt(page as string) || 1
+      page_size: parseInt(limit as string) || 50
     })
 
     if (!conversationsResult.success) {
@@ -48,7 +47,10 @@ export default async function handler(
           let clientIntent: string | null = null
           
           if (convDetailResult.success && convDetailResult.data) {
-            const transcript = convDetailResult.data.transcript || ''
+            const rawTranscript = (convDetailResult.data as any).transcript
+            const transcript = Array.isArray(rawTranscript)
+              ? rawTranscript.map((m: any) => (typeof m === 'string' ? m : m?.content || '')).join(' ')
+              : (rawTranscript || '') as string
             
             // Извлекаем контактную информацию из транскрипта
             const phonePattern = /\+375\s*\(?(\d{2})\)?\s*(\d{3})[- ]?(\d{2})[- ]?(\d{2})/g
