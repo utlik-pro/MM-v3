@@ -24,6 +24,11 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/lead-monitor": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/lead-monitor.js"
+    ],
     "/widget": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",

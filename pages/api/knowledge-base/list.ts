@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (search) params.append('search', search as string);
     if (show_only_owned_documents) params.append('show_only_owned_documents', show_only_owned_documents as string);
 
-    const agentId = process.env.ELEVENLABS_AGENT_ID || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk';
+    const agentId = process.env.ELEVENLABS_AGENT_ID || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t';
     // Add agent_id to filter results for our agent
     params.append('agent_id', agentId);
     const response = await fetch(`https://api.elevenlabs.io/v1/convai/knowledge-base?${params}`, {

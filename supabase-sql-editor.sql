@@ -83,7 +83,7 @@ INSERT INTO "clients" ("id", "name", "domain", "settings", "isActive") VALUES
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "agents" ("id", "clientId", "externalId", "name", "description", "isActive") VALUES
-('agent_1', 'default-client', 'agent_2001k4cgbmjhebd92cbzn8fk2zmk', 'MinskMir Voice Assistant', 'Голосовой ассистент для захвата лидов', true)
+('agent_1', 'default-client', 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t', 'MinskMir Voice Assistant', 'Голосовой ассистент для захвата лидов', true)
 ON CONFLICT ("clientId", "externalId") DO NOTHING;
 
 -- Тестовые лиды

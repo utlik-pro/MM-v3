@@ -33,7 +33,7 @@ export default async function handler(
     }
     
     // Проверяем, что разговор принадлежит нужному агенту
-    const targetAgentId = process.env.ELEVENLABS_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || ''
+    const targetAgentId = process.env.ELEVENLABS_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t'
     if (targetAgentId && conversation?.agent_id && conversation.agent_id !== targetAgentId) {
       return res.status(403).json({
         error: 'Access denied',

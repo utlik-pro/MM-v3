@@ -1,9 +1,12 @@
 {
   "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+  "/_error": "pages/_error.js",
   "/widget": "pages/widget.js",
   "/": "pages/index.js",
-  "/api/leads/new-leads": "pages/api/leads/new-leads.js",
-  "/api/elevenlabs/signed-url": "pages/api/elevenlabs/signed-url.js"
+  "/api/conversations-list": "pages/api/conversations-list.js",
+  "/api/conversation-details": "pages/api/conversation-details.js",
+  "/api/conversation-audio": "pages/api/conversation-audio.js",
+  "/lead-monitor": "pages/lead-monitor.js",
+  "/api/leads/new-leads": "pages/api/leads/new-leads.js"
 }

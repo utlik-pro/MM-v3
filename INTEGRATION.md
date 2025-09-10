@@ -33,7 +33,7 @@ git push -u origin main
 
 ```env
 ELEVENLABS_API_KEY=sk_079e94528d5861306a40b2083311d6697bcc49e3933991d8
-ELEVENLABS_AGENT_ID=agent_2001k4cgbmjhebd92cbzn8fk2zmk
+ELEVENLABS_AGENT_ID=agent_8901k4s5hkbkf7gsf1tk5r0a4g8t
 ALLOWED_ORIGINS=https://minskmir.by,https://www.minskmir.by
 RATE_LIMIT_REQUESTS=100
 RATE_LIMIT_WINDOW=3600
@@ -108,7 +108,7 @@ https://your-project-name.vercel.app/widget
 | Переменная | Значение | Описание |
 |------------|----------|----------|
 | `ELEVENLABS_API_KEY` | `sk_079e94528d5861306a40b2083311d6697bcc49e3933991d8` | Ваш API ключ ElevenLabs |
-| `ELEVENLABS_AGENT_ID` | `agent_2001k4cgbmjhebd92cbzn8fk2zmk` | ID вашего агента |
+| `ELEVENLABS_AGENT_ID` | `agent_8901k4s5hkbkf7gsf1tk5r0a4g8t` | ID вашего агента |
 | `ALLOWED_ORIGINS` | `https://minskmir.by,https://www.minskmir.by` | Разрешенные домены |
 | `RATE_LIMIT_REQUESTS` | `100` | Лимит запросов в час |
 | `RATE_LIMIT_WINDOW` | `3600` | Окно лимитирования (сек) |

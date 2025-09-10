@@ -24,7 +24,7 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
 
   // Default configuration
   const widgetConfig: WidgetConfig = {
-    agentId: process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
+    agentId: process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t',
     variant: 'full',
     avatarOrbColor1: '#2563eb',
     avatarOrbColor2: '#0ea5e9',

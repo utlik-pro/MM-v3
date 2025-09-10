@@ -13,7 +13,7 @@ export default async function handler(
     const cursor = typeof req.query.cursor === 'string' ? req.query.cursor : undefined
     const pageSize = req.query.page_size ? Number(req.query.page_size) : 20
 
-    const agentId = process.env.ELEVENLABS_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || ''
+    const agentId = process.env.ELEVENLABS_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t'
 
     const client = createDefaultElevenLabsClient()
     const result = await client.listConversations({

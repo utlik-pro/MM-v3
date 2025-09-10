@@ -28,7 +28,7 @@ export default async function handler(
     console.log(`📋 Found ${conversations.length} conversations`)
 
     // Фильтруем по агенту из ENV (если задан), иначе показываем все
-    const targetAgentId = process.env.ELEVENLABS_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || ''
+    const targetAgentId = process.env.ELEVENLABS_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t'
     const filteredConversations = targetAgentId
       ? conversations.filter(conversation => conversation.agent_id === targetAgentId)
       : conversations

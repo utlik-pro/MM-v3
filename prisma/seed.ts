@@ -22,14 +22,14 @@ async function main() {
   const existingAgent = await prisma.agent.findFirst({
     where: {
       clientId: client.id,
-      externalId: 'agent_2001k4cgbmjhebd92cbzn8fk2zmk'
+      externalId: 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t'
     }
   })
 
   const agent = existingAgent || await prisma.agent.create({
     data: {
       clientId: client.id,
-      externalId: 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
+      externalId: 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t',
       name: 'MinskMir Voice Assistant',
       description: 'Голосовой ассистент для захвата лидов',
       isActive: true

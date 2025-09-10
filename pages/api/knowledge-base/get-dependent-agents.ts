@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const data = await response.json();
     
     // Check if our specific agent is in the list
-    const ourAgentId = process.env.ELEVENLABS_AGENT_ID || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk';
+    const ourAgentId = process.env.ELEVENLABS_AGENT_ID || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t';
     const isAttachedToOurAgent = data.agents?.some((agent: any) => agent.id === ourAgentId) || false;
     
     res.status(200).json({

@@ -89,7 +89,7 @@ export default async function handler(
     // Подготавливаем данные для сохранения в нашей системе
     const enhancedLeadData = {
       client_id: 'default-client',
-      agent_id: leadData.agent_id || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
+      agent_id: leadData.agent_id || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t',
       conversation_id: null, // Пока не создаем записи conversations
       source_conversation_id: null,
       

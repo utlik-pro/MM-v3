@@ -40,7 +40,7 @@ export default async function handler(
       .from('leads')
       .insert({
         client_id: 'default-client',
-        agent_id: 'agent_2001k4cgbmjhebd92cbzn8fk2zmk',
+        agent_id: 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t',
         conversation_id: conversation_id,
         contact_info: JSON.stringify({
           name: lead_info.name,
@@ -54,7 +54,7 @@ export default async function handler(
           conversation_data: {
             duration: conversation_data?.duration_seconds || 0,
             status: conversation_data?.status || 'unknown',
-            agent_id: conversation_data?.agent_id || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk'
+            agent_id: conversation_data?.agent_id || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t'
           }
         },
         lead_quality_score: calculateLeadQuality(lead_info, client_intent),

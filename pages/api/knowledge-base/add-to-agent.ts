@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { documentation_id, document_id, document_name, document_type } = req.body;
-    const agentId = process.env.ELEVENLABS_AGENT_ID || 'agent_2001k4cgbmjhebd92cbzn8fk2zmk';
+    const agentId = process.env.ELEVENLABS_AGENT_ID || 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t';
     
     // Support both new format (documentation_id) and old format (document_id)
     const docId = documentation_id || document_id;

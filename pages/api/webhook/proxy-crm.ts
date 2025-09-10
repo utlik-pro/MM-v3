@@ -56,7 +56,7 @@ export default async function handler(
     // Подготовка данных для сохранения
     const enhancedLeadData = {
       client_id: 'default-client',
-      agent_id: 'agent_2001k4cgbmjhebd92cbzn8fk2zmk', // Используем существующий agent
+      agent_id: 'agent_8901k4s5hkbkf7gsf1tk5r0a4g8t', // Используем существующий agent
       conversation_id: null,
       source_conversation_id: null,
       contact_info: JSON.stringify({
