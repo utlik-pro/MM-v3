@@ -10,13 +10,16 @@ interface AINotificationWidgetProps {
   status?: 'idle' | 'connecting' | 'connected' | 'completed';
 }
 
-export function AINotificationWidget({ 
-  className = '', 
-  onCall, 
+export function AINotificationWidget({
+  className = '',
+  onCall,
   onClose,
-  status = 'idle' 
+  status = 'idle'
 }: AINotificationWidgetProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const [privacyPolicyChecked, setPrivacyPolicyChecked] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [showValidationError, setShowValidationError] = useState(false);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -24,14 +27,34 @@ export function AINotificationWidget({
   };
 
   const handleCall = () => {
+    // Validate checkboxes
+    if (!privacyPolicyChecked || !consentChecked) {
+      setShowValidationError(true);
+      setTimeout(() => setShowValidationError(false), 3000);
+      return;
+    }
+
+    setShowValidationError(false);
     onCall?.();
+  };
+
+  const handleCheckboxChange = (checkbox: 'privacy' | 'consent') => {
+    if (checkbox === 'privacy') {
+      setPrivacyPolicyChecked(!privacyPolicyChecked);
+    } else {
+      setConsentChecked(!consentChecked);
+    }
+    // Hide validation error when user changes checkboxes
+    if (showValidationError) {
+      setShowValidationError(false);
+    }
   };
 
   if (!isVisible) return null;
 
   return (
     <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
-      <div className="bg-white rounded-2xl border border-gray-300 shadow-lg p-4 w-80 h-40">
+      <div className="bg-white rounded-2xl border border-gray-300 shadow-lg p-4 w-80">
         {/* Header with close button */}
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-3 flex-1">
@@ -70,6 +93,35 @@ export function AINotificationWidget({
           </button>
         </div>
 
+        {/* Checkboxes for consent */}
+        <div className="mb-3 space-y-2">
+          {/* Privacy Policy Checkbox */}
+          <label className="flex items-start space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={privacyPolicyChecked}
+              onChange={() => handleCheckboxChange('privacy')}
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 flex-shrink-0 cursor-pointer"
+            />
+            <span className="text-xs text-gray-700 leading-tight">
+              Я ознакомлен с <span className="font-medium">Политикой обработки персональных данных</span>
+            </span>
+          </label>
+
+          {/* Consent Checkbox */}
+          <label className="flex items-start space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentChecked}
+              onChange={() => handleCheckboxChange('consent')}
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 flex-shrink-0 cursor-pointer"
+            />
+            <span className="text-xs text-gray-700 leading-tight">
+              Я ознакомлен с условиями и даю <span className="font-medium">Согласие</span> на обработку моих персональных данных для получения консультации
+            </span>
+          </label>
+        </div>
+
         {/* Action button */}
         {status === 'connecting' ? (
           <div className="bg-white border border-gray-300 rounded-lg p-3 flex items-center justify-center">
@@ -94,6 +146,20 @@ export function AINotificationWidget({
             <Phone className="w-4 h-4" />
             <span className="font-medium">ПОЗВОНИТЬ</span>
           </button>
+        )}
+
+        {/* Info text */}
+        <p className="mt-2 text-xs text-gray-500 text-center leading-tight">
+          Без получения согласия консультация возможна только по телефону 7675
+        </p>
+
+        {/* Validation Error */}
+        {showValidationError && (
+          <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-amber-700 text-xs text-center">
+              Необходимо отметить оба чекбокса для продолжения
+            </p>
+          </div>
         )}
       </div>
     </div>

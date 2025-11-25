@@ -58,6 +58,9 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
   const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(theme);
+  const [privacyPolicyChecked, setPrivacyPolicyChecked] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [showValidationError, setShowValidationError] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const conversationRef = useRef<any>(null);
@@ -152,8 +155,16 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
   };
 
   const handleCallClick = async () => {
+    // Validate checkboxes
+    if (!privacyPolicyChecked || !consentChecked) {
+      setShowValidationError(true);
+      setTimeout(() => setShowValidationError(false), 3000);
+      return;
+    }
+
     try {
       setStatus('connecting');
+      setShowValidationError(false);
       onCallStart?.();
       
       // Request microphone access
@@ -240,6 +251,18 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
     setShowWidget(false);
   };
 
+  const handleCheckboxChange = (checkbox: 'privacy' | 'consent') => {
+    if (checkbox === 'privacy') {
+      setPrivacyPolicyChecked(!privacyPolicyChecked);
+    } else {
+      setConsentChecked(!consentChecked);
+    }
+    // Hide validation error when user changes checkboxes
+    if (showValidationError) {
+      setShowValidationError(false);
+    }
+  };
+
   if (!showWidget) return null;
 
   return (
@@ -255,8 +278,8 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
       }}
     >
       {/* New Modern Widget Design */}
-      <div 
-        className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 h-40"
+      <div
+        className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80"
         style={{
           boxShadow: '0 0 40px rgba(0, 0, 0, 0.08)',
           WebkitBoxShadow: '0 0 40px rgba(0, 0, 0, 0.08)',
@@ -302,6 +325,35 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
           </button>
         </div>
         
+        {/* Checkboxes for consent */}
+        <div className="mb-3 space-y-2">
+          {/* Privacy Policy Checkbox */}
+          <label className="flex items-start space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={privacyPolicyChecked}
+              onChange={() => handleCheckboxChange('privacy')}
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 flex-shrink-0 cursor-pointer"
+            />
+            <span className="text-xs text-gray-700 leading-tight">
+              Я ознакомлен с <span className="font-medium">Политикой обработки персональных данных</span>
+            </span>
+          </label>
+
+          {/* Consent Checkbox */}
+          <label className="flex items-start space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentChecked}
+              onChange={() => handleCheckboxChange('consent')}
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 flex-shrink-0 cursor-pointer"
+            />
+            <span className="text-xs text-gray-700 leading-tight">
+              Я ознакомлен с условиями и даю <span className="font-medium">Согласие</span> на обработку моих персональных данных для получения консультации
+            </span>
+          </label>
+        </div>
+
         {/* Call Button */}
         <button
           onClick={status === 'connected' ? handleEndCall : handleCallClick}
@@ -309,22 +361,22 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
           className={`
             w-full py-3 px-4 rounded-lg font-semibold text-sm
             flex items-center justify-center space-x-2 transition-all duration-200
-            ${status === 'connecting' 
-              ? 'cursor-not-allowed' 
+            ${status === 'connecting'
+              ? 'cursor-not-allowed'
               : status === 'connected'
               ? 'text-white active:scale-95'
               : `text-white bg-gradient-to-r ${colors.button} hover:${colors.buttonHover} active:scale-95`
             }
           `}
           style={
-            status === 'connecting' 
-              ? { 
+            status === 'connecting'
+              ? {
                   backgroundColor: 'white',
                   color: 'black',
                   border: '1px solid black'
                 }
-              : status === 'connected' 
-              ? { backgroundColor: colors.buttonConnected } 
+              : status === 'connected'
+              ? { backgroundColor: colors.buttonConnected }
               : undefined
           }
           onMouseEnter={status === 'connected' ? (e) => {
@@ -357,13 +409,26 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
             </>
           )}
         </button>
-        
-        
+
+        {/* Info text */}
+        <p className="mt-2 text-xs text-gray-500 text-center leading-tight">
+          Без получения согласия консультация возможна только по телефону 7675
+        </p>
+
+        {/* Validation Error */}
+        {showValidationError && (
+          <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-amber-700 text-xs text-center">
+              Необходимо отметить оба чекбокса для продолжения
+            </p>
+          </div>
+        )}
+
         {/* Error Message */}
         {status === 'error' && (
-          <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+          <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-600 text-xs text-center">
-              {!hasMicrophoneAccess 
+              {!hasMicrophoneAccess
                 ? 'Требуется доступ к микрофону для звонка. Разрешите доступ и попробуйте снова.'
                 : 'Ошибка подключения. Попробуйте еще раз.'
               }

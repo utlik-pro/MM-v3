@@ -18,7 +18,10 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  
+  const [privacyPolicyChecked, setPrivacyPolicyChecked] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [showValidationError, setShowValidationError] = useState(false);
+
   const conversationRef = useRef<any>(null);
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -69,9 +72,29 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
     return data.signed_url;
   };
 
+  const handleCheckboxChange = (checkbox: 'privacy' | 'consent') => {
+    if (checkbox === 'privacy') {
+      setPrivacyPolicyChecked(!privacyPolicyChecked);
+    } else {
+      setConsentChecked(!consentChecked);
+    }
+    // Hide validation error when user changes checkboxes
+    if (showValidationError) {
+      setShowValidationError(false);
+    }
+  };
+
   const startConversation = useCallback(async () => {
+    // Validate checkboxes
+    if (!privacyPolicyChecked || !consentChecked) {
+      setShowValidationError(true);
+      setTimeout(() => setShowValidationError(false), 3000);
+      return;
+    }
+
     try {
       setError(null);
+      setShowValidationError(false);
       setStatus('connecting');
 
       // Request microphone permission
@@ -116,7 +139,7 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
       setError(error instanceof Error ? error.message : 'Не удалось начать разговор');
       setStatus('disconnected');
     }
-  }, [hasPermission, widgetConfig.dynamicVariables]);
+  }, [hasPermission, widgetConfig.dynamicVariables, privacyPolicyChecked, consentChecked]);
 
   const stopConversation = useCallback(async () => {
     try {
@@ -242,6 +265,37 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
         </div>
       )}
 
+      {/* Checkboxes for consent - only show when disconnected */}
+      {status === 'disconnected' && (
+        <div className="mb-4 space-y-2 px-2">
+          {/* Privacy Policy Checkbox */}
+          <label className="flex items-start space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={privacyPolicyChecked}
+              onChange={() => handleCheckboxChange('privacy')}
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
+            />
+            <span className="text-xs text-gray-700 leading-tight">
+              Я ознакомлен с <span className="font-medium">Политикой обработки персональных данных</span>
+            </span>
+          </label>
+
+          {/* Consent Checkbox */}
+          <label className="flex items-start space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentChecked}
+              onChange={() => handleCheckboxChange('consent')}
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
+            />
+            <span className="text-xs text-gray-700 leading-tight">
+              Я ознакомлен с условиями и даю <span className="font-medium">Согласие</span> на обработку моих персональных данных для получения консультации
+            </span>
+          </label>
+        </div>
+      )}
+
       {/* Controls */}
       <div className="flex justify-center gap-4 mb-4">
         {status === 'disconnected' ? (
@@ -301,6 +355,22 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
           </>
         )}
       </div>
+
+      {/* Info text - only show when disconnected */}
+      {status === 'disconnected' && (
+        <p className="text-xs text-gray-500 text-center leading-tight mb-4">
+          Без получения согласия консультация возможна только по телефону 7675
+        </p>
+      )}
+
+      {/* Validation Error */}
+      {showValidationError && (
+        <div className="mb-4 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+          <p className="text-amber-700 text-xs text-center">
+            Необходимо отметить оба чекбокса для продолжения
+          </p>
+        </div>
+      )}
 
       {/* Permission Request */}
       {hasPermission === false && (
