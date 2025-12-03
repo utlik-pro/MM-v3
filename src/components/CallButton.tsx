@@ -412,7 +412,7 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
 
         {/* Info text */}
         <p className="mt-2 text-xs text-gray-500 text-center leading-tight">
-          Без получения согласия консультация возможна только по телефону 7675
+          Без получения согласия консультация возможна только по телефону 7911
         </p>
 
         {/* Validation Error */}

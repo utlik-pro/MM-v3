@@ -359,7 +359,7 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
       {/* Info text - only show when disconnected */}
       {status === 'disconnected' && (
         <p className="text-xs text-gray-500 text-center leading-tight mb-4">
-          Без получения согласия консультация возможна только по телефону 7675
+          Без получения согласия консультация возможна только по телефону 7911
         </p>
       )}
 
