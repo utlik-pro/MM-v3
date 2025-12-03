@@ -277,7 +277,7 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
               className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
             />
             <span className="text-xs text-gray-700 leading-tight">
-              Я ознакомлен с <span className="font-medium">Политикой обработки персональных данных</span>
+              Я ознакомлен с <a href="https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html" target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:text-blue-700 underline">Политикой обработки персональных данных</a>
             </span>
           </label>
 
@@ -290,7 +290,7 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
               className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
             />
             <span className="text-xs text-gray-700 leading-tight">
-              Я ознакомлен с условиями и даю <span className="font-medium">Согласие</span> на обработку моих персональных данных для получения консультации
+              Я ознакомлен с условиями и даю <a href="https://bir.by/aiconsent.pdf" target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:text-blue-700 underline">Согласие</a> на обработку моих персональных данных для получения консультации
             </span>
           </label>
         </div>
