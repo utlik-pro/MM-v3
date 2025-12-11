@@ -2,17 +2,55 @@ import CallButton from '../src/components/CallButton';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
+// Функция валидации URL для безопасности
+function isValidUrl(urlString: string): boolean {
+  try {
+    const url = new URL(urlString);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 export default function WidgetPage() {
   const router = useRouter();
   const [currentTheme, setCurrentTheme] = useState('default');
-  
+  const [widgetConfig, setWidgetConfig] = useState({
+    phone: '7911',
+    privacyUrl: 'https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html',
+    consentUrl: 'https://bir.by/aiconsent.pdf'
+  });
+
   useEffect(() => {
     if (router.isReady) {
-      const { theme } = router.query;
+      const { theme, phone, privacyUrl, consentUrl } = router.query;
+
+      // Валидация темы (существующая логика)
       const validThemes = ['default', 'blue', 'purple', 'orange', 'red'];
       const themeValue = validThemes.includes(theme as string) ? theme as string : 'default';
       setCurrentTheme(themeValue);
-      console.log('Widget page - URL theme:', theme, 'Current theme:', themeValue);
+
+      // Извлечение и валидация новых параметров
+      const phoneValue = phone as string || '7911';
+      const privacyUrlValue = (privacyUrl && isValidUrl(privacyUrl as string))
+        ? privacyUrl as string
+        : 'https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html';
+      const consentUrlValue = (consentUrl && isValidUrl(consentUrl as string))
+        ? consentUrl as string
+        : 'https://bir.by/aiconsent.pdf';
+
+      setWidgetConfig({
+        phone: phoneValue,
+        privacyUrl: privacyUrlValue,
+        consentUrl: consentUrlValue
+      });
+
+      console.log('Widget config:', {
+        theme: themeValue,
+        phone: phoneValue,
+        privacyUrl: privacyUrlValue,
+        consentUrl: consentUrlValue
+      });
     }
   }, [router.isReady, router.query]);
   return (
@@ -242,7 +280,14 @@ export default function WidgetPage() {
       `}</style>
       
       <main className="w-full h-full flex items-center justify-center bg-transparent">
-        {router.isReady && <CallButton theme={currentTheme as any} />}
+        {router.isReady && (
+          <CallButton
+            theme={currentTheme as any}
+            phone={widgetConfig.phone}
+            privacyUrl={widgetConfig.privacyUrl}
+            consentUrl={widgetConfig.consentUrl}
+          />
+        )}
       </main>
     </>
   );

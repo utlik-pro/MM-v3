@@ -6,6 +6,9 @@ import { Phone, X } from 'lucide-react';
 interface CallButtonProps {
   onCallStart?: () => void;
   theme?: 'default' | 'blue' | 'purple' | 'orange' | 'red';
+  phone?: string;
+  privacyUrl?: string;
+  consentUrl?: string;
 }
 
 // Цветовые схемы для разных тем
@@ -52,7 +55,13 @@ const themeColors = {
   }
 };
 
-const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' }) => {
+const CallButton: React.FC<CallButtonProps> = ({
+  onCallStart,
+  theme = 'default',
+  phone = '7911',
+  privacyUrl = 'https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html',
+  consentUrl = 'https://bir.by/aiconsent.pdf'
+}) => {
   const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [showWidget, setShowWidget] = useState(true);
   const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState(false);
@@ -336,7 +345,7 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
               className="mt-0.5 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 flex-shrink-0 cursor-pointer"
             />
             <span className="text-xs text-gray-700 leading-tight">
-              Я ознакомлен с <a href="https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html" target="_blank" rel="noopener noreferrer" className="font-medium text-teal-600 hover:text-teal-700 underline">Политикой обработки персональных данных</a>
+              Я ознакомлен с <a href={privacyUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-teal-600 hover:text-teal-700 underline">Политикой обработки персональных данных</a>
             </span>
           </label>
 
@@ -349,7 +358,7 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
               className="mt-0.5 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 flex-shrink-0 cursor-pointer"
             />
             <span className="text-xs text-gray-700 leading-tight">
-              Я ознакомлен с условиями и даю <a href="https://bir.by/aiconsent.pdf" target="_blank" rel="noopener noreferrer" className="font-medium text-teal-600 hover:text-teal-700 underline">Согласие</a> на обработку моих персональных данных для получения консультации
+              Я ознакомлен с условиями и даю <a href={consentUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-teal-600 hover:text-teal-700 underline">Согласие</a> на обработку моих персональных данных для получения консультации
             </span>
           </label>
         </div>
@@ -412,7 +421,7 @@ const CallButton: React.FC<CallButtonProps> = ({ onCallStart, theme = 'default' 
 
         {/* Info text */}
         <p className="mt-2 text-xs text-gray-500 text-center leading-tight">
-          Без получения согласия консультация возможна только по телефону 7911
+          Без получения согласия консультация возможна только по телефону {phone}
         </p>
 
         {/* Validation Error */}
