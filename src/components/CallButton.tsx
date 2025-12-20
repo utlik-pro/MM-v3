@@ -258,6 +258,11 @@ const CallButton: React.FC<CallButtonProps> = ({
       stopRecording();
     }
     setShowWidget(false);
+
+    // Сообщаем родительской странице скрыть iframe
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'widget-closed' }, '*');
+    }
   };
 
   const handleCheckboxChange = (checkbox: 'privacy' | 'consent') => {
