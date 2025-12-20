@@ -63,7 +63,6 @@ export default function WidgetPage() {
           outline: none !important;
           margin: 0 !important;
           padding: 0 !important;
-          pointer-events: none !important;
         }
 
         /* Don't reset box-shadow globally */
@@ -71,11 +70,6 @@ export default function WidgetPage() {
           background: transparent !important;
           border: none !important;
           outline: none !important;
-        }
-
-        /* Разрешаем клики только на самом виджете */
-        .fixed, .fixed * {
-          pointer-events: auto !important;
         }
         
         /* Restore specific styles for the new widget */
