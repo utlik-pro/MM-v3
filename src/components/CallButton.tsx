@@ -272,10 +272,15 @@ const CallButton: React.FC<CallButtonProps> = ({
     }
   };
 
-  if (!showWidget) return null;
+  // Когда виджет закрыт, возвращаем пустой div с pointer-events: none
+  if (!showWidget) {
+    return (
+      <div style={{ pointerEvents: 'none', width: 0, height: 0 }} />
+    );
+  }
 
   return (
-    <div 
+    <div
       className="fixed bottom-4 right-4 z-[999999]"
       style={{
         position: 'fixed',
@@ -283,7 +288,8 @@ const CallButton: React.FC<CallButtonProps> = ({
         right: '16px',
         zIndex: 999999,
         padding: '40px',
-        margin: '-40px'
+        margin: '-40px',
+        pointerEvents: 'auto'
       }}
     >
       {/* New Modern Widget Design */}
