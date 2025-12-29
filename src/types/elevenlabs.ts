@@ -1,5 +1,6 @@
 export interface ElevenLabsSignedUrlResponse {
   signed_url: string;
+  proxied?: boolean;
 }
 
 export interface ElevenLabsConversationTokenResponse {
