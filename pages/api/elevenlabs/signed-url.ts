@@ -142,11 +142,26 @@ export default async function handler(
     }
 
     const data = await response.json();
-    
-    // Return the signed URL
-    res.status(200).json({
-      signed_url: data.signed_url
-    });
+
+    // Check if WebSocket proxy is configured
+    const wsProxyUrl = process.env.WS_PROXY_URL;
+
+    if (wsProxyUrl) {
+      // Return proxied URL - browser connects to our proxy instead of ElevenLabs directly
+      const proxiedUrl = `${wsProxyUrl}?url=${encodeURIComponent(data.signed_url)}`;
+      console.log('Using WebSocket proxy:', wsProxyUrl);
+
+      res.status(200).json({
+        signed_url: proxiedUrl,
+        proxied: true
+      });
+    } else {
+      // Return direct ElevenLabs URL (may not work in sanctioned countries)
+      res.status(200).json({
+        signed_url: data.signed_url,
+        proxied: false
+      });
+    }
 
   } catch (error) {
     console.error('Error in signed-url endpoint:', error);
