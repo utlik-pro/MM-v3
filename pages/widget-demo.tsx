@@ -7,17 +7,16 @@ type WidgetStatus = 'idle' | 'connecting' | 'connected' | 'completed';
 
 export default function WidgetDemo() {
   const [status, setStatus] = useState<WidgetStatus>('idle');
-  const [showWidget, setShowWidget] = useState(true);
 
   const handleCall = () => {
     console.log('Call button clicked');
     setStatus('connecting');
-    
+
     // Simulate connection process
     setTimeout(() => {
       setStatus('connected');
     }, 2000);
-    
+
     // Simulate completion
     setTimeout(() => {
       setStatus('completed');
@@ -25,13 +24,16 @@ export default function WidgetDemo() {
   };
 
   const handleClose = () => {
-    console.log('Widget closed');
-    setShowWidget(false);
+    console.log('Widget collapsed');
+    // Виджет теперь сам управляет своим состоянием (свёрнут/развёрнут)
   };
 
   const resetWidget = () => {
     setStatus('idle');
-    setShowWidget(true);
+    // Очищаем localStorage чтобы виджет показался развёрнутым
+    localStorage.removeItem('ai_widget_collapsed');
+    localStorage.removeItem('ai_widget_collapse_time');
+    window.location.reload();
   };
 
   return (
@@ -141,13 +143,13 @@ export default function WidgetDemo() {
         </div>
       </div>
 
-      {showWidget && (
-        <AINotificationWidget
-          status={status}
-          onCall={handleCall}
-          onClose={handleClose}
-        />
-      )}
+      {/* Виджет всегда рендерится - он сам управляет collapsed/expanded состоянием */}
+      <AINotificationWidget
+        status={status}
+        onCall={handleCall}
+        onClose={handleClose}
+        reExpandDelayMinutes={1} // 1 минута для теста (по умолчанию 10)
+      />
     </div>
   );
 }

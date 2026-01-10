@@ -3,12 +3,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Phone, X } from 'lucide-react';
 
+const STORAGE_KEY = 'call_widget_collapsed';
+const COLLAPSE_TIMESTAMP_KEY = 'call_widget_collapse_time';
+
 interface CallButtonProps {
   onCallStart?: () => void;
   theme?: 'default' | 'blue' | 'purple' | 'orange' | 'red';
   phone?: string;
   privacyUrl?: string;
   consentUrl?: string;
+  /** Время в минутах до повторного показа развёрнутого виджета (по умолчанию 10) */
+  reExpandDelayMinutes?: number;
 }
 
 // Цветовые схемы для разных тем
@@ -60,10 +65,12 @@ const CallButton: React.FC<CallButtonProps> = ({
   theme = 'default',
   phone = '7911',
   privacyUrl = 'https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html',
-  consentUrl = 'https://bir.by/aiconsent.pdf'
+  consentUrl = 'https://bir.by/aiconsent.pdf',
+  reExpandDelayMinutes = 10
 }) => {
   const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
-  const [showWidget, setShowWidget] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(theme);
@@ -73,6 +80,40 @@ const CallButton: React.FC<CallButtonProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const conversationRef = useRef<any>(null);
+  const reExpandTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reExpandDelay = reExpandDelayMinutes * 60 * 1000;
+
+  // Инициализация состояния из localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const wasCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
+    const collapseTimestamp = localStorage.getItem(COLLAPSE_TIMESTAMP_KEY);
+
+    if (wasCollapsed && collapseTimestamp) {
+      const timeSinceCollapse = Date.now() - parseInt(collapseTimestamp, 10);
+
+      // Если прошло больше времени ожидания, показываем развёрнутый виджет
+      if (timeSinceCollapse >= reExpandDelay) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(COLLAPSE_TIMESTAMP_KEY);
+        setIsCollapsed(false);
+      } else {
+        // Иначе оставляем свёрнутым и ставим таймер на оставшееся время
+        setIsCollapsed(true);
+        const remainingTime = reExpandDelay - timeSinceCollapse;
+        reExpandTimerRef.current = setTimeout(() => {
+          handleExpand();
+        }, remainingTime);
+      }
+    }
+
+    return () => {
+      if (reExpandTimerRef.current) {
+        clearTimeout(reExpandTimerRef.current);
+      }
+    };
+  }, [reExpandDelay]);
 
   // Получаем тему из URL параметров при загрузке компонента
   useEffect(() => {
@@ -253,15 +294,50 @@ const CallButton: React.FC<CallButtonProps> = ({
     setStatus('idle');
   };
 
-  const handleClose = () => {
+  // Обработка сворачивания виджета
+  const handleCollapse = () => {
     if (isRecording) {
       stopRecording();
     }
-    setShowWidget(false);
 
-    // Сообщаем родительской странице скрыть iframe
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsCollapsed(true);
+      setIsAnimating(false);
+
+      // Сохраняем состояние и время сворачивания
+      localStorage.setItem(STORAGE_KEY, 'true');
+      localStorage.setItem(COLLAPSE_TIMESTAMP_KEY, Date.now().toString());
+
+      // Устанавливаем таймер на повторное раскрытие
+      if (reExpandTimerRef.current) {
+        clearTimeout(reExpandTimerRef.current);
+      }
+      reExpandTimerRef.current = setTimeout(() => {
+        handleExpand();
+      }, reExpandDelay);
+
+      // Сообщаем родительской странице что виджет свёрнут
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'widget-collapsed' }, '*');
+      }
+    }, 200);
+  };
+
+  // Обработка разворачивания виджета
+  const handleExpand = () => {
+    setIsCollapsed(false);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(COLLAPSE_TIMESTAMP_KEY);
+
+    if (reExpandTimerRef.current) {
+      clearTimeout(reExpandTimerRef.current);
+      reExpandTimerRef.current = null;
+    }
+
+    // Сообщаем родительской странице что виджет развёрнут
     if (window.parent !== window) {
-      window.parent.postMessage({ type: 'widget-closed' }, '*');
+      window.parent.postMessage({ type: 'widget-expanded' }, '*');
     }
   };
 
@@ -277,8 +353,47 @@ const CallButton: React.FC<CallButtonProps> = ({
     }
   };
 
-  // Когда виджет закрыт, ничего не рендерим
-  if (!showWidget) return null;
+  // Свёрнутое состояние - маленький кружок с иконкой телефона
+  if (isCollapsed) {
+    return (
+      <div
+        className="fixed bottom-4 right-4 z-[999999] group"
+        style={{
+          position: 'fixed',
+          bottom: '16px',
+          right: '16px',
+          zIndex: 999999
+        }}
+      >
+        <button
+          onClick={handleExpand}
+          className={`relative w-14 h-14 bg-gradient-to-br ${colors.icon} rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center`}
+          style={{
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+          }}
+          aria-label="Открыть AI-помощника"
+        >
+          {/* Пульсирующее кольцо анимации */}
+          <span className={`absolute inset-0 rounded-full bg-gradient-to-br ${colors.icon} animate-ping opacity-25`}></span>
+          <span className={`absolute inset-0 rounded-full bg-gradient-to-br ${colors.icon} animate-pulse opacity-20`}></span>
+
+          {/* Иконка телефона */}
+          <Phone className="w-6 h-6 text-white relative z-10 group-hover:rotate-12 transition-transform" />
+
+          {/* Блестящий эффект */}
+          <span className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full opacity-80"></span>
+        </button>
+
+        {/* Подсказка при наведении */}
+        <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          <div className="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
+            AI-консультант
+            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -292,7 +407,7 @@ const CallButton: React.FC<CallButtonProps> = ({
     >
       {/* New Modern Widget Design */}
       <div
-        className="bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80"
+        className={`bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 transition-all duration-200 ${isAnimating ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}`}
         style={{
           boxShadow: '0 0 40px rgba(0, 0, 0, 0.08)',
           WebkitBoxShadow: '0 0 40px rgba(0, 0, 0, 0.08)',
@@ -328,11 +443,11 @@ const CallButton: React.FC<CallButtonProps> = ({
             </div>
           </div>
           
-          {/* Close Button */}
+          {/* Close Button - сворачивает в кружок */}
           <button
-            onClick={handleClose}
+            onClick={handleCollapse}
             className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-            aria-label="Закрыть"
+            aria-label="Свернуть"
           >
             <X className="w-3 h-3 text-gray-500" />
           </button>

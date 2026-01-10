@@ -1,29 +1,100 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Phone, Loader2 } from 'lucide-react';
+
+const STORAGE_KEY = 'ai_widget_collapsed';
+const COLLAPSE_TIMESTAMP_KEY = 'ai_widget_collapse_time';
 
 interface AINotificationWidgetProps {
   className?: string;
   onCall?: () => void;
   onClose?: () => void;
   status?: 'idle' | 'connecting' | 'connected' | 'completed';
+  /** Время в минутах до повторного показа развёрнутого виджета (по умолчанию 10) */
+  reExpandDelayMinutes?: number;
 }
 
 export function AINotificationWidget({
   className = '',
   onCall,
   onClose,
-  status = 'idle'
+  status = 'idle',
+  reExpandDelayMinutes = 10
 }: AINotificationWidgetProps) {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [privacyPolicyChecked, setPrivacyPolicyChecked] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
   const [showValidationError, setShowValidationError] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const reExpandTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reExpandDelay = reExpandDelayMinutes * 60 * 1000;
 
-  const handleClose = () => {
-    setIsVisible(false);
-    onClose?.();
+  // Инициализация состояния из localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const wasCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
+    const collapseTimestamp = localStorage.getItem(COLLAPSE_TIMESTAMP_KEY);
+
+    if (wasCollapsed && collapseTimestamp) {
+      const timeSinceCollapse = Date.now() - parseInt(collapseTimestamp, 10);
+
+      // Если прошло больше времени ожидания, показываем развёрнутый виджет
+      if (timeSinceCollapse >= reExpandDelay) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(COLLAPSE_TIMESTAMP_KEY);
+        setIsCollapsed(false);
+      } else {
+        // Иначе оставляем свёрнутым и ставим таймер на оставшееся время
+        setIsCollapsed(true);
+        const remainingTime = reExpandDelay - timeSinceCollapse;
+        reExpandTimerRef.current = setTimeout(() => {
+          handleExpand();
+        }, remainingTime);
+      }
+    }
+
+    return () => {
+      if (reExpandTimerRef.current) {
+        clearTimeout(reExpandTimerRef.current);
+      }
+    };
+  }, [reExpandDelay]);
+
+  // Обработка сворачивания виджета
+  const handleCollapse = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsCollapsed(true);
+      setIsAnimating(false);
+
+      // Сохраняем состояние и время сворачивания
+      localStorage.setItem(STORAGE_KEY, 'true');
+      localStorage.setItem(COLLAPSE_TIMESTAMP_KEY, Date.now().toString());
+
+      // Устанавливаем таймер на повторное раскрытие
+      if (reExpandTimerRef.current) {
+        clearTimeout(reExpandTimerRef.current);
+      }
+      reExpandTimerRef.current = setTimeout(() => {
+        handleExpand();
+      }, reExpandDelay);
+
+      onClose?.();
+    }, 200);
+  };
+
+  // Обработка разворачивания виджета
+  const handleExpand = () => {
+    setIsCollapsed(false);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(COLLAPSE_TIMESTAMP_KEY);
+
+    if (reExpandTimerRef.current) {
+      clearTimeout(reExpandTimerRef.current);
+      reExpandTimerRef.current = null;
+    }
   };
 
   const handleCall = () => {
@@ -50,11 +121,40 @@ export function AINotificationWidget({
     }
   };
 
-  if (!isVisible) return null;
+  // Свёрнутое состояние - маленький кружок с иконкой телефона
+  if (isCollapsed) {
+    return (
+      <div className={`fixed bottom-4 right-4 z-50 group ${className}`}>
+        <button
+          onClick={handleExpand}
+          className="relative w-14 h-14 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center"
+          aria-label="Открыть AI-помощника"
+        >
+          {/* Пульсирующее кольцо анимации */}
+          <span className="absolute inset-0 rounded-full bg-teal-400 animate-ping opacity-25"></span>
+          <span className="absolute inset-0 rounded-full bg-teal-500 animate-pulse opacity-20"></span>
+
+          {/* Иконка телефона */}
+          <Phone className="w-6 h-6 text-white relative z-10 group-hover:rotate-12 transition-transform" />
+
+          {/* Блестящий эффект */}
+          <span className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full opacity-80"></span>
+        </button>
+
+        {/* Подсказка при наведении */}
+        <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          <div className="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
+            AI-консультант
+            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
-      <div className="bg-white rounded-2xl border border-gray-300 shadow-lg p-4 w-80">
+      <div className={`bg-white rounded-2xl border border-gray-300 shadow-lg p-4 w-80 transition-all duration-200 ${isAnimating ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}`}>
         {/* Header with close button */}
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-3 flex-1">
@@ -84,10 +184,11 @@ export function AINotificationWidget({
             </div>
           </div>
           
-          {/* Close button */}
+          {/* Close button - сворачивает в кружок */}
           <button
-            onClick={handleClose}
+            onClick={handleCollapse}
             className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+            aria-label="Свернуть"
           >
             <X className="w-4 h-4" />
           </button>
@@ -132,7 +233,7 @@ export function AINotificationWidget({
           </div>
         ) : status === 'completed' ? (
           <button
-            onClick={handleClose}
+            onClick={handleCollapse}
             className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-3 px-4 flex items-center justify-center gap-2 transition-colors"
           >
             <X className="w-4 h-4" />
