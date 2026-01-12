@@ -4,7 +4,7 @@
  * изменения размера виджета при сворачивании/разворачивании
  *
  * Использование:
- * <script src="https://[ваш-домен]/widget-resize.js"></script>
+ * <script src="https://mm-v3.vercel.app/widget-resize.js"></script>
  */
 
 (function() {
