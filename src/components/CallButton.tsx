@@ -362,7 +362,10 @@ const CallButton: React.FC<CallButtonProps> = ({
           position: 'fixed',
           bottom: '16px',
           right: '16px',
-          zIndex: 999999
+          zIndex: 999999,
+          width: '56px',
+          height: '56px',
+          pointerEvents: 'none' // Контейнер не блокирует клики
         }}
       >
         <button
@@ -370,6 +373,7 @@ const CallButton: React.FC<CallButtonProps> = ({
           className={`relative w-14 h-14 bg-gradient-to-br ${colors.icon} rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center`}
           style={{
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+            pointerEvents: 'auto' // Только кнопка кликабельна
           }}
           aria-label="Открыть AI-помощника"
         >
@@ -385,7 +389,10 @@ const CallButton: React.FC<CallButtonProps> = ({
         </button>
 
         {/* Подсказка при наведении */}
-        <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+        <div
+          className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          style={{ pointerEvents: 'none' }}
+        >
           <div className="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
             AI-консультант
             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>

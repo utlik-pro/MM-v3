@@ -124,10 +124,18 @@ export function AINotificationWidget({
   // Свёрнутое состояние - маленький кружок с иконкой телефона
   if (isCollapsed) {
     return (
-      <div className={`fixed bottom-4 right-4 z-50 group ${className}`}>
+      <div
+        className={`fixed bottom-4 right-4 z-50 group ${className}`}
+        style={{
+          width: '56px',
+          height: '56px',
+          pointerEvents: 'none' // Контейнер не блокирует клики
+        }}
+      >
         <button
           onClick={handleExpand}
           className="relative w-14 h-14 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center"
+          style={{ pointerEvents: 'auto' }} // Только кнопка кликабельна
           aria-label="Открыть AI-помощника"
         >
           {/* Пульсирующее кольцо анимации */}
@@ -142,7 +150,10 @@ export function AINotificationWidget({
         </button>
 
         {/* Подсказка при наведении */}
-        <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+        <div
+          className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          style={{ pointerEvents: 'none' }}
+        >
           <div className="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
             AI-консультант
             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
