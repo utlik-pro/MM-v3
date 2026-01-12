@@ -1,228 +1,200 @@
-# Инструкция по исправлению виджета голосового помощника
+# Инструкция по интеграции голосового виджета
 
 **Дата:** 12 января 2025
-**Проблема:** При сворачивании виджета большая область экрана становится некликабельной
-**Решение:** Добавить скрипт для автоматического изменения размера контейнера
+**Версия:** 2.0
 
 ---
 
-## Проблема
+## Быстрый старт (рекомендуется)
 
-Когда пользователь закрывает виджет, он сворачивается в маленький кружок (70x70px). Однако контейнер `<div>` на вашем сайте остаётся большим (340x340px) и блокирует клики на элементы страницы под ним.
+Добавьте **одну строку кода** перед закрывающим тегом `</body>`:
 
----
-
-## Решение
-
-Добавить JavaScript-код, который слушает сообщения от виджета и автоматически изменяет размер контейнера.
-
----
-
-# Инструкция для minskworld.by
-
-## Шаг 1: Найти контейнер виджета
-
-На вашем сайте виджет находится в элементе:
+### Для minskworld.by (бирюзовый):
 ```html
-<div id="minskworld-widget">
-  <iframe src="..."></iframe>
-</div>
+<script src="https://mm-v3.vercel.app/widget-embed.js" data-theme="default"></script>
 ```
 
-## Шаг 2: Добавить скрипт
+### Для bir.by (фиолетовый):
+```html
+<script src="https://mm-v3.vercel.app/widget-embed.js" data-theme="purple"></script>
+```
 
-Добавьте следующий код **перед закрывающим тегом `</body>`**:
+**Готово!** Скрипт автоматически создаст виджет и будет управлять его размером.
+
+---
+
+## Доступные темы
+
+| Сайт | Тема | Код |
+|------|------|-----|
+| minskworld.by | Бирюзовый | `data-theme="default"` |
+| bir.by | Фиолетовый | `data-theme="purple"` |
+| Другие | Синий | `data-theme="blue"` |
+| Другие | Оранжевый | `data-theme="orange"` |
+| Другие | Красный | `data-theme="red"` |
+
+---
+
+## Дополнительные параметры
 
 ```html
-<!-- Скрипт автоматического изменения размера виджета -->
-<script>
-(function() {
-  window.addEventListener('message', function(event) {
-    var data = event.data;
-    if (!data || !data.type) return;
-
-    // Найти контейнер виджета
-    var container = document.getElementById('minskworld-widget');
-    if (!container) return;
-
-    // Найти iframe внутри
-    var iframe = container.querySelector('iframe');
-
-    if (data.type === 'widget-collapsed') {
-      // Виджет свёрнут - уменьшить размер
-      container.style.width = '70px';
-      container.style.height = '70px';
-      if (iframe) {
-        iframe.style.width = '70px';
-        iframe.style.height = '70px';
-      }
-    } else if (data.type === 'widget-expanded') {
-      // Виджет развёрнут - вернуть полный размер
-      container.style.width = '340px';
-      container.style.height = '450px';
-      if (iframe) {
-        iframe.style.width = '340px';
-        iframe.style.height = '450px';
-      }
-    }
-  });
-})();
+<script
+  src="https://mm-v3.vercel.app/widget-embed.js"
+  data-theme="purple"
+  data-position="bottom-right"
+  data-phone="7911">
 </script>
 ```
 
-## Шаг 3: Проверить CSS контейнера
-
-Убедитесь, что контейнер имеет правильные стили:
-
-```css
-#minskworld-widget {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-  width: 340px;
-  height: 450px;
-  /* ВАЖНО: добавить transition для плавной анимации */
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-#minskworld-widget iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  transition: width 0.3s ease, height 0.3s ease;
-}
-```
+| Параметр | Описание | Значения |
+|----------|----------|----------|
+| `data-theme` | Цветовая тема | `default`, `purple`, `blue`, `orange`, `red` |
+| `data-position` | Позиция на экране | `bottom-right` (по умолчанию), `bottom-left` |
+| `data-phone` | Телефон для fallback | Любой номер (по умолчанию `7911`) |
 
 ---
 
-# Инструкция для bir.by
+## Что делает скрипт
 
-## Шаг 1: Найти контейнер виджета
+1. ✅ Автоматически создаёт контейнер и iframe
+2. ✅ Позиционирует виджет в углу экрана
+3. ✅ При сворачивании уменьшает размер до 70x70px
+4. ✅ При разворачивании возвращает размер 340x450px
+5. ✅ Не блокирует клики на странице
+6. ✅ Сохраняет состояние между страницами (10 минут)
 
-На вашем сайте виджет находится в элементе (уточните ID):
+---
+
+## Миграция со старого кода
+
+### Старый код (удалить):
 ```html
-<div id="bir-widget">
-  <iframe src="..."></iframe>
+<div id="minskworld-widget" style="position: fixed; bottom: 20px; right: 20px; ...">
+  <iframe src="https://mm-v3.vercel.app/widget" width="340" height="340" ...></iframe>
 </div>
-```
-
-## Шаг 2: Добавить скрипт
-
-Добавьте следующий код **перед закрывающим тегом `</body>`**:
-
-```html
-<!-- Скрипт автоматического изменения размера виджета -->
 <script>
-(function() {
-  window.addEventListener('message', function(event) {
-    var data = event.data;
-    if (!data || !data.type) return;
-
-    // Найти контейнер виджета (измените ID если отличается)
-    var container = document.getElementById('bir-widget');
-    if (!container) return;
-
-    // Найти iframe внутри
-    var iframe = container.querySelector('iframe');
-
-    if (data.type === 'widget-collapsed') {
-      // Виджет свёрнут - уменьшить размер
-      container.style.width = '70px';
-      container.style.height = '70px';
-      if (iframe) {
-        iframe.style.width = '70px';
-        iframe.style.height = '70px';
-      }
-    } else if (data.type === 'widget-expanded') {
-      // Виджет развёрнут - вернуть полный размер
-      container.style.width = '340px';
-      container.style.height = '450px';
-      if (iframe) {
-        iframe.style.width = '340px';
-        iframe.style.height = '450px';
-      }
-    }
-  });
-})();
+  // старый код обработки виджета
 </script>
 ```
 
-## Шаг 3: Проверить CSS контейнера
+### Новый код (добавить):
+```html
+<script src="https://mm-v3.vercel.app/widget-embed.js" data-theme="default"></script>
+```
 
-```css
-#bir-widget {
+---
+
+## Альтернативный вариант (ручная интеграция)
+
+Если вам нужен полный контроль над виджетом, используйте ручную интеграцию:
+
+### Шаг 1: HTML-разметка
+
+```html
+<div id="voice-widget-container" style="
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 999999;
   width: 340px;
   height: 450px;
   transition: width 0.3s ease, height 0.3s ease;
-}
-
-#bir-widget iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  transition: width 0.3s ease, height 0.3s ease;
-}
+">
+  <iframe
+    src="https://mm-v3.vercel.app/widget?theme=default"
+    style="width: 100%; height: 100%; border: none;"
+    allow="microphone"
+    title="Voice Assistant">
+  </iframe>
+</div>
 ```
 
----
-
-# Тестирование
-
-После добавления кода проверьте:
-
-1. ✅ Открыть страницу с виджетом
-2. ✅ Виджет показывается развёрнутым (полный размер)
-3. ✅ Нажать X на виджете → виджет сворачивается в кружок
-4. ✅ Контейнер уменьшается до 70x70px
-5. ✅ Элементы страницы под виджетом кликабельны
-6. ✅ Нажать на кружок → виджет разворачивается
-7. ✅ Контейнер возвращается к 340x450px
-8. ✅ Перезагрузить страницу → состояние сохраняется
-
----
-
-# Отладка
-
-## Проверить что скрипт работает
-
-Откройте консоль браузера (F12 → Console) и выполните:
-
-```javascript
-// Симулировать сворачивание
-window.postMessage({ type: 'widget-collapsed', width: 70, height: 70 }, '*');
-
-// Симулировать разворачивание
-window.postMessage({ type: 'widget-expanded', width: 340, height: 450 }, '*');
-```
-
-## Проверить что сообщения приходят
-
-Добавьте временно в скрипт:
-
-```javascript
-window.addEventListener('message', function(event) {
-  console.log('Widget message:', event.data);
-  // ... остальной код
-});
-```
-
----
-
-# Альтернативный вариант: Подключить готовый скрипт
-
-Вместо копирования кода можно подключить готовый скрипт:
+### Шаг 2: Скрипт для изменения размера
 
 ```html
 <script src="https://mm-v3.vercel.app/widget-resize.js"></script>
 ```
 
+Или добавьте код напрямую:
+
+```html
+<script>
+(function() {
+  window.addEventListener('message', function(event) {
+    var data = event.data;
+    if (!data || !data.type) return;
+
+    var container = document.getElementById('voice-widget-container');
+    if (!container) return;
+
+    if (data.type === 'widget-collapsed') {
+      container.style.width = (data.width || 70) + 'px';
+      container.style.height = (data.height || 70) + 'px';
+    } else if (data.type === 'widget-expanded') {
+      container.style.width = (data.width || 340) + 'px';
+      container.style.height = (data.height || 450) + 'px';
+    }
+  });
+})();
+</script>
+```
+
 ---
 
-# Контакты
+## Тестирование
+
+После интеграции проверьте:
+
+1. ✅ Виджет отображается в правом нижнем углу
+2. ✅ Нажатие X сворачивает виджет в кружок
+3. ✅ Элементы страницы под виджетом кликабельны
+4. ✅ Клик по кружку разворачивает виджет
+5. ✅ Цвет соответствует выбранной теме
+6. ✅ После перезагрузки страницы состояние сохраняется
+
+---
+
+## Отладка
+
+### Проверить в консоли браузера (F12):
+
+```javascript
+// Должно быть сообщение при загрузке:
+// [VoiceWidget] Embedded successfully with theme: default
+```
+
+### Симулировать сворачивание/разворачивание:
+
+```javascript
+// Свернуть
+window.postMessage({ type: 'widget-collapsed', width: 70, height: 70 }, '*');
+
+// Развернуть
+window.postMessage({ type: 'widget-expanded', width: 340, height: 450 }, '*');
+```
+
+---
+
+## FAQ
+
+**Q: Виджет не появляется**
+A: Проверьте, что скрипт добавлен перед `</body>` и нет ошибок в консоли.
+
+**Q: Виджет блокирует клики на странице**
+A: Убедитесь, что используете новый скрипт `widget-embed.js` версии от 12.01.2025.
+
+**Q: Как изменить позицию виджета?**
+A: Добавьте `data-position="bottom-left"` для левого нижнего угла.
+
+**Q: Виджет не сохраняет состояние между страницами**
+A: Проверьте, что localStorage не заблокирован в браузере.
+
+---
+
+## Контакты
 
 По вопросам интеграции обращайтесь к команде разработки.
+
+---
+
+*Документация обновлена: 12 января 2025*
