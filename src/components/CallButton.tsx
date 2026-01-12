@@ -317,9 +317,13 @@ const CallButton: React.FC<CallButtonProps> = ({
         handleExpand();
       }, reExpandDelay);
 
-      // Сообщаем родительской странице что виджет свёрнут
+      // Сообщаем родительской странице что виджет свёрнут + размер для iframe
       if (window.parent !== window) {
-        window.parent.postMessage({ type: 'widget-collapsed' }, '*');
+        window.parent.postMessage({
+          type: 'widget-collapsed',
+          width: 70,  // 56px кнопка + отступы
+          height: 70
+        }, '*');
       }
     }, 200);
   };
@@ -335,9 +339,13 @@ const CallButton: React.FC<CallButtonProps> = ({
       reExpandTimerRef.current = null;
     }
 
-    // Сообщаем родительской странице что виджет развёрнут
+    // Сообщаем родительской странице что виджет развёрнут + размер для iframe
     if (window.parent !== window) {
-      window.parent.postMessage({ type: 'widget-expanded' }, '*');
+      window.parent.postMessage({
+        type: 'widget-expanded',
+        width: 340,
+        height: 450
+      }, '*');
     }
   };
 
