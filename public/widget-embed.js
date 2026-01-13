@@ -22,7 +22,8 @@
   var position = currentScript?.getAttribute('data-position') || 'bottom-right';
 
   // Номер телефона по умолчанию зависит от темы
-  var defaultPhone = (theme === 'purple') ? '7911' : '7675';
+  // purple (minskworld.by) = 7675, default (bir.by) = 7911
+  var defaultPhone = (theme === 'purple') ? '7675' : '7911';
   var phone = currentScript?.getAttribute('data-phone') || defaultPhone;
 
   // Базовый URL виджета
