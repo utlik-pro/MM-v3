@@ -63,7 +63,7 @@ const themeColors = {
 const CallButton: React.FC<CallButtonProps> = ({
   onCallStart,
   theme = 'default',
-  phone = '7911',
+  phone = '7675',
   privacyUrl = 'https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html',
   consentUrl = 'https://bir.by/aiconsent.pdf',
   reExpandDelayMinutes = 10

@@ -20,7 +20,10 @@
   var currentScript = document.currentScript;
   var theme = currentScript?.getAttribute('data-theme') || 'default';
   var position = currentScript?.getAttribute('data-position') || 'bottom-right';
-  var phone = currentScript?.getAttribute('data-phone') || '7911';
+
+  // Номер телефона по умолчанию зависит от темы
+  var defaultPhone = (theme === 'purple') ? '7911' : '7675';
+  var phone = currentScript?.getAttribute('data-phone') || defaultPhone;
 
   // Базовый URL виджета
   var WIDGET_BASE_URL = 'https://mm-v3.vercel.app/widget';
