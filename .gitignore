@@ -34,3 +34,6 @@ out/
 # Task files
 # tasks.json
 # tasks/ 
+
+# Auto Claude data directory
+.auto-claude/

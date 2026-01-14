@@ -1,0 +1,34 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  },
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Read(./**)",
+      "Write(./**)",
+      "Edit(./**)",
+      "Glob(./**)",
+      "Grep(./**)",
+      "Read(/Users/admin/Cursor_template/lib/**)",
+      "Write(/Users/admin/Cursor_template/lib/**)",
+      "Edit(/Users/admin/Cursor_template/lib/**)",
+      "Glob(/Users/admin/Cursor_template/lib/**)",
+      "Grep(/Users/admin/Cursor_template/lib/**)",
+      "Read(/Users/admin/Cursor_template/lib/.auto-claude/ideation/**)",
+      "Write(/Users/admin/Cursor_template/lib/.auto-claude/ideation/**)",
+      "Edit(/Users/admin/Cursor_template/lib/.auto-claude/ideation/**)",
+      "Bash(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "mcp__context7__resolve-library-id(*)",
+      "mcp__context7__get-library-docs(*)",
+      "mcp__graphiti-memory__search_nodes(*)",
+      "mcp__graphiti-memory__search_facts(*)",
+      "mcp__graphiti-memory__add_episode(*)",
+      "mcp__graphiti-memory__get_episodes(*)",
+      "mcp__graphiti-memory__get_entity_edge(*)"
+    ]
+  }
+}
