@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { 
-  BarChart, 
-  Settings, 
-  Download, 
+import {
+  BarChart,
+  Settings,
+  Download,
   Activity,
   TrendingUp,
   Users,
@@ -19,7 +19,9 @@ import {
   Webhook,
   Key,
   Globe,
-  Monitor
+  Monitor,
+  Plug,
+  Phone
 } from 'lucide-react';
 import Navigation from '../../src/components/Navigation';
 
@@ -53,15 +55,42 @@ interface QuickAction {
   status?: 'success' | 'warning' | 'error';
 }
 
+interface WidgetConfig {
+  id: string;
+  domain: string;
+  name: string;
+  enabled: boolean;
+  theme: string;
+  phone: string;
+}
+
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'analytics' | 'settings' | 'logs' | 'export'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'settings' | 'logs' | 'export' | 'widgets'>('analytics');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [widgets, setWidgets] = useState<WidgetConfig[]>([]);
+  const [widgetsLoading, setWidgetsLoading] = useState(false);
 
   useEffect(() => {
     fetchAdminStats();
+    fetchWidgets();
   }, []);
+
+  const fetchWidgets = async () => {
+    try {
+      setWidgetsLoading(true);
+      const response = await fetch('/api/admin/widget-config');
+      if (response.ok) {
+        const data = await response.json();
+        setWidgets(data.widgets || []);
+      }
+    } catch (err) {
+      console.error('Error fetching widgets:', err);
+    } finally {
+      setWidgetsLoading(false);
+    }
+  };
 
   const fetchAdminStats = async () => {
     try {
@@ -514,6 +543,86 @@ export default function AdminDashboard() {
     </div>
   );
 
+  const renderWidgets = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Управление виджетами</h3>
+            <p className="text-sm text-gray-500">Включение и выключение виджетов на сайтах клиентов</p>
+          </div>
+          <button
+            onClick={fetchWidgets}
+            disabled={widgetsLoading}
+            className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 px-3 py-2 rounded-md text-sm"
+          >
+            <RefreshCw className={`h-4 w-4 ${widgetsLoading ? 'animate-spin' : ''}`} />
+            Обновить
+          </button>
+        </div>
+
+        {widgetsLoading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+            <p className="mt-2 text-gray-500">Загрузка...</p>
+          </div>
+        ) : widgets.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            Виджеты не найдены
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {widgets.map((widget) => (
+              <div
+                key={widget.id}
+                className={`border rounded-lg p-4 transition-colors ${
+                  widget.enabled ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${widget.enabled ? 'bg-green-500' : 'bg-gray-400'}`} />
+                    <div>
+                      <h4 className="font-medium text-gray-900">{widget.name}</h4>
+                      <p className="text-sm text-gray-500">{widget.domain}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <span className="capitalize">{widget.theme}</span>
+                        <span className="text-gray-400">|</span>
+                        <Phone className="h-3 w-3" />
+                        <span>{widget.phone}</span>
+                      </div>
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      widget.enabled
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {widget.enabled ? 'Включен' : 'Выключен'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+          <h4 className="font-medium text-blue-900 mb-2">Как изменить статус виджета</h4>
+          <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+            <li>Откройте файл <code className="bg-blue-100 px-1 rounded">config/widgets.json</code></li>
+            <li>Измените <code className="bg-blue-100 px-1 rounded">"enabled": true/false</code> для нужного домена</li>
+            <li>Сделайте commit и push в git</li>
+            <li>Vercel автоматически задеплоит изменения (~2-3 мин)</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
       <div className="flex h-screen bg-gray-50">
@@ -569,7 +678,8 @@ export default function AdminDashboard() {
               { id: 'analytics', name: 'Аналитика', icon: BarChart },
               { id: 'settings', name: 'Настройки', icon: Settings },
               { id: 'logs', name: 'Логи', icon: Activity },
-              { id: 'export', name: 'Экспорт', icon: Download }
+              { id: 'export', name: 'Экспорт', icon: Download },
+              { id: 'widgets', name: 'Виджеты', icon: Plug }
             ].map((tab) => {
               const Icon = tab.icon;
               return (
@@ -644,6 +754,7 @@ export default function AdminDashboard() {
           {activeTab === 'settings' && renderSettings()}
           {activeTab === 'logs' && renderLogs()}
           {activeTab === 'export' && renderExport()}
+          {activeTab === 'widgets' && renderWidgets()}
         </div>
       </div>
     </div>

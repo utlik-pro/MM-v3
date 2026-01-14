@@ -100,17 +100,45 @@
     });
   }
 
-  // Инициализация
-  function init() {
-    var widget = createWidget();
-    setupMessageListener(widget.container);
-    console.log('[VoiceWidget] Embedded successfully with theme:', theme);
+  // Проверка статуса виджета и создание
+  function checkStatusAndInit() {
+    var domain = window.location.hostname;
+    var statusUrl = 'https://mm-v3.vercel.app/api/widget/status?domain=' + encodeURIComponent(domain);
+
+    fetch(statusUrl)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        // Проверяем enabled статус
+        if (data.enabled === false) {
+          console.log('[VoiceWidget] Widget disabled for domain:', domain);
+          return;
+        }
+
+        // Применяем конфиг с сервера если есть
+        if (data.config) {
+          if (data.config.theme) theme = data.config.theme;
+          if (data.config.phone) phone = data.config.phone;
+        }
+
+        // Создаём виджет
+        var widget = createWidget();
+        setupMessageListener(widget.container);
+        console.log('[VoiceWidget] Embedded successfully with theme:', theme, 'for domain:', domain);
+      })
+      .catch(function(error) {
+        // При ошибке показываем виджет (fail-open)
+        console.log('[VoiceWidget] Status check failed, showing widget anyway:', error);
+        var widget = createWidget();
+        setupMessageListener(widget.container);
+      });
   }
 
   // Запуск при загрузке DOM
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', checkStatusAndInit);
   } else {
-    init();
+    checkStatusAndInit();
   }
 })();

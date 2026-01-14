@@ -1,0 +1,20 @@
+{
+  "widgets": [
+    {
+      "id": "bir",
+      "domain": "bir.by",
+      "name": "BIR.by",
+      "enabled": true,
+      "theme": "default",
+      "phone": "7911"
+    },
+    {
+      "id": "minskworld",
+      "domain": "minskworld.by",
+      "name": "MinskWorld",
+      "enabled": true,
+      "theme": "purple",
+      "phone": "7675"
+    }
+  ]
+}
