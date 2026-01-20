@@ -14,6 +14,8 @@ interface CallButtonProps {
   consentUrl?: string;
   /** Время в минутах до повторного показа развёрнутого виджета (по умолчанию 10) */
   reExpandDelayMinutes?: number;
+  /** Источник лида (домен сайта клиента, например bir.by или minskworld.by) */
+  source?: string;
 }
 
 // Цветовые схемы для разных тем
@@ -66,7 +68,8 @@ const CallButton: React.FC<CallButtonProps> = ({
   phone = '7675',
   privacyUrl = 'https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html',
   consentUrl = 'https://bir.by/aiconsent.pdf',
-  reExpandDelayMinutes = 10
+  reExpandDelayMinutes = 10,
+  source = 'unknown'
 }) => {
   const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -244,8 +247,11 @@ const CallButton: React.FC<CallButtonProps> = ({
       // Start real ElevenLabs conversation
       const conversation = await Conversation.startSession({
         signedUrl: signed_url,
+        dynamicVariables: {
+          source: source,
+        },
         onConnect: () => {
-          console.log('Connected to ElevenLabs');
+          console.log('Connected to ElevenLabs, source:', source);
           setStatus('connected');
         },
         onDisconnect: () => {

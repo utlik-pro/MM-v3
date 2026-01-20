@@ -18,12 +18,13 @@ export default function WidgetPage() {
   const [widgetConfig, setWidgetConfig] = useState({
     phone: '7911',
     privacyUrl: 'https://bir.by/politike-v-otnoshenii-obrabotki-personalnyix-dannyix-potenczialnyix-klientov-v-ooo-bir-baj.html',
-    consentUrl: 'https://bir.by/aiconsent.pdf'
+    consentUrl: 'https://bir.by/aiconsent.pdf',
+    source: 'unknown'
   });
 
   useEffect(() => {
     if (router.isReady) {
-      const { theme, phone, privacyUrl, consentUrl } = router.query;
+      const { theme, phone, privacyUrl, consentUrl, source } = router.query;
 
       // Валидация темы (существующая логика)
       const validThemes = ['default', 'blue', 'purple', 'orange', 'red'];
@@ -38,18 +39,21 @@ export default function WidgetPage() {
       const consentUrlValue = (consentUrl && isValidUrl(consentUrl as string))
         ? consentUrl as string
         : 'https://bir.by/aiconsent.pdf';
+      const sourceValue = source as string || 'unknown';
 
       setWidgetConfig({
         phone: phoneValue,
         privacyUrl: privacyUrlValue,
-        consentUrl: consentUrlValue
+        consentUrl: consentUrlValue,
+        source: sourceValue
       });
 
       console.log('Widget config:', {
         theme: themeValue,
         phone: phoneValue,
         privacyUrl: privacyUrlValue,
-        consentUrl: consentUrlValue
+        consentUrl: consentUrlValue,
+        source: sourceValue
       });
     }
   }, [router.isReady, router.query]);
@@ -286,6 +290,7 @@ export default function WidgetPage() {
             phone={widgetConfig.phone}
             privacyUrl={widgetConfig.privacyUrl}
             consentUrl={widgetConfig.consentUrl}
+            source={widgetConfig.source}
           />
         )}
       </main>

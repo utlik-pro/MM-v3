@@ -38,7 +38,8 @@ export function VoiceWidget({ config = {}, className = '' }: VoiceWidgetProps) {
     speakingText: 'Говорю...',
     dynamicVariables: {
       company: 'MinskMir',
-      language: 'ru'
+      language: 'ru',
+      source: 'unknown'
     },
     ...config
   };

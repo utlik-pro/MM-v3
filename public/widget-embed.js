@@ -34,7 +34,7 @@
   var COLLAPSED_SIZE = { width: 70, height: 70 };
 
   // Создать контейнер и iframe
-  function createWidget() {
+  function createWidget(domain) {
     // Создать контейнер
     var container = document.createElement('div');
     container.id = 'voice-widget-container';
@@ -51,7 +51,7 @@
 
     // Создать iframe
     var iframe = document.createElement('iframe');
-    iframe.src = WIDGET_BASE_URL + '?theme=' + theme + '&phone=' + encodeURIComponent(phone);
+    iframe.src = WIDGET_BASE_URL + '?theme=' + theme + '&phone=' + encodeURIComponent(phone) + '&source=' + encodeURIComponent(domain || window.location.hostname);
     iframe.style.cssText = [
       'width: 100%',
       'height: 100%',
@@ -123,14 +123,14 @@
         }
 
         // Создаём виджет
-        var widget = createWidget();
+        var widget = createWidget(domain);
         setupMessageListener(widget.container);
-        console.log('[VoiceWidget] Embedded successfully with theme:', theme, 'for domain:', domain);
+        console.log('[VoiceWidget] Embedded successfully with theme:', theme, 'source:', domain);
       })
       .catch(function(error) {
         // При ошибке показываем виджет (fail-open)
         console.log('[VoiceWidget] Status check failed, showing widget anyway:', error);
-        var widget = createWidget();
+        var widget = createWidget(domain);
         setupMessageListener(widget.container);
       });
   }
