@@ -371,13 +371,14 @@ const CallButton: React.FC<CallButtonProps> = ({
   if (isCollapsed) {
     return (
       <div
-        className="group"
+        className="fixed bottom-4 right-4 z-[999999] group"
         style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          position: 'fixed',
+          bottom: '16px',
+          right: '16px',
+          zIndex: 999999,
+          width: '56px',
+          height: '56px',
           pointerEvents: 'none' // Контейнер не блокирует клики
         }}
       >
