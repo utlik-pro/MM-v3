@@ -31,7 +31,7 @@
 
   // Размеры
   var EXPANDED_SIZE = { width: 340, height: 450 };
-  var COLLAPSED_SIZE = { width: 90, height: 90 };
+  var COLLAPSED_SIZE = { width: 120, height: 120 };
 
   // Создать контейнер и iframe
   function createWidget(domain) {
