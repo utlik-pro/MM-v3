@@ -327,8 +327,8 @@ const CallButton: React.FC<CallButtonProps> = ({
       if (window.parent !== window) {
         window.parent.postMessage({
           type: 'widget-collapsed',
-          width: 70,  // 56px кнопка + отступы
-          height: 70
+          width: 90,  // 56px кнопка + 16px отступ + запас на тень/анимацию
+          height: 90
         }, '*');
       }
     }, 200);
