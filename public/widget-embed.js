@@ -46,7 +46,8 @@
       'width: ' + EXPANDED_SIZE.width + 'px',
       'height: ' + EXPANDED_SIZE.height + 'px',
       'transition: width 0.3s ease, height 0.3s ease',
-      'pointer-events: none'
+      'pointer-events: none',
+      'overflow: hidden'
     ].join(';');
 
     // Создать iframe
