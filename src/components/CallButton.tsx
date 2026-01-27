@@ -147,8 +147,7 @@ const CallButton: React.FC<CallButtonProps> = ({
     };
   }, [reExpandDelay]);
 
-  // Prevent flash of wrong state
-  if (!isInitialized) return null;
+
 
   // Получаем тему из URL параметров при загрузке компонента
   useEffect(() => {
@@ -177,6 +176,9 @@ const CallButton: React.FC<CallButtonProps> = ({
       }
     };
   }, []);
+
+  // Prevent flash of wrong state - check AFTER all hooks
+  if (!isInitialized) return null;
 
   const requestMicrophoneAccess = async () => {
     try {
