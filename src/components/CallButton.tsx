@@ -177,8 +177,7 @@ const CallButton: React.FC<CallButtonProps> = ({
     };
   }, []);
 
-  // Prevent flash of wrong state - check AFTER all hooks
-  if (!isInitialized) return null;
+
 
   const requestMicrophoneAccess = async () => {
     try {
@@ -363,6 +362,9 @@ const CallButton: React.FC<CallButtonProps> = ({
       return () => clearTimeout(timer);
     }
   }, [isCollapsed]);
+
+  // Prevent flash of wrong state - check AFTER ALL hooks
+  if (!isInitialized) return null;
 
   // Обработка сворачивания виджета
   const handleCollapse = () => {
