@@ -101,20 +101,8 @@ const CallButton: React.FC<CallButtonProps> = ({
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(COLLAPSE_TIMESTAMP_KEY);
         setIsCollapsed(false);
-      } else {
         // Иначе оставляем свёрнутым и ставим таймер на оставшееся время
         setIsCollapsed(true);
-        
-        // Fix: Force resize immediate message
-        if (typeof window !== 'undefined' && window.parent !== window) {
-           setTimeout(() => {
-             window.parent.postMessage({
-              type: 'widget-collapsed',
-              width: 120,
-              height: 120
-            }, '*');
-           }, 100);
-        }
 
         const remainingTime = reExpandDelay - timeSinceCollapse;
         reExpandTimerRef.current = setTimeout(() => {
@@ -160,19 +148,19 @@ const CallButton: React.FC<CallButtonProps> = ({
 
   const requestMicrophoneAccess = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true
-        } 
+        }
       });
       setHasMicrophoneAccess(true);
       return stream;
     } catch (error) {
       console.error('Failed to get microphone access:', error);
       setHasMicrophoneAccess(false);
-      
+
       // Provide specific error handling
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
@@ -181,7 +169,7 @@ const CallButton: React.FC<CallButtonProps> = ({
           throw new Error('Микрофон не найден');
         }
       }
-      
+
       throw error;
     }
   };
@@ -190,7 +178,7 @@ const CallButton: React.FC<CallButtonProps> = ({
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: 'audio/webm;codecs=opus'
     });
-    
+
     mediaRecorderRef.current = mediaRecorder;
     audioChunksRef.current = [];
 
@@ -203,7 +191,7 @@ const CallButton: React.FC<CallButtonProps> = ({
     mediaRecorder.onstop = async () => {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       console.log('Recording stopped, audio size:', audioBlob.size);
-      
+
       // Here you would send the audio to your API
       // await sendAudioToAPI(audioBlob);
     };
@@ -231,13 +219,13 @@ const CallButton: React.FC<CallButtonProps> = ({
       setStatus('connecting');
       setShowValidationError(false);
       onCallStart?.();
-      
+
       // Request microphone access
       const stream = await requestMicrophoneAccess();
-      
+
       // Start recording
       startRecording(stream);
-      
+
       // Get signed URL for ElevenLabs WebSocket connection
       const response = await fetch('/api/elevenlabs/signed-url', {
         method: 'POST',
@@ -252,13 +240,21 @@ const CallButton: React.FC<CallButtonProps> = ({
 
       const { signed_url } = await response.json();
       console.log('ElevenLabs signed URL obtained:', signed_url);
-      
+
+      // Construct proxy URL if configured
+      const proxyBaseUrl = process.env.NEXT_PUBLIC_WS_PROXY_URL;
+      const connectionUrl = proxyBaseUrl
+        ? `${proxyBaseUrl}?url=${encodeURIComponent(signed_url)}`
+        : signed_url;
+
+      console.log('Connection URL:', connectionUrl);
+
       // Dynamic import of ElevenLabs client
       const { Conversation } = await import('@elevenlabs/client');
-      
+
       // Start real ElevenLabs conversation
       const conversation = await Conversation.startSession({
-        signedUrl: signed_url,
+        signedUrl: connectionUrl,
         dynamicVariables: {
           source: source,
         },
@@ -280,21 +276,21 @@ const CallButton: React.FC<CallButtonProps> = ({
           // Handle speaking/listening modes if needed
         }
       });
-      
+
       // Store conversation reference for cleanup
       conversationRef.current = conversation;
-      
+
       console.log('ElevenLabs conversation started');
     } catch (error) {
       console.error('Call error:', error);
       setStatus('error');
-      
+
       // Show specific error message based on error type
       if (error instanceof Error && error.name === 'NotAllowedError') {
         // Microphone permission denied
         console.log('Microphone permission denied');
       }
-      
+
       // Reset to idle after 3 seconds
       setTimeout(() => {
         setStatus('idle');
@@ -311,6 +307,28 @@ const CallButton: React.FC<CallButtonProps> = ({
     stopRecording();
     setStatus('idle');
   };
+
+  // Ensure parent window is notified when collapsed state changes
+  useEffect(() => {
+    if (isCollapsed) {
+      const sendCollapseMessage = () => {
+        if (window.parent !== window) {
+          window.parent.postMessage({
+            type: 'widget-collapsed',
+            width: 80,
+            height: 80
+          }, '*');
+        }
+      };
+
+      // Send immediately
+      sendCollapseMessage();
+
+      // Send again after a short delay to ensure parent catches it (e.g. after animations)
+      const timer = setTimeout(sendCollapseMessage, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isCollapsed]);
 
   // Обработка сворачивания виджета
   const handleCollapse = () => {
@@ -334,15 +352,6 @@ const CallButton: React.FC<CallButtonProps> = ({
       reExpandTimerRef.current = setTimeout(() => {
         handleExpand();
       }, reExpandDelay);
-
-      // Сообщаем родительской странице что виджет свёрнут + размер для iframe
-      if (window.parent !== window) {
-        window.parent.postMessage({
-          type: 'widget-collapsed',
-          width: 120,  // 56px кнопка + 16px отступ + 48px на анимацию волн
-          height: 120
-        }, '*');
-      }
     }, 200);
   };
 
@@ -357,12 +366,14 @@ const CallButton: React.FC<CallButtonProps> = ({
       reExpandTimerRef.current = null;
     }
 
-    // Сообщаем родительской странице что виджет развёрнут + размер для iframe
+    // Сообщаем родительской странице что виджет развёрнут
+    // Размеры будут отправлены автоматически через ResizeObserver
     if (window.parent !== window) {
+      // Send a default/min size initially to ensure visibility before observer kicks in
       window.parent.postMessage({
         type: 'widget-expanded',
-        width: 340,
-        height: 450
+        width: 360,
+        height: 340 // Fallback/Initial
       }, '*');
     }
   };
@@ -379,11 +390,31 @@ const CallButton: React.FC<CallButtonProps> = ({
     }
   };
 
-  // Свёрнутое состояние - маленький кружок с иконкой телефона
+
   if (isCollapsed) {
     return (
       <div
         className="fixed bottom-4 right-4 z-[999999] group"
+        onMouseEnter={() => {
+          if (window.parent !== window) {
+            // Разворачиваем контейнер для показа подсказки
+            window.parent.postMessage({
+              type: 'widget-collapsed',
+              width: 300, // Шире для длинных подсказок
+              height: 150 // Выше для подсказки сверху
+            }, '*');
+          }
+        }}
+        onMouseLeave={() => {
+          if (window.parent !== window) {
+            // Сворачиваем обратно к размеру кнопки
+            window.parent.postMessage({
+              type: 'widget-collapsed',
+              width: 80,
+              height: 80
+            }, '*');
+          }
+        }}
         style={{
           position: 'fixed',
           bottom: '16px',
@@ -416,10 +447,10 @@ const CallButton: React.FC<CallButtonProps> = ({
 
         {/* Подсказка при наведении */}
         <div
-          className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          style={{ pointerEvents: 'none' }}
+          className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          style={{ pointerEvents: 'none', width: 'max-content' }}
         >
-          <div className="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
+          <div className="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg relative">
             AI-консультант
             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
           </div>
@@ -440,6 +471,47 @@ const CallButton: React.FC<CallButtonProps> = ({
     >
       {/* New Modern Widget Design */}
       <div
+        ref={(el) => {
+          // Use a callback ref to handle potential nulls during mounting/unmounting
+          if (el) {
+            // Store the element reference if needed for other things
+            // strict null check safe
+
+            // Setup ResizeObserver
+            const resizeObserver = new ResizeObserver((entries) => {
+              if (isCollapsed) return;
+
+              for (const entry of entries) {
+                // Add some buffer for shadows (approx 20px total horizontal/vertical)
+                // The widget width is w-80 (320px) + padding/border + shadow buffer
+                // We want to send the size that encompasses the visual element
+
+                // Пользователь просил фиксированный размер, но 320x300 обрезает тени
+                // w-80 (320px) + тени требуют запаса.
+                // Ставим 360x340 для безопасности
+                const measuredWidth = Math.ceil(entry.contentRect.width) + 40; // +40px buffer for shadows
+                const measuredHeight = Math.ceil(entry.contentRect.height) + 40;
+
+                const width = Math.max(360, measuredWidth);
+                const height = Math.max(340, measuredHeight);
+
+                if (window.parent !== window) {
+                  window.parent.postMessage({
+                    type: 'widget-expanded',
+                    width: width,
+                    height: height
+                  }, '*');
+                }
+              }
+            });
+
+            resizeObserver.observe(el);
+
+            // Cleanup function for when element changes or unmounts works differently with callback refs
+            // We can't easily return cleanup here.
+            // Instead, let's use a useEffect for the observer logic properly.
+          }
+        }}
         className={`bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-80 transition-all duration-200 ${isAnimating ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}`}
         style={{
           boxShadow: '0 0 40px rgba(0, 0, 0, 0.08)',
@@ -464,7 +536,7 @@ const CallButton: React.FC<CallButtonProps> = ({
                 </svg>
               </div>
             </div>
-            
+
             {/* Text */}
             <div className="flex-1">
               <p className="text-gray-900 leading-tight font-medium" style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '15px', letterSpacing: '0%', lineHeight: '1.2' }}>
@@ -475,7 +547,7 @@ const CallButton: React.FC<CallButtonProps> = ({
               </p>
             </div>
           </div>
-          
+
           {/* Close Button - сворачивает в кружок */}
           <button
             onClick={handleCollapse}
@@ -485,7 +557,7 @@ const CallButton: React.FC<CallButtonProps> = ({
             <X className="w-3 h-3 text-gray-500" />
           </button>
         </div>
-        
+
         {/* Checkboxes for consent */}
         <div className="mb-3 space-y-2">
           {/* Privacy Policy Checkbox */}
@@ -525,20 +597,20 @@ const CallButton: React.FC<CallButtonProps> = ({
             ${status === 'connecting'
               ? 'cursor-not-allowed'
               : status === 'connected'
-              ? 'text-white active:scale-95'
-              : `text-white bg-gradient-to-r ${colors.button} hover:${colors.buttonHover} active:scale-95`
+                ? 'text-white active:scale-95'
+                : `text-white bg-gradient-to-r ${colors.button} hover:${colors.buttonHover} active:scale-95`
             }
           `}
           style={
             status === 'connecting'
               ? {
-                  backgroundColor: 'white',
-                  color: 'black',
-                  border: '1px solid black'
-                }
+                backgroundColor: 'white',
+                color: 'black',
+                border: '1px solid black'
+              }
               : status === 'connected'
-              ? { backgroundColor: colors.buttonConnected }
-              : undefined
+                ? { backgroundColor: colors.buttonConnected }
+                : undefined
           }
           onMouseEnter={status === 'connected' ? (e) => {
             e.currentTarget.style.backgroundColor = colors.buttonConnectedHover;

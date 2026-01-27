@@ -13,7 +13,7 @@
  * - data-phone: номер телефона для fallback (по умолчанию "7911")
  */
 
-(function() {
+(function () {
   'use strict';
 
   // Получить параметры из script тега
@@ -30,8 +30,8 @@
   var WIDGET_BASE_URL = 'https://mm-v3.vercel.app/widget';
 
   // Размеры
-  var EXPANDED_SIZE = { width: 340, height: 450 };
-  var COLLAPSED_SIZE = { width: 120, height: 120 };
+  var EXPANDED_SIZE = { width: 360, height: 340 };
+  var COLLAPSED_SIZE = { width: 80, height: 80 };
 
   // Создать контейнер и iframe
   function createWidget(domain) {
@@ -77,7 +77,7 @@
 
   // Слушать сообщения от виджета
   function setupMessageListener(container) {
-    window.addEventListener('message', function(event) {
+    window.addEventListener('message', function (event) {
       var data = event.data;
       if (!data || !data.type) return;
 
@@ -107,10 +107,10 @@
     var statusUrl = 'https://mm-v3.vercel.app/api/widget/status?domain=' + encodeURIComponent(domain);
 
     fetch(statusUrl)
-      .then(function(response) {
+      .then(function (response) {
         return response.json();
       })
-      .then(function(data) {
+      .then(function (data) {
         // Проверяем enabled статус
         if (data.enabled === false) {
           console.log('[VoiceWidget] Widget disabled for domain:', domain);
@@ -128,7 +128,7 @@
         setupMessageListener(widget.container);
         console.log('[VoiceWidget] Embedded successfully with theme:', theme, 'source:', domain);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         // При ошибке показываем виджет (fail-open)
         console.log('[VoiceWidget] Status check failed, showing widget anyway:', error);
         var widget = createWidget(domain);
