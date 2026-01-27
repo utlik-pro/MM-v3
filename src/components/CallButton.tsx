@@ -104,6 +104,18 @@ const CallButton: React.FC<CallButtonProps> = ({
       } else {
         // Иначе оставляем свёрнутым и ставим таймер на оставшееся время
         setIsCollapsed(true);
+        
+        // Fix: Force resize immediate message
+        if (typeof window !== 'undefined' && window.parent !== window) {
+           setTimeout(() => {
+             window.parent.postMessage({
+              type: 'widget-collapsed',
+              width: 120,
+              height: 120
+            }, '*');
+           }, 100);
+        }
+
         const remainingTime = reExpandDelay - timeSinceCollapse;
         reExpandTimerRef.current = setTimeout(() => {
           handleExpand();
