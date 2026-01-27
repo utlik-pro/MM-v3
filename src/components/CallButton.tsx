@@ -86,29 +86,58 @@ const CallButton: React.FC<CallButtonProps> = ({
   const reExpandTimerRef = useRef<NodeJS.Timeout | null>(null);
   const reExpandDelay = reExpandDelayMinutes * 60 * 1000;
 
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // Инициализация состояния из localStorage
   useEffect(() => {
+    // Only run on client
     if (typeof window === 'undefined') return;
 
-    const wasCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
-    const collapseTimestamp = localStorage.getItem(COLLAPSE_TIMESTAMP_KEY);
+    try {
+      const wasCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
+      const collapseTimestamp = localStorage.getItem(COLLAPSE_TIMESTAMP_KEY);
 
-    if (wasCollapsed && collapseTimestamp) {
-      const timeSinceCollapse = Date.now() - parseInt(collapseTimestamp, 10);
+      console.log('Checking storage:', { wasCollapsed, collapseTimestamp });
 
-      // Если прошло больше времени ожидания, показываем развёрнутый виджет
-      if (timeSinceCollapse >= reExpandDelay) {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(COLLAPSE_TIMESTAMP_KEY);
+      if (wasCollapsed && collapseTimestamp) {
+        const timeSinceCollapse = Date.now() - parseInt(collapseTimestamp, 10);
+        console.log('Time since collapse:', timeSinceCollapse / 1000 / 60, 'minutes. Delay:', reExpandDelayMinutes, 'minutes');
+
+        // Если прошло больше времени ожидания, показываем развёрнутый виджет
+        if (timeSinceCollapse >= reExpandDelay) {
+          console.log('Timer expired, expanding');
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(COLLAPSE_TIMESTAMP_KEY);
+          setIsCollapsed(false);
+        } else {
+          // Иначе оставляем свёрнутым
+          console.log('Timer active, keeping collapsed');
+          setIsCollapsed(true);
+
+          // Fix for "Re-opened" issue: Ensure we send the collapsed message immediately
+          // since state update might be async or batched
+          if (window.parent !== window) {
+            window.parent.postMessage({
+              type: 'widget-collapsed',
+              width: 80,
+              height: 80
+            }, '*');
+          }
+
+          const remainingTime = reExpandDelay - timeSinceCollapse;
+          reExpandTimerRef.current = setTimeout(() => {
+            handleExpand();
+          }, remainingTime);
+        }
+      } else {
+        // No storage, default to Expanded
+        console.log('No valid storage, defaulting to Expanded');
         setIsCollapsed(false);
-        // Иначе оставляем свёрнутым и ставим таймер на оставшееся время
-        setIsCollapsed(true);
-
-        const remainingTime = reExpandDelay - timeSinceCollapse;
-        reExpandTimerRef.current = setTimeout(() => {
-          handleExpand();
-        }, remainingTime);
       }
+    } catch (e) {
+      console.error('Error reading storage:', e);
+    } finally {
+      setIsInitialized(true);
     }
 
     return () => {
@@ -117,6 +146,9 @@ const CallButton: React.FC<CallButtonProps> = ({
       }
     };
   }, [reExpandDelay]);
+
+  // Prevent flash of wrong state
+  if (!isInitialized) return null;
 
   // Получаем тему из URL параметров при загрузке компонента
   useEffect(() => {
