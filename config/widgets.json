@@ -4,7 +4,7 @@
       "id": "bir",
       "domain": "bir.by",
       "name": "BIR.by",
-      "enabled": true,
+      "enabled": false,
       "theme": "default",
       "phone": "7911"
     },
@@ -12,7 +12,7 @@
       "id": "minskworld",
       "domain": "minskworld.by",
       "name": "MinskWorld",
-      "enabled": true,
+      "enabled": false,
       "theme": "purple",
       "phone": "7675"
     }
