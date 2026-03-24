@@ -10,7 +10,8 @@ import {
   APIResponse,
   APIError,
   RateLimitInfo,
-  RequestConfig
+  RequestConfig,
+  SubscriptionInfo
 } from './types'
 
 export class ElevenLabsClient {
@@ -286,6 +287,12 @@ export class ElevenLabsClient {
     return this.request<void>(endpoint, {
       method: 'DELETE'
     })
+  }
+
+  // Subscription / balance check
+  public async getSubscription(): Promise<APIResponse<SubscriptionInfo>> {
+    const endpoint = '/user/subscription'
+    return this.request<SubscriptionInfo>(endpoint)
   }
 
   // Health check
